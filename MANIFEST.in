@@ -1,15 +1,17 @@
-include README.rst
+include README.md
 include LICENSE
-include requirements.txt
-include discord/bin/*.dll
-include discord/py.typed
-include discord/emojis.json
+include rum/bin/*.dll
+include rum/py.typed
+include rum/emojis.json
+
+# setup.py reads the project metadata from README.md via scripts/readme_metadata.py
+recursive-include scripts *.py
 
 prune .github
 prune docs
 prune examples
 prune tests
-exclude discord/bin/COPYING
+exclude rum/bin/COPYING
 exclude .flake8
 exclude .gitignore
 exclude .pre-commit-config.yaml

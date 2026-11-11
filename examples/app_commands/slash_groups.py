@@ -1,9 +1,9 @@
-import discord
+import rum
 
-bot = discord.Bot(debug_guilds=[...])
+bot = rum.Bot(debug_guilds=[...])
 
 # If you use commands.Bot, @bot.slash_command should be used for
-# slash commands. You can use @bot.slash_command with discord.Bot as well.
+# slash commands. You can use @bot.slash_command with rum.Bot as well.
 
 math = bot.create_group(
     "math", "Commands related to mathematics."
@@ -11,11 +11,11 @@ math = bot.create_group(
 
 # Another way, creating the class manually:
 
-math = discord.SlashCommandGroup("math", "Commands related to mathematics.")
+math = rum.SlashCommandGroup("math", "Commands related to mathematics.")
 
 
 @math.command()  # Create a slash command under the math group
-async def add(ctx: discord.ApplicationContext, num1: int, num2: int):
+async def add(ctx: rum.ApplicationContext, num1: int, num2: int):
     """Get the sum of 2 integers."""
     await ctx.respond(f"The sum of these numbers is **{num1+num2}**")
 

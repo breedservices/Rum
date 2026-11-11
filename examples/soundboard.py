@@ -4,25 +4,25 @@ import os
 
 from dotenv import load_dotenv
 
-import discord
+import rum
 
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
-bot = discord.Bot()
+bot = rum.Bot()
 
 
-class SoundboardCog(discord.Cog):
+class SoundboardCog(rum.Cog):
     """A cog demonstrating Discord's soundboard features."""
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: rum.Bot):
         self.bot = bot
 
-    @discord.Cog.listener()
+    @rum.Cog.listener()
     async def on_voice_channel_effect_send(
-        self, event: discord.VoiceChannelEffectSendEvent
+        self, event: rum.VoiceChannelEffectSendEvent
     ):
         """Called when someone uses a soundboard effect in a voice channel."""
         if event.sound:
@@ -30,8 +30,8 @@ class SoundboardCog(discord.Cog):
         elif event.emoji:
             print(f"{event.user} sent emoji effect {event.emoji} in {event.channel}")
 
-    @discord.slash_command()
-    async def list_sounds(self, ctx: discord.ApplicationContext):
+    @rum.slash_command()
+    async def list_sounds(self, ctx: rum.ApplicationContext):
         """Lists all the available sounds in the guild."""
         await ctx.defer()
 
@@ -39,7 +39,7 @@ class SoundboardCog(discord.Cog):
         default_sounds = await self.bot.fetch_default_sounds()
         guild_sounds = await ctx.guild.fetch_sounds()
 
-        embed = discord.Embed(title="Available Sounds")
+        embed = rum.Embed(title="Available Sounds")
 
         # List default sounds
         if default_sounds:
@@ -61,14 +61,14 @@ class SoundboardCog(discord.Cog):
 
         await ctx.respond(embed=embed)
 
-    @discord.slash_command()
-    @discord.default_permissions(manage_guild=True)
+    @rum.slash_command()
+    @rum.default_permissions(manage_guild=True)
     async def add_sound(
         self,
-        ctx: discord.ApplicationContext,
+        ctx: rum.ApplicationContext,
         name: str,
         emoji: str,
-        attachment: discord.Attachment,
+        attachment: rum.Attachment,
     ):
         """Adds a new sound to the guild's soundboard. Currently only supports mp3 files."""
         await ctx.defer()
@@ -78,7 +78,7 @@ class SoundboardCog(discord.Cog):
 
         try:
             sound_bytes = await attachment.read()
-            emoji = discord.PartialEmoji.from_str(emoji)
+            emoji = rum.PartialEmoji.from_str(emoji)
 
             new_sound = await ctx.guild.create_sound(
                 name=name, sound=sound_bytes, volume=1.0, emoji=emoji
@@ -88,11 +88,11 @@ class SoundboardCog(discord.Cog):
         except Exception as e:
             await ctx.respond(f"Failed to add sound: {str(e)}")
 
-    @discord.slash_command()
-    @discord.default_permissions(manage_guild=True)
+    @rum.slash_command()
+    @rum.default_permissions(manage_guild=True)
     async def edit_sound(
         self,
-        ctx: discord.ApplicationContext,
+        ctx: rum.ApplicationContext,
         sound_name: str,
         new_name: str | None = None,
         new_emoji: str | None = None,
@@ -103,7 +103,7 @@ class SoundboardCog(discord.Cog):
 
         # Find the sound by name
         sounds = await ctx.guild.fetch_sounds()
-        sound = discord.utils.get(sounds, name=sound_name)
+        sound = rum.utils.get(sounds, name=sound_name)
 
         if not sound:
             return await ctx.respond(f"Sound '{sound_name}' not found!")
@@ -112,7 +112,7 @@ class SoundboardCog(discord.Cog):
             await sound.edit(
                 name=new_name or sound.name,
                 emoji=(
-                    discord.PartialEmoji.from_str(new_emoji)
+                    rum.PartialEmoji.from_str(new_emoji)
                     if new_emoji
                     else sound.emoji
                 ),
@@ -122,12 +122,12 @@ class SoundboardCog(discord.Cog):
         except Exception as e:
             await ctx.respond(f"Failed to edit sound: {str(e)}")
 
-    @discord.slash_command()
+    @rum.slash_command()
     async def play_sound(
         self,
-        ctx: discord.ApplicationContext,
+        ctx: rum.ApplicationContext,
         sound_name: str,
-        channel: discord.VoiceChannel | None = None,
+        channel: rum.VoiceChannel | None = None,
     ):
         """Plays a sound in a voice channel."""
         await ctx.defer()
@@ -141,11 +141,11 @@ class SoundboardCog(discord.Cog):
         try:
             # Find the sound
             sounds = await ctx.guild.fetch_sounds()
-            sound = discord.utils.get(sounds, name=sound_name)
+            sound = rum.utils.get(sounds, name=sound_name)
             if not sound:
                 # Check default sounds if not found in guild sounds
                 defaults = await self.bot.fetch_default_sounds()
-                sound = discord.utils.get(defaults, name=sound_name)
+                sound = rum.utils.get(defaults, name=sound_name)
 
             if not sound:
                 return await ctx.respond(f"Sound '{sound_name}' not found!")

@@ -1,11 +1,11 @@
-import discord
-from discord import option
+import rum
+from rum import option
 
-bot = discord.Bot(debug_guilds=[...])
+bot = rum.Bot(debug_guilds=[...])
 
 
 # If you use commands.Bot, @bot.slash_command should be used for
-# slash commands. You can use @bot.slash_command with discord.Bot as well.
+# slash commands. You can use @bot.slash_command with rum.Bot as well.
 
 
 @bot.slash_command()
@@ -26,7 +26,7 @@ bot = discord.Bot(debug_guilds=[...])
     # age: Option(int, "Enter your age") = 18
 )
 async def hello(
-    ctx: discord.ApplicationContext,
+    ctx: rum.ApplicationContext,
     name: str,
     pokemon: str,
     age: int,
@@ -39,13 +39,13 @@ async def hello(
 @bot.slash_command(name="channel")
 @option(
     "channel",
-    discord.TextChannel | discord.VoiceChannel,
+    rum.TextChannel | rum.VoiceChannel,
     # You can specify allowed channel types by passing a union of them like this.
     description="Select a channel",
 )
 async def select_channel(
-    ctx: discord.ApplicationContext,
-    channel: discord.TextChannel | discord.VoiceChannel,
+    ctx: rum.ApplicationContext,
+    channel: rum.TextChannel | rum.VoiceChannel,
 ):
     await ctx.respond(f"Hi! You selected {channel.mention} channel.")
 
@@ -53,13 +53,13 @@ async def select_channel(
 @bot.slash_command(name="attach_file")
 @option(
     "attachment",
-    discord.Attachment,
+    rum.Attachment,
     description="A file to attach to the message",
     required=False,  # The default value will be None if the user doesn't provide a file.
 )
 async def say(
-    ctx: discord.ApplicationContext,
-    attachment: discord.Attachment,
+    ctx: rum.ApplicationContext,
+    attachment: rum.Attachment,
 ):
     """This demonstrates how to attach a file with a slash command."""
     if attachment:

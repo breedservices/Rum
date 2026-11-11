@@ -1,9 +1,9 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 API Reference
 =============
 
-The following section outlines the API of Pycord's prefixed command extension module.
+The following section outlines the API of rum's prefixed command extension module.
 
 .. note::
 
@@ -18,9 +18,9 @@ Bots
 Bot
 ~~~
 
-.. attributetable:: discord.ext.commands.Bot
+.. attributetable:: rum.ext.commands.Bot
 
-.. autoclass:: discord.ext.commands.Bot
+.. autoclass:: rum.ext.commands.Bot
     :members:
     :inherited-members:
     :exclude-members: after_invoke, before_invoke, check, check_once, command, event, group, listen
@@ -52,17 +52,17 @@ Bot
 AutoShardedBot
 ~~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.commands.AutoShardedBot
+.. attributetable:: rum.ext.commands.AutoShardedBot
 
-.. autoclass:: discord.ext.commands.AutoShardedBot
+.. autoclass:: rum.ext.commands.AutoShardedBot
     :members:
 
 Prefix Helpers
 --------------
 
-.. autofunction:: discord.ext.commands.when_mentioned
+.. autofunction:: rum.ext.commands.when_mentioned
 
-.. autofunction:: discord.ext.commands.when_mentioned_or
+.. autofunction:: rum.ext.commands.when_mentioned_or
 
 .. _ext_commands_api_events:
 
@@ -72,7 +72,7 @@ Event Reference
 These events function similar to :ref:`the regular events <discord-api-events>`, except they
 are custom to the command extension module.
 
-.. function:: discord.ext.commands.on_command_error(ctx, error)
+.. function:: rum.ext.commands.on_command_error(ctx, error)
 
     An error handler that is called when an error is raised
     inside a command either through user input error, check
@@ -85,7 +85,7 @@ are custom to the command extension module.
     :param error: The error that was raised.
     :type error: :class:`.CommandError` derived
 
-.. function:: discord.ext.commands.on_command(ctx)
+.. function:: rum.ext.commands.on_command(ctx)
 
     An event that is called when a command is found and is about to be invoked.
 
@@ -95,7 +95,7 @@ are custom to the command extension module.
     :param ctx: The invocation context.
     :type ctx: :class:`.Context`
 
-.. function:: discord.ext.commands.on_command_completion(ctx)
+.. function:: rum.ext.commands.on_command_completion(ctx)
 
     An event that is called when a command has completed its invocation.
 
@@ -113,18 +113,18 @@ Commands
 Decorators
 ~~~~~~~~~~
 
-.. autofunction:: discord.ext.commands.command
+.. autofunction:: rum.ext.commands.command
     :decorator:
 
-.. autofunction:: discord.ext.commands.group
+.. autofunction:: rum.ext.commands.group
     :decorator:
 
 Command
 ~~~~~~~
 
-.. attributetable:: discord.ext.commands.Command
+.. attributetable:: rum.ext.commands.Command
 
-.. autoclass:: discord.ext.commands.Command
+.. autoclass:: rum.ext.commands.Command
     :members:
     :special-members: __call__
     :exclude-members: after_invoke, before_invoke, error
@@ -141,9 +141,9 @@ Command
 Group
 ~~~~~
 
-.. attributetable:: discord.ext.commands.Group
+.. attributetable:: rum.ext.commands.Group
 
-.. autoclass:: discord.ext.commands.Group
+.. autoclass:: rum.ext.commands.Group
     :members:
     :inherited-members:
     :exclude-members: after_invoke, before_invoke, command, error, group
@@ -166,9 +166,9 @@ Group
 GroupMixin
 ~~~~~~~~~~
 
-.. attributetable:: discord.ext.commands.GroupMixin
+.. attributetable:: rum.ext.commands.GroupMixin
 
-.. autoclass:: discord.ext.commands.GroupMixin
+.. autoclass:: rum.ext.commands.GroupMixin
     :members:
     :exclude-members: command, group
 
@@ -186,17 +186,17 @@ Cogs
 Cog
 ~~~
 
-.. attributetable:: discord.ext.commands.Cog
+.. attributetable:: rum.ext.commands.Cog
 
-.. autoclass:: discord.ext.commands.Cog
+.. autoclass:: rum.ext.commands.Cog
     :members:
 
 CogMeta
 ~~~~~~~
 
-.. attributetable:: discord.cog.CogMeta
+.. attributetable:: rum.cog.CogMeta
 
-.. autoclass:: discord.cog.CogMeta
+.. autoclass:: rum.cog.CogMeta
     :members:
 
 .. _ext_commands_help_command:
@@ -207,42 +207,42 @@ Help Commands
 HelpCommand
 ~~~~~~~~~~~
 
-.. attributetable:: discord.ext.commands.HelpCommand
+.. attributetable:: rum.ext.commands.HelpCommand
 
-.. autoclass:: discord.ext.commands.HelpCommand
+.. autoclass:: rum.ext.commands.HelpCommand
     :members:
 
 DefaultHelpCommand
 ~~~~~~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.commands.DefaultHelpCommand
+.. attributetable:: rum.ext.commands.DefaultHelpCommand
 
-.. autoclass:: discord.ext.commands.DefaultHelpCommand
+.. autoclass:: rum.ext.commands.DefaultHelpCommand
     :members:
     :exclude-members: send_bot_help, send_cog_help, send_group_help, send_command_help, prepare_help_command
 
 MinimalHelpCommand
 ~~~~~~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.commands.MinimalHelpCommand
+.. attributetable:: rum.ext.commands.MinimalHelpCommand
 
-.. autoclass:: discord.ext.commands.MinimalHelpCommand
+.. autoclass:: rum.ext.commands.MinimalHelpCommand
     :members:
     :exclude-members: send_bot_help, send_cog_help, send_group_help, send_command_help, prepare_help_command
 
 Paginator
 ~~~~~~~~~
 
-.. attributetable:: discord.ext.commands.Paginator
+.. attributetable:: rum.ext.commands.Paginator
 
-.. autoclass:: discord.ext.commands.Paginator
+.. autoclass:: rum.ext.commands.Paginator
     :members:
 
 Enums
 -----
 
 .. class:: BucketType
-    :module: discord.ext.commands
+    :module: rum.ext.commands
 
     Specifies a type of bucket for, e.g. a cooldown.
 
@@ -276,61 +276,61 @@ Enums
 Checks
 ------
 
-.. autofunction:: discord.ext.commands.check(predicate)
+.. autofunction:: rum.ext.commands.check(predicate)
     :decorator:
 
-.. autofunction:: discord.ext.commands.check_any(*checks)
+.. autofunction:: rum.ext.commands.check_any(*checks)
     :decorator:
 
-.. autofunction:: discord.ext.commands.has_role(item)
+.. autofunction:: rum.ext.commands.has_role(item)
     :decorator:
 
-.. autofunction:: discord.ext.commands.has_permissions(**perms)
+.. autofunction:: rum.ext.commands.has_permissions(**perms)
     :decorator:
 
-.. autofunction:: discord.ext.commands.has_guild_permissions(**perms)
+.. autofunction:: rum.ext.commands.has_guild_permissions(**perms)
     :decorator:
 
-.. autofunction:: discord.ext.commands.has_any_role(*items)
+.. autofunction:: rum.ext.commands.has_any_role(*items)
     :decorator:
 
-.. autofunction:: discord.ext.commands.bot_has_role(item)
+.. autofunction:: rum.ext.commands.bot_has_role(item)
     :decorator:
 
-.. autofunction:: discord.ext.commands.bot_has_permissions(**perms)
+.. autofunction:: rum.ext.commands.bot_has_permissions(**perms)
     :decorator:
 
-.. autofunction:: discord.ext.commands.bot_has_guild_permissions(**perms)
+.. autofunction:: rum.ext.commands.bot_has_guild_permissions(**perms)
     :decorator:
 
-.. autofunction:: discord.ext.commands.bot_has_any_role(*items)
+.. autofunction:: rum.ext.commands.bot_has_any_role(*items)
     :decorator:
 
-.. autofunction:: discord.ext.commands.cooldown(rate, per, type=discord.ext.commands.BucketType.default)
+.. autofunction:: rum.ext.commands.cooldown(rate, per, type=rum.ext.commands.BucketType.default)
     :decorator:
 
-.. autofunction:: discord.ext.commands.dynamic_cooldown(cooldown, type=BucketType.default)
+.. autofunction:: rum.ext.commands.dynamic_cooldown(cooldown, type=BucketType.default)
     :decorator:
 
-.. autofunction:: discord.ext.commands.max_concurrency(number, per=discord.ext.commands.BucketType.default, *, wait=False)
+.. autofunction:: rum.ext.commands.max_concurrency(number, per=rum.ext.commands.BucketType.default, *, wait=False)
     :decorator:
 
-.. autofunction:: discord.ext.commands.before_invoke(coro)
+.. autofunction:: rum.ext.commands.before_invoke(coro)
     :decorator:
 
-.. autofunction:: discord.ext.commands.after_invoke(coro)
+.. autofunction:: rum.ext.commands.after_invoke(coro)
     :decorator:
 
-.. autofunction:: discord.ext.commands.guild_only(,)
+.. autofunction:: rum.ext.commands.guild_only(,)
     :decorator:
 
-.. autofunction:: discord.ext.commands.dm_only(,)
+.. autofunction:: rum.ext.commands.dm_only(,)
     :decorator:
 
-.. autofunction:: discord.ext.commands.is_owner(,)
+.. autofunction:: rum.ext.commands.is_owner(,)
     :decorator:
 
-.. autofunction:: discord.ext.commands.is_nsfw(,)
+.. autofunction:: rum.ext.commands.is_nsfw(,)
     :decorator:
 
 .. _ext_commands_api_context:
@@ -338,25 +338,25 @@ Checks
 Cooldown
 --------
 
-.. attributetable:: discord.ext.commands.Cooldown
+.. attributetable:: rum.ext.commands.Cooldown
 
-.. autoclass:: discord.ext.commands.Cooldown
+.. autoclass:: rum.ext.commands.Cooldown
     :members:
 
 Context
 -------
 
-.. attributetable:: discord.ext.commands.Context
+.. attributetable:: rum.ext.commands.Context
 
-.. autoclass:: discord.ext.commands.Context
+.. autoclass:: rum.ext.commands.Context
     :members:
     :inherited-members:
     :exclude-members: history, typing
 
-    .. automethod:: discord.ext.commands.Context.history
+    .. automethod:: rum.ext.commands.Context.history
         :async-for:
 
-    .. automethod:: discord.ext.commands.Context.typing
+    .. automethod:: rum.ext.commands.Context.typing
         :async-with:
 
 .. _ext_commands_api_converters:
@@ -364,237 +364,237 @@ Context
 Converters
 ----------
 
-.. autoclass:: discord.ext.commands.Converter
+.. autoclass:: rum.ext.commands.Converter
     :members:
 
-.. autoclass:: discord.ext.commands.ObjectConverter
+.. autoclass:: rum.ext.commands.ObjectConverter
     :members:
 
-.. autoclass:: discord.ext.commands.MemberConverter
+.. autoclass:: rum.ext.commands.MemberConverter
     :members:
 
-.. autoclass:: discord.ext.commands.UserConverter
+.. autoclass:: rum.ext.commands.UserConverter
     :members:
 
-.. autoclass:: discord.ext.commands.MessageConverter
+.. autoclass:: rum.ext.commands.MessageConverter
     :members:
 
-.. autoclass:: discord.ext.commands.PartialMessageConverter
+.. autoclass:: rum.ext.commands.PartialMessageConverter
     :members:
 
-.. autoclass:: discord.ext.commands.GuildChannelConverter
+.. autoclass:: rum.ext.commands.GuildChannelConverter
     :members:
 
-.. autoclass:: discord.ext.commands.TextChannelConverter
+.. autoclass:: rum.ext.commands.TextChannelConverter
     :members:
 
-.. autoclass:: discord.ext.commands.VoiceChannelConverter
+.. autoclass:: rum.ext.commands.VoiceChannelConverter
     :members:
 
-.. autoclass:: discord.ext.commands.StageChannelConverter
+.. autoclass:: rum.ext.commands.StageChannelConverter
     :members:
 
-.. autoclass:: discord.ext.commands.CategoryChannelConverter
+.. autoclass:: rum.ext.commands.CategoryChannelConverter
     :members:
 
-.. autoclass:: discord.ext.commands.ForumChannelConverter
+.. autoclass:: rum.ext.commands.ForumChannelConverter
     :members:
 
-.. autoclass:: discord.ext.commands.InviteConverter
+.. autoclass:: rum.ext.commands.InviteConverter
     :members:
 
-.. autoclass:: discord.ext.commands.GuildConverter
+.. autoclass:: rum.ext.commands.GuildConverter
     :members:
 
-.. autoclass:: discord.ext.commands.RoleConverter
+.. autoclass:: rum.ext.commands.RoleConverter
     :members:
 
-.. autoclass:: discord.ext.commands.GameConverter
+.. autoclass:: rum.ext.commands.GameConverter
     :members:
 
-.. autoclass:: discord.ext.commands.ColourConverter
+.. autoclass:: rum.ext.commands.ColourConverter
     :members:
 
-.. autoclass:: discord.ext.commands.EmojiConverter
+.. autoclass:: rum.ext.commands.EmojiConverter
     :members:
 
-.. autoclass:: discord.ext.commands.PartialEmojiConverter
+.. autoclass:: rum.ext.commands.PartialEmojiConverter
     :members:
 
-.. autoclass:: discord.ext.commands.ThreadConverter
+.. autoclass:: rum.ext.commands.ThreadConverter
     :members:
 
-.. autoclass:: discord.ext.commands.GuildStickerConverter
+.. autoclass:: rum.ext.commands.GuildStickerConverter
     :members:
 
-.. autoclass:: discord.ext.commands.clean_content
+.. autoclass:: rum.ext.commands.clean_content
     :members:
 
-.. autoclass:: discord.ext.commands.Greedy()
+.. autoclass:: rum.ext.commands.Greedy()
 
-.. autofunction:: discord.ext.commands.run_converters
+.. autofunction:: rum.ext.commands.run_converters
 
 Flag Converter
 ~~~~~~~~~~~~~~
 
-.. autoclass:: discord.ext.commands.FlagConverter
+.. autoclass:: rum.ext.commands.FlagConverter
     :members:
 
-.. autoclass:: discord.ext.commands.Flag()
+.. autoclass:: rum.ext.commands.Flag()
     :members:
 
-.. autofunction:: discord.ext.commands.flag
+.. autofunction:: rum.ext.commands.flag
 
 .. _ext_commands_api_errors:
 
 Exceptions
 ----------
 
-.. autoexception:: discord.ext.commands.CommandError
+.. autoexception:: rum.ext.commands.CommandError
     :members:
 
-.. autoexception:: discord.ext.commands.ConversionError
+.. autoexception:: rum.ext.commands.ConversionError
     :members:
 
-.. autoexception:: discord.ext.commands.MissingRequiredArgument
+.. autoexception:: rum.ext.commands.MissingRequiredArgument
     :members:
 
-.. autoexception:: discord.ext.commands.ArgumentParsingError
+.. autoexception:: rum.ext.commands.ArgumentParsingError
     :members:
 
-.. autoexception:: discord.ext.commands.UnexpectedQuoteError
+.. autoexception:: rum.ext.commands.UnexpectedQuoteError
     :members:
 
-.. autoexception:: discord.ext.commands.InvalidEndOfQuotedStringError
+.. autoexception:: rum.ext.commands.InvalidEndOfQuotedStringError
     :members:
 
-.. autoexception:: discord.ext.commands.ExpectedClosingQuoteError
+.. autoexception:: rum.ext.commands.ExpectedClosingQuoteError
     :members:
 
-.. autoexception:: discord.ext.commands.BadArgument
+.. autoexception:: rum.ext.commands.BadArgument
     :members:
 
-.. autoexception:: discord.ext.commands.BadUnionArgument
+.. autoexception:: rum.ext.commands.BadUnionArgument
     :members:
 
-.. autoexception:: discord.ext.commands.BadLiteralArgument
+.. autoexception:: rum.ext.commands.BadLiteralArgument
     :members:
 
-.. autoexception:: discord.ext.commands.PrivateMessageOnly
+.. autoexception:: rum.ext.commands.PrivateMessageOnly
     :members:
 
-.. autoexception:: discord.ext.commands.NoPrivateMessage
+.. autoexception:: rum.ext.commands.NoPrivateMessage
     :members:
 
-.. autoexception:: discord.ext.commands.CheckFailure
+.. autoexception:: rum.ext.commands.CheckFailure
     :members:
 
-.. autoexception:: discord.ext.commands.CheckAnyFailure
+.. autoexception:: rum.ext.commands.CheckAnyFailure
     :members:
 
-.. autoexception:: discord.ext.commands.CommandNotFound
+.. autoexception:: rum.ext.commands.CommandNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.DisabledCommand
+.. autoexception:: rum.ext.commands.DisabledCommand
     :members:
 
-.. autoexception:: discord.ext.commands.CommandInvokeError
+.. autoexception:: rum.ext.commands.CommandInvokeError
     :members:
 
-.. autoexception:: discord.ext.commands.TooManyArguments
+.. autoexception:: rum.ext.commands.TooManyArguments
     :members:
 
-.. autoexception:: discord.ext.commands.UserInputError
+.. autoexception:: rum.ext.commands.UserInputError
     :members:
 
-.. autoexception:: discord.ext.commands.CommandOnCooldown
+.. autoexception:: rum.ext.commands.CommandOnCooldown
     :members:
 
-.. autoexception:: discord.ext.commands.MaxConcurrencyReached
+.. autoexception:: rum.ext.commands.MaxConcurrencyReached
     :members:
 
-.. autoexception:: discord.ext.commands.NotOwner
+.. autoexception:: rum.ext.commands.NotOwner
     :members:
 
-.. autoexception:: discord.ext.commands.MessageNotFound
+.. autoexception:: rum.ext.commands.MessageNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.MemberNotFound
+.. autoexception:: rum.ext.commands.MemberNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.GuildNotFound
+.. autoexception:: rum.ext.commands.GuildNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.UserNotFound
+.. autoexception:: rum.ext.commands.UserNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.ChannelNotFound
+.. autoexception:: rum.ext.commands.ChannelNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.ChannelNotReadable
+.. autoexception:: rum.ext.commands.ChannelNotReadable
     :members:
 
-.. autoexception:: discord.ext.commands.ThreadNotFound
+.. autoexception:: rum.ext.commands.ThreadNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.BadColourArgument
+.. autoexception:: rum.ext.commands.BadColourArgument
     :members:
 
-.. autoexception:: discord.ext.commands.RoleNotFound
+.. autoexception:: rum.ext.commands.RoleNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.BadInviteArgument
+.. autoexception:: rum.ext.commands.BadInviteArgument
     :members:
 
-.. autoexception:: discord.ext.commands.EmojiNotFound
+.. autoexception:: rum.ext.commands.EmojiNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.PartialEmojiConversionFailure
+.. autoexception:: rum.ext.commands.PartialEmojiConversionFailure
     :members:
 
-.. autoexception:: discord.ext.commands.GuildStickerNotFound
+.. autoexception:: rum.ext.commands.GuildStickerNotFound
     :members:
 
-.. autoexception:: discord.ext.commands.BadBoolArgument
+.. autoexception:: rum.ext.commands.BadBoolArgument
     :members:
 
-.. autoexception:: discord.ext.commands.MissingPermissions
+.. autoexception:: rum.ext.commands.MissingPermissions
     :members:
 
-.. autoexception:: discord.ext.commands.BotMissingPermissions
+.. autoexception:: rum.ext.commands.BotMissingPermissions
     :members:
 
-.. autoexception:: discord.ext.commands.MissingRole
+.. autoexception:: rum.ext.commands.MissingRole
     :members:
 
-.. autoexception:: discord.ext.commands.BotMissingRole
+.. autoexception:: rum.ext.commands.BotMissingRole
     :members:
 
-.. autoexception:: discord.ext.commands.MissingAnyRole
+.. autoexception:: rum.ext.commands.MissingAnyRole
     :members:
 
-.. autoexception:: discord.ext.commands.BotMissingAnyRole
+.. autoexception:: rum.ext.commands.BotMissingAnyRole
     :members:
 
-.. autoexception:: discord.ext.commands.NSFWChannelRequired
+.. autoexception:: rum.ext.commands.NSFWChannelRequired
     :members:
 
-.. autoexception:: discord.ext.commands.FlagError
+.. autoexception:: rum.ext.commands.FlagError
     :members:
 
-.. autoexception:: discord.ext.commands.BadFlagArgument
+.. autoexception:: rum.ext.commands.BadFlagArgument
     :members:
 
-.. autoexception:: discord.ext.commands.MissingFlagArgument
+.. autoexception:: rum.ext.commands.MissingFlagArgument
     :members:
 
-.. autoexception:: discord.ext.commands.TooManyFlags
+.. autoexception:: rum.ext.commands.TooManyFlags
     :members:
 
-.. autoexception:: discord.ext.commands.MissingRequiredFlag
+.. autoexception:: rum.ext.commands.MissingRequiredFlag
     :members:
 
-.. autoexception:: discord.ext.commands.CommandRegistrationError
+.. autoexception:: rum.ext.commands.CommandRegistrationError
     :members:
 
 

@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Application Info
 ================

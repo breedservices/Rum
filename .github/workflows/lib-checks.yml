@@ -3,7 +3,7 @@ name: "Library Checks"
 on:
   push:
     paths:
-      - "discord/**"
+      - "rum/**"
       - "examples/**"
       - "requirements/**"
       - "tests/**"
@@ -11,7 +11,7 @@ on:
       - ".github/workflows/lib-checks.yml"
       - "LICENSE"
       - "MANIFEST.in"
-      - "README.rst"
+      - "README.md"
       - "*.toml"
       - "*.py"
       - ".*"
@@ -52,7 +52,7 @@ jobs:
             });
 
             const matches = (file) => (
-              file.startsWith('discord/') ||
+              file.startsWith('rum/') ||
               file.startsWith('examples/') ||
               file.startsWith('requirements/') ||
               file.startsWith('tests/') ||
@@ -60,7 +60,7 @@ jobs:
               file === '.github/workflows/lib-checks.yml' ||
               file === 'LICENSE' ||
               file === 'MANIFEST.in' ||
-              file === 'README.rst' ||
+              file === 'README.md' ||
               (!file.includes('/') && file.endsWith('.toml')) ||
               (!file.includes('/') && file.endsWith('.py')) ||
               /^\.[^/]+$/.test(file)
@@ -105,6 +105,54 @@ jobs:
           python-version: "3.14"
       - name: "Run bandit"
         run: bandit --recursive  --skip B101,B104,B105,B110,B307,B311,B404,B603,B607 .
+  readme-metadata:
+    needs: [ changes ]
+    if: ${{ needs.changes.outputs.lib == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: "Setup Python"
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: "Check README metadata is in sync"
+        run: |
+          set -euo pipefail
+          python3 -m pip install --upgrade pip uv
+          uv build --wheel --out-dir dist
+          python3 - <<'PY'
+          import glob, sys, zipfile
+          sys.path.insert(0, "scripts")
+          from readme_metadata import read_metadata
+
+          metadata = read_metadata()
+          wheel = glob.glob("dist/*.whl")[0]
+          with zipfile.ZipFile(wheel) as zf:
+              name = next(n for n in zf.namelist() if n.endswith(".dist-info/METADATA"))
+              raw = zf.read(name).decode("utf-8")
+
+          fields = {}
+          for line in raw.splitlines():
+              if not line.strip():
+                  break
+              key, _, value = line.partition(": ")
+              fields[key] = value
+
+          expected_summary = metadata["description"]
+          expected_keywords = ",".join(metadata["keywords"])
+          errors = []
+          if fields.get("Summary") != expected_summary:
+              errors.append(f"Summary: {fields.get('Summary')!r} != {expected_summary!r}")
+          if fields.get("Keywords") != expected_keywords:
+              errors.append(f"Keywords: {fields.get('Keywords')!r} != {expected_keywords!r}")
+          if errors:
+              print("README metadata is out of sync with the built package:")
+              for error in errors:
+                  print("  -", error)
+              sys.exit(1)
+          print("README metadata matches the built package metadata.")
+          PY
   pylint:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' && github.event_name != 'schedule' }}
@@ -121,11 +169,11 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .pylint.d
-          key: pylint-${{ runner.os }}-py3.14-${{ hashFiles('pyproject.toml', 'discord/**/*.py') }}
+          key: pylint-${{ runner.os }}-py3.14-${{ hashFiles('pyproject.toml', 'rum/**/*.py') }}
           restore-keys: |
             pylint-${{ runner.os }}-py3.14-
       - name: "Run pylint"
-        run: pylint discord/ --exit-zero
+        run: pylint rum/ --exit-zero
   mypy:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' && github.event_name != 'schedule' }}
@@ -142,14 +190,14 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .mypy_cache
-          key: mypy-${{ runner.os }}-py3.14-${{ hashFiles('pyproject.toml', 'discord/**/*.py') }}
+          key: mypy-${{ runner.os }}-py3.14-${{ hashFiles('pyproject.toml', 'rum/**/*.py') }}
           restore-keys: |
             mypy-${{ runner.os }}-py3.14-
       - name: "Make mypy cache directory"
         id: cache-dir-mypy
         run: mkdir -p -v .mypy_cache
       - name: "Run mypy"
-        run: mypy --non-interactive discord/
+        run: mypy --non-interactive rum/
   flake8:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' }}
@@ -172,7 +220,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        python-version: [ "3.10", "3.14" ]
+        python-version: [ "3.11", "3.14" ]
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -191,7 +239,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
-        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        python-version: [ "3.11", "3.12", "3.13", "3.14" ]
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

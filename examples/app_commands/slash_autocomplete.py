@@ -1,9 +1,9 @@
 from functools import partial
 
-import discord
-from discord.commands import option
+import rum
+from rum.commands import option
 
-bot = discord.Bot(debug_guilds=[...])
+bot = rum.Bot(debug_guilds=[...])
 
 COLORS = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
 
@@ -90,17 +90,17 @@ LOTS_OF_COLORS = [
 
 BASIC_ALLOWED = [
     ...
-]  # This would normally be a list of discord user IDs for the purpose of this example
+]  # This would normally be a list of rum user IDs for the purpose of this example
 
 
-async def color_searcher(ctx: discord.AutocompleteContext):
+async def color_searcher(ctx: rum.AutocompleteContext):
     """
     Returns a list of matching colors from the LOTS_OF_COLORS list.
 
     In this example, we've added logic to only display any results in the
     returned list if the user's ID exists in the BASIC_ALLOWED list.
 
-    This is to demonstrate passing a callback in the discord.utils.basic_autocomplete function.
+    This is to demonstrate passing a callback in the rum.utils.basic_autocomplete function.
     """
 
     return [
@@ -108,12 +108,12 @@ async def color_searcher(ctx: discord.AutocompleteContext):
     ]
 
 
-async def get_colors(ctx: discord.AutocompleteContext):
+async def get_colors(ctx: rum.AutocompleteContext):
     """Returns a list of colors that begin with the characters entered so far."""
     return [color for color in COLORS if color.startswith(ctx.value.lower())]
 
 
-async def get_animals(ctx: discord.AutocompleteContext):
+async def get_animals(ctx: rum.AutocompleteContext):
     """Returns a list of animals that are (mostly) the color selected for the "color" option."""
     picked_color = ctx.options["color"]
     if picked_color == "red":
@@ -140,7 +140,7 @@ async def get_animals(ctx: discord.AutocompleteContext):
 @option("color", description="Pick a color!", autocomplete=get_colors)
 @option("animal", description="Pick an animal!", autocomplete=get_animals)
 async def autocomplete_example(
-    ctx: discord.ApplicationContext,
+    ctx: rum.ApplicationContext,
     color: str,
     animal: str,
 ):
@@ -165,24 +165,24 @@ async def autocomplete_example(
 @option(
     "color",
     description="Pick a color from this big list!",
-    autocomplete=discord.utils.basic_autocomplete(color_searcher),
-    # Demonstrates passing a callback to discord.utils.basic_autocomplete
+    autocomplete=rum.utils.basic_autocomplete(color_searcher),
+    # Demonstrates passing a callback to rum.utils.basic_autocomplete
 )
 @option(
     "animal",
     description="Pick an animal from this small list",
-    autocomplete=discord.utils.basic_autocomplete(
+    autocomplete=rum.utils.basic_autocomplete(
         ["snail", "python", "cricket", "orca"]
     ),
-    # Demonstrates passing a static iterable discord.utils.basic_autocomplete
+    # Demonstrates passing a static iterable rum.utils.basic_autocomplete
 )
 async def autocomplete_basic_example(
-    ctx: discord.ApplicationContext,
+    ctx: rum.ApplicationContext,
     color: str,
     animal: str,
 ):
     """
-    This demonstrates using the discord.utils.basic_autocomplete helper function.
+    This demonstrates using the rum.utils.basic_autocomplete helper function.
 
     For the `color` option, a callback is passed, where additional
     logic can be added to determine which values are returned.
@@ -190,7 +190,7 @@ async def autocomplete_basic_example(
     For the `animal` option, a static iterable is passed.
 
     While a small amount of values for `animal` are used in this example,
-    iterables of any length can be passed to discord.utils.basic_autocomplete
+    iterables of any length can be passed to rum.utils.basic_autocomplete
 
     Note that the basic_autocomplete function itself will still only return a maximum of 25 items.
     """
@@ -203,11 +203,11 @@ VEGETABLES = ["Carrot", "Lettuce", "Potato"]
 
 
 async def food_autocomplete(
-    ctx: discord.AutocompleteContext, food_type: str
-) -> list[discord.OptionChoice]:
+    ctx: rum.AutocompleteContext, food_type: str
+) -> list[rum.OptionChoice]:
     items = FRUITS if food_type == "fruit" else VEGETABLES
     return [
-        discord.OptionChoice(name=item)
+        rum.OptionChoice(name=item)
         for item in items
         if ctx.value.lower() in item.lower()
     ]
@@ -219,7 +219,7 @@ async def food_autocomplete(
     description="Pick a fruit",
     autocomplete=partial(food_autocomplete, food_type="fruit"),
 )
-async def get_fruit(ctx: discord.ApplicationContext, choice: str):
+async def get_fruit(ctx: rum.ApplicationContext, choice: str):
     await ctx.respond(f'You picked "{choice}"')
 
 
@@ -229,7 +229,7 @@ async def get_fruit(ctx: discord.ApplicationContext, choice: str):
     description="Pick a vegetable",
     autocomplete=partial(food_autocomplete, food_type="vegetable"),
 )
-async def get_vegetable(ctx: discord.ApplicationContext, choice: str):
+async def get_vegetable(ctx: rum.ApplicationContext, choice: str):
     await ctx.respond(f'You picked "{choice}"')
 
 

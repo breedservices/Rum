@@ -3,7 +3,7 @@ name: "TODO Checks"
 on:
   push:
     paths:
-      - "discord/**"
+      - "rum/**"
       - "docs/**"
       - "examples/**"
       - "tests/**"

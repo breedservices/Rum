@@ -1,9 +1,9 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Webhook Support
 ===============
 
-Pycord offers support for creating, editing, and executing webhooks through the :class:`Webhook` class.
+rum offers support for creating, editing, and executing webhooks through the :class:`Webhook` class.
 
 .. attributetable:: Webhook
 

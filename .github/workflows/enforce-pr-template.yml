@@ -108,8 +108,8 @@ jobs:
             }
 
             // Enforce Contribution reading line
-            if (!body.includes('I have read the [Contributing Guidelines](https://github.com/Pycord-Development/pycord/blob/master/CONTRIBUTING.md)')) {
-              problems.push('The line "I have read the [Contributing Guidelines](https://github.com/Pycord-Development/pycord/blob/master/CONTRIBUTING.md)" is missing.');
+            if (!body.includes('I have read the [Contributing Guidelines](https://github.com/breedservices/Rum/blob/master/CONTRIBUTING.md)')) {
+              problems.push('The line "I have read the [Contributing Guidelines](https://github.com/breedservices/Rum/blob/master/CONTRIBUTING.md)" is missing.');
             }
 
             // Enforce AI disclosure line

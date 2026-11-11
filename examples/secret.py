@@ -2,10 +2,10 @@
 # and the 'message_content' privileged intent for prefixed commands.
 
 
-import discord
-from discord.ext import commands
+import rum
+from rum.ext import commands
 
-intents = discord.Intents.default()
+intents = rum.Intents.default()
 intents.members = True
 intents.message_content = True
 
@@ -24,13 +24,13 @@ async def secret(ctx: commands.Context):
         await ctx.send("Shh!", delete_after=5)
 
 
-def create_overwrites(ctx: commands.Context, *objects: discord.Role | discord.Member):
+def create_overwrites(ctx: commands.Context, *objects: rum.Role | rum.Member):
     """
     This is just a helper function that creates the overwrites for the
     voice/text channels.
 
-    A `discord.PermissionOverwrite` allows you to determine the permissions
-    of an object, whether it be a `discord.Role` or a `discord.Member`.
+    A `rum.PermissionOverwrite` allows you to determine the permissions
+    of an object, whether it be a `rum.Role` or a `rum.Member`.
 
     In this case, the `view_channel` permission is being used to hide the channel
     From being viewed by whoever does not meet the criteria, thus creating a
@@ -38,19 +38,19 @@ def create_overwrites(ctx: commands.Context, *objects: discord.Role | discord.Me
     """
 
     # A dict comprehension is being utilised here to set the same permission overwrites
-    # for each `discord.Role` or `discord.Member`.
+    # for each `rum.Role` or `rum.Member`.
     overwrites = {
-        obj: discord.PermissionOverwrite(view_channel=True) for obj in objects
+        obj: rum.PermissionOverwrite(view_channel=True) for obj in objects
     }
 
     # Prevents the default role (@everyone) from viewing the channel
     # if it isn't already allowed to view the channel.
     overwrites.setdefault(
-        ctx.guild.default_role, discord.PermissionOverwrite(view_channel=False)
+        ctx.guild.default_role, rum.PermissionOverwrite(view_channel=False)
     )
 
     # Makes sure the client is always allowed to view the channel.
-    overwrites[ctx.guild.me] = discord.PermissionOverwrite(view_channel=True)
+    overwrites[ctx.guild.me] = rum.PermissionOverwrite(view_channel=True)
 
     return overwrites
 
@@ -62,7 +62,7 @@ def create_overwrites(ctx: commands.Context, *objects: discord.Role | discord.Me
 async def text(
     ctx: commands.Context,
     name: str,
-    *objects: discord.Role | discord.Member,
+    *objects: rum.Role | rum.Member,
 ):
     """
     This makes a text channel with the passed name that
@@ -87,7 +87,7 @@ async def text(
 async def voice(
     ctx: commands.Context,
     name: str,
-    *objects: discord.Role | discord.Member,
+    *objects: rum.Role | rum.Member,
 ):
     """
     This does the same thing as the `text` subcommand
@@ -104,7 +104,7 @@ async def voice(
 @secret.command(name="emoji")
 @commands.guild_only()
 async def clone_emoji(
-    ctx: commands.Context, emoji: discord.PartialEmoji, *roles: discord.Role
+    ctx: commands.Context, emoji: rum.PartialEmoji, *roles: rum.Role
 ):
     """
     This clones a specified emoji that only

@@ -1,16 +1,16 @@
-import discord
-from discord.utils import users_to_csv
+import rum
+from rum.utils import users_to_csv
 
-bot = discord.Bot()
+bot = rum.Bot()
 
 
 @bot.slash_command()
-async def create_custom_invite(ctx: discord.ApplicationContext, user_ids: str):
+async def create_custom_invite(ctx: rum.ApplicationContext, user_ids: str):
     """Create an invite that only works for the specified users."""
     await ctx.defer()
     user_id_list = [int(uid.strip()) for uid in user_ids.split(",")]
-    target_users_file = discord.File(
-        users_to_csv([discord.Object(uid) for uid in user_id_list]),
+    target_users_file = rum.File(
+        users_to_csv([rum.Object(uid) for uid in user_id_list]),
         filename="users.csv",
     )
     invite = await ctx.channel.create_invite(
@@ -24,7 +24,7 @@ async def create_custom_invite(ctx: discord.ApplicationContext, user_ids: str):
 
 @bot.slash_command()
 async def create_custom_invite_from_file(
-    ctx: discord.ApplicationContext, target_users: discord.Attachment
+    ctx: rum.ApplicationContext, target_users: rum.Attachment
 ):
     await ctx.defer()
     target_users_file = await target_users.to_file()
@@ -39,7 +39,7 @@ async def create_custom_invite_from_file(
 
 @bot.slash_command()
 async def update_custom_invite(
-    ctx: discord.ApplicationContext, invite_code: str, target_users: discord.Attachment
+    ctx: rum.ApplicationContext, invite_code: str, target_users: rum.Attachment
 ):
     await ctx.defer()
     invite = await bot.fetch_invite(invite_code)
@@ -54,7 +54,7 @@ async def update_custom_invite(
 
 
 @bot.slash_command()
-async def get_invite_target_users(ctx: discord.ApplicationContext, code: str):
+async def get_invite_target_users(ctx: rum.ApplicationContext, code: str):
     await ctx.defer()
     invite = await bot.fetch_invite(code)
     if invite.guild.id != ctx.guild.id:

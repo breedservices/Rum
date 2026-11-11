@@ -160,6 +160,7 @@ cython_debug/
 # Custom
 *.json
 !renovate.json
+!rum/emojis.json
 *.egg-info
 .venv/
 docs/_build
@@ -197,3 +198,6 @@ remote-release.yml
 *.wav
 *.ogg
 *.ps1
+
+# Vendored wreq-python (separate upstream repo, not part of this project)
+/wreq-python/

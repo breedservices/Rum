@@ -1,56 +1,56 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 .. _discord-api-utils:
 
 Utility Functions
 =================
 
-.. autofunction:: discord.utils.find
+.. autofunction:: rum.utils.find
 
-.. autofunction:: discord.utils.get
+.. autofunction:: rum.utils.get
 
-.. autofunction:: discord.utils.get_or_fetch
+.. autofunction:: rum.utils.get_or_fetch
 
-.. autofunction:: discord.utils.oauth_url
+.. autofunction:: rum.utils.oauth_url
 
-.. autofunction:: discord.utils.remove_markdown
+.. autofunction:: rum.utils.remove_markdown
 
-.. autofunction:: discord.utils.escape_markdown
+.. autofunction:: rum.utils.escape_markdown
 
-.. autofunction:: discord.utils.escape_mentions
+.. autofunction:: rum.utils.escape_mentions
 
-.. autofunction:: discord.utils.raw_mentions
+.. autofunction:: rum.utils.raw_mentions
 
-.. autofunction:: discord.utils.raw_channel_mentions
+.. autofunction:: rum.utils.raw_channel_mentions
 
-.. autofunction:: discord.utils.raw_role_mentions
+.. autofunction:: rum.utils.raw_role_mentions
 
-.. autofunction:: discord.utils.resolve_invite
+.. autofunction:: rum.utils.resolve_invite
 
-.. autofunction:: discord.utils.resolve_template
+.. autofunction:: rum.utils.resolve_template
 
-.. autofunction:: discord.utils.sleep_until
+.. autofunction:: rum.utils.sleep_until
 
-.. autofunction:: discord.utils.utcnow
+.. autofunction:: rum.utils.utcnow
 
-.. autofunction:: discord.utils.snowflake_time
+.. autofunction:: rum.utils.snowflake_time
 
-.. autofunction:: discord.utils.parse_time
+.. autofunction:: rum.utils.parse_time
 
-.. autofunction:: discord.utils.format_dt
+.. autofunction:: rum.utils.format_dt
 
-.. autofunction:: discord.utils.time_snowflake
+.. autofunction:: rum.utils.time_snowflake
 
-.. autofunction:: discord.utils.generate_snowflake
+.. autofunction:: rum.utils.generate_snowflake
 
-.. autofunction:: discord.utils.basic_autocomplete
+.. autofunction:: rum.utils.basic_autocomplete
 
-.. autofunction:: discord.utils.as_chunks
+.. autofunction:: rum.utils.as_chunks
 
-.. autofunction:: discord.utils.filter_params
+.. autofunction:: rum.utils.filter_params
 
-.. autofunction:: discord.utils.warn_deprecated
+.. autofunction:: rum.utils.warn_deprecated
 
-.. autofunction:: discord.utils.deprecated
+.. autofunction:: rum.utils.deprecated
 
-.. autofunction:: discord.utils.users_to_csv
+.. autofunction:: rum.utils.users_to_csv

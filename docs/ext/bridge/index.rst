@@ -1,22 +1,22 @@
 .. _discord_ext_bridge:
 
-discord.ext.bridge
+rum.ext.bridge
 ==================
 
 .. versionadded:: 2.0
 
 This module allows using one command callback in order to make both a prefix command and a slash command.
 This page includes the API reference/documentation for the module, but only contains a short example. For a more
-detailed guide on how to use this, see our `discord.ext.bridge guide <https://guide.pycord.dev/extensions/bridge>`_.
+detailed guide on how to use this, see our `rum.ext.bridge guide <https://guide.pycord.dev/extensions/bridge>`_.
 
 Example usage:
 
 .. code-block:: python3
 
-    import discord
-    from discord.ext import bridge
+    import rum
+    from rum.ext import bridge
 
-    intents = discord.Intents.default()
+    intents = rum.Intents.default()
     intents.message_content = True
 
     bot = bridge.Bot(command_prefix="!", intents=intents)

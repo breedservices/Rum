@@ -1,13 +1,13 @@
 import datetime
 
-import discord
+import rum
 
-bot = discord.Bot(debug_guilds=[...])
+bot = rum.Bot(debug_guilds=[...])
 
 
 @bot.slash_command()
 async def timeout(
-    ctx: discord.ApplicationContext, member: discord.Member, minutes: int
+    ctx: rum.ApplicationContext, member: rum.Member, minutes: int
 ):
     """Apply a timeout to a member."""
 
@@ -18,7 +18,7 @@ async def timeout(
     """
     The method used above is a shortcut for:
 
-    until = discord.utils.utcnow() + datetime.timedelta(minutes=minutes)
+    until = rum.utils.utcnow() + datetime.timedelta(minutes=minutes)
     await member.timeout(until)
     """
 

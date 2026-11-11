@@ -1,19 +1,19 @@
 :orphan:
 
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 .. _intro:
 
-Installing Pycord
+Installing rum
 =================
 
-This is the documentation for Pycord, a library for Python to aid
+This is the documentation for rum, a library for Python to aid
 in creating applications that utilise the Discord API.
 
 Prerequisites
 -------------
 
-Pycord works with Python 3.10 or higher. Support for earlier versions of Python
+rum works with Python 3.11 or higher. Support for earlier versions of Python
 is not provided. Python 2.7 or lower is not supported. Python 3.8 or lower is not supported.
 
 
@@ -24,37 +24,37 @@ Installing
 
 .. note::
 
-    For new features in upcoming versions, you will need to install the pre-release until a stable version is released. ::
+    rum is not published on PyPI. Install it directly from the repository URL. ::
 
-        python3 -m pip install -U py-cord --pre
+        python3 -m pip install -U "git+https://github.com/breedservices/Rum.git"
 
     For Windows users, this command should be used to install the pre-release: ::
 
-        py -3 -m pip install -U py-cord --pre
+        py -3 -m pip install -U "git+https://github.com/breedservices/Rum.git"
 
-You can get the library directly from PyPI: ::
+You can get the library directly from the repository: ::
 
-    python3 -m pip install -U py-cord
+    python3 -m pip install -U "git+https://github.com/breedservices/Rum.git"
 
 If you are using Windows, then the following should be used instead: ::
 
-    py -3 -m pip install -U py-cord
+    py -3 -m pip install -U "git+https://github.com/breedservices/Rum.git"
 
 
-To install additional packages for speedup,  you should use ``py-cord[speed]`` instead of ``py-cord``, e.g.
+To install additional packages for speedup,  you should use ``rum[speed]`` instead of ``rum``, e.g.
 
 .. code:: sh
 
     # Linux/macOS
-    python3 -m pip install -U "py-cord[speed]"
+    python3 -m pip install -U "rum[speed] @ git+https://github.com/breedservices/Rum.git"
 
     # Windows
-    py -3 -m pip install -U py-cord[speed]
+    py -3 -m pip install -U "rum[speed] @ git+https://github.com/breedservices/Rum.git"
 
 
-To get voice support, you should use ``py-cord[voice]`` instead of ``py-cord``, e.g. ::
+To get voice support, you should use ``rum[voice]`` instead of ``rum``, e.g. ::
 
-    python3 -m pip install -U py-cord[voice]
+    python3 -m pip install -U "rum[voice] @ git+https://github.com/breedservices/Rum.git"
 
 On Linux environments, installing voice requires getting the following dependencies:
 
@@ -105,14 +105,14 @@ However, for the quick and dirty:
 
     .. code-block:: shell
 
-        $ pip install -U py-cord
+        $ pip install -U "git+https://github.com/breedservices/Rum.git"
 
 Congratulations. You now have a virtual environment all set up.
 
 Basic Concepts
 --------------
 
-Pycord revolves around the concept of :ref:`events <discord-api-events>`.
+rum revolves around the concept of :ref:`events <discord-api-events>`.
 An event is something you listen to and then respond to. For example, when a message
 happens, you will receive an event about it that you can respond to.
 
@@ -120,9 +120,9 @@ A quick example to showcase how events work:
 
 .. code-block:: python3
 
-    import discord
+    import rum
 
-    class MyClient(discord.Client):
+    class MyClient(rum.Client):
         async def on_ready(self):
             print(f'Logged on as {self.user}!')
 

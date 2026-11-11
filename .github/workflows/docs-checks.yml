@@ -3,14 +3,14 @@ name: "Documentation Checks"
 on:
   push:
     paths:
-      - "discord/**"
+      - "rum/**"
       - "docs/**"
       - "requirements/**"
       - ".github/workflows/docs-checks.yml"
       - ".readthedocs.yml"
       - "LICENSE"
       - "MANIFEST.in"
-      - "README.rst"
+      - "README.md"
       - "*.toml"
       - "*.py"
     branches: [ master ]
@@ -55,14 +55,14 @@ jobs:
             });
 
             const matches = (file) => (
-              file.startsWith('discord/') ||
+              file.startsWith('rum/') ||
               file.startsWith('docs/') ||
               file.startsWith('requirements/') ||
               file === '.github/workflows/docs-checks.yml' ||
               file === '.readthedocs.yml' ||
               file === 'LICENSE' ||
               file === 'MANIFEST.in' ||
-              file === 'README.rst' ||
+              file === 'README.md' ||
               (!file.includes('/') && file.endsWith('.toml')) ||
               (!file.includes('/') && file.endsWith('.py'))
             );

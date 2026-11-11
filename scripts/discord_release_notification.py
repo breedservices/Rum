@@ -35,31 +35,30 @@ def build_message(
 ) -> str:
     major_minor = version.split(".")[:2]
     major_minor_str = ".".join(major_minor)
-    docs_url = f"https://docs.pycord.dev/en/v{version}/changelog.html"
+    docs_url = f"https://github.com/{repo}/releases/tag/v{version}"
     base_compare = previous_tag
     if "rc" not in version:
         base_compare = previous_final_tag or previous_tag
     compare_url = f"https://github.com/{repo}/compare/{base_compare}...v{version}"
     release_url = f"https://github.com/{repo}/releases/tag/v{version}"
-    pypi_url = f"https://pypi.org/project/py-cord/{version}/"
 
     if "rc" in version:
-        heading = f"## <:pycord:1063211537008955495> Pycord v{version} Release Candidate ({major_minor_str}) is available!\n\n"
+        heading = f"## <:pycord:1063211537008955495> rum v{version} Release Candidate ({major_minor_str}) is available!\n\n"
         audience = "@here\n\n"
         preface = (
             "This is a pre-release (release candidate) for testing and feedback.\n\n"
         )
         docs_line = f"You can view the changelog here: <{docs_url}>\n\n"
-        links = f"Check out the [GitHub changelog](<{compare_url}>), [GitHub release page](<{release_url}>), and [PyPI release page](<{pypi_url}>).\n\n"
-        install = f"You can install this version by running the following command:\n```sh\npip install -U py-cord=={version}\n```\n\n"
+        links = f"Check out the [GitHub changelog](<{compare_url}>) and the [GitHub release page](<{release_url}>).\n\n"
+        install = f"You can install this version by running the following command:\n```sh\npip install -U \"git+https://github.com/{repo}.git@{version}\"\n```\n\n"
         close = "Please try it out and let us know your feedback or any issues!"
     else:
-        heading = f"## <:pycord:1063211537008955495> Pycord v{version} is out!\n\n"
+        heading = f"## <:pycord:1063211537008955495> rum v{version} is out!\n\n"
         audience = "@everyone\n\n"
         preface = ""
         docs_line = f"You can view the changelog here: <{docs_url}>\n\n"
-        links = f"Feel free to take a look at the [GitHub changelog](<{compare_url}>), [GitHub release page](<{release_url}>) and the [PyPI release page](<{pypi_url}>).\n\n"
-        install = f"You can install this version by running the following command:\n```sh\npip install -U py-cord=={version}\n```"
+        links = f"Feel free to take a look at the [GitHub changelog](<{compare_url}>) and the [GitHub release page](<{release_url}>).\n\n"
+        install = f"You can install this version by running the following command:\n```sh\npip install -U \"git+https://github.com/{repo}.git@{version}\"\n```"
         close = ""
 
     return heading + audience + preface + docs_line + links + install + close
@@ -73,7 +72,7 @@ def send_webhook(webhook_url: str, content: str) -> None:
         data=data,
         headers={
             "Content-Type": "application/json",
-            "User-Agent": "pycord-release-bot/1.0 (+https://github.com/Pycord-Development/pycord)",
+            "User-Agent": "rum-release-bot/1.0 (+https://github.com/breedservices/Rum)",
             "Accept": "*/*",
         },
         method="POST",

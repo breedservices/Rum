@@ -1,0 +1,45 @@
+name: "Repo Metadata"
+
+on:
+  push:
+    paths:
+      - "README.md"
+    branches: [master, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  repo-metadata:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required to update the repository description and topics.
+      metadata: write
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: "Derive metadata from README.md"
+        id: metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          DESCRIPTION=$(python3 scripts/readme_metadata.py --summary)
+          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+          echo "Derived description: $DESCRIPTION"
+
+      - name: "Update repository description and topics"
+        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python3 scripts/readme_metadata.py --apply

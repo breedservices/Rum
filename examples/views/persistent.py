@@ -1,7 +1,7 @@
 # This example requires the `message_content` privileged intent for prefixed commands.
 
-import discord
-from discord.ext import commands
+import rum
+from rum.ext import commands
 
 
 # Define a simple View that persists between bot restarts.
@@ -12,34 +12,34 @@ from discord.ext import commands
 # prevent conflicts with other buttons the bot sends.
 # For this example the custom_id is prefixed with the name of the bot.
 # Note that custom_ids can only be up to 100 characters long.
-class PersistentView(discord.ui.View):
+class PersistentView(rum.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(
+    @rum.ui.button(
         label="Green",
-        style=discord.ButtonStyle.green,
+        style=rum.ButtonStyle.green,
         custom_id="persistent_view:green",
     )
-    async def green(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def green(self, button: rum.ui.Button, interaction: rum.Interaction):
         await interaction.response.send_message("This is green.", ephemeral=True)
 
-    @discord.ui.button(
-        label="Red", style=discord.ButtonStyle.red, custom_id="persistent_view:red"
+    @rum.ui.button(
+        label="Red", style=rum.ButtonStyle.red, custom_id="persistent_view:red"
     )
-    async def red(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def red(self, button: rum.ui.Button, interaction: rum.Interaction):
         await interaction.response.send_message("This is red.", ephemeral=True)
 
-    @discord.ui.button(
-        label="Grey", style=discord.ButtonStyle.grey, custom_id="persistent_view:grey"
+    @rum.ui.button(
+        label="Grey", style=rum.ButtonStyle.grey, custom_id="persistent_view:grey"
     )
-    async def grey(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def grey(self, button: rum.ui.Button, interaction: rum.Interaction):
         await interaction.response.send_message("This is grey.", ephemeral=True)
 
 
 class PersistentViewBot(commands.Bot):
     def __init__(self):
-        intents = discord.Intents.default()
+        intents = rum.Intents.default()
         intents.message_content = True
         super().__init__(
             command_prefix=commands.when_mentioned_or("!"), intents=intents

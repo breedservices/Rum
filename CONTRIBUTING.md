@@ -1,4 +1,4 @@
-## Contributing to Pycord
+## Contributing to rum
 
 First off, thanks for taking the time to contribute. It makes the library substantially
 better. :+1:
@@ -6,13 +6,17 @@ better. :+1:
 The following is a set of guidelines for contributing to the repository. These are
 guidelines, not hard rules.
 
+rum is a fork of [Pycord](https://github.com/Pycord-Development/pycord) and is
+maintained by The rum team. Please report issues against this repository, not
+upstream, unless the bug is inherited from Pycord.
+
 ## This is too much to read! I want to ask a question!
 
 Generally speaking questions are better suited in our resources below.
 
-- The official support server: https://pycord.dev/discord
-- [The FAQ in the documentation](https://docs.pycord.dev/en/master/faq.html)
-- [StackOverflow's `pycord` tag](https://stackoverflow.com/questions/tagged/pycord)
+- The Pycord support server (upstream): https://pycord.dev/discord
+- [The FAQ in the Pycord documentation](https://docs.pycord.dev/en/master/faq.html)
+- [This repository's discussions](https://github.com/breedservices/Rum/discussions)
 
 Please try your best not to ask questions in our issue tracker. Most of them don't
 belong there unless they provide value to a larger audience.
@@ -54,6 +58,25 @@ and doesn't manage to have scope creep and it's probably good to go. It would be
 incredibly lovely if the style is consistent to that found in the project. This project
 follows PEP-8 guidelines (mostly) with a column limit of 120.
 
+## Development Setup
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management and builds.
+
+```sh
+# Create the environment and install the dev/test dependencies
+uv sync --group dev --group test --extra voice
+
+# Run the tests
+uv run pytest
+
+# Build the sdist and wheel
+uv build
+```
+
+The project summary and keywords are derived from `README.md` by
+`scripts/readme_metadata.py`, so please update the `readme-metadata` block at the top
+of the README rather than `pyproject.toml` when changing them.
+
 ## Use of "type: ignore" comments
 
 In some cases, it might be necessary to ignore type checker warnings for one reason or
@@ -65,7 +88,7 @@ you are deciding to ignore type checking warnings.
 By submitting a pull request, you agree to and accept the following:
 
 1. You hold the copyright on all submitted code inside said pull request.
-2. You transfer all rights to the owner of this repository.
+2. You transfer all rights to the owner of this repository (The rum team).
 3. If you are found to be in fault with any of the above, we shall not be held
    responsible in any way after the pull request has been merged.
 

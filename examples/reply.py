@@ -1,13 +1,13 @@
-import discord
+import rum
 
-intents = discord.Intents.default()
+intents = rum.Intents.default()
 intents.message_content = (
     True  # < This may give you `read-only` warning, just ignore it.
 )
-# This intent requires "Message Content Intent" to be enabled at https://discord.com/developers
+# This intent requires "Message Content Intent" to be enabled at https://rum.com/developers
 
 
-bot = discord.Bot(intents=intents)
+bot = rum.Bot(intents=intents)
 
 
 @bot.event
@@ -16,7 +16,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(message: discord.Message):
+async def on_message(message: rum.Message):
     # Make sure we won't be replying to ourselves.
     if message.author.id == bot.user.id:
         return

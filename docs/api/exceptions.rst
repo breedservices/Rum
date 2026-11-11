@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Exceptions
 ==========
@@ -77,53 +77,53 @@ The following exceptions are thrown by the library.
 
 .. autoexception:: InteractionResponded
 
-.. autoexception:: discord.opus.OpusError
+.. autoexception:: rum.opus.OpusError
 
-.. autoexception:: discord.opus.OpusNotLoaded
+.. autoexception:: rum.opus.OpusNotLoaded
 
-.. autoexception:: discord.ApplicationCommandError
+.. autoexception:: rum.ApplicationCommandError
     :members:
 
-.. autoexception:: discord.CheckFailure
+.. autoexception:: rum.CheckFailure
     :members:
 
-.. autoexception:: discord.ApplicationCommandInvokeError
+.. autoexception:: rum.ApplicationCommandInvokeError
     :members:
 
-.. autoexception:: discord.ExtensionError
+.. autoexception:: rum.ExtensionError
     :members:
 
-.. autoexception:: discord.ExtensionAlreadyLoaded
+.. autoexception:: rum.ExtensionAlreadyLoaded
     :members:
 
-.. autoexception:: discord.ExtensionNotLoaded
+.. autoexception:: rum.ExtensionNotLoaded
     :members:
 
-.. autoexception:: discord.NoEntryPointError
+.. autoexception:: rum.NoEntryPointError
     :members:
 
-.. autoexception:: discord.ExtensionFailed
+.. autoexception:: rum.ExtensionFailed
     :members:
 
-.. autoexception:: discord.ExtensionNotFound
+.. autoexception:: rum.ExtensionNotFound
     :members:
 
-.. autoexception:: discord.sinks.SinkException
+.. autoexception:: rum.sinks.SinkException
 
-.. autoexception:: discord.sinks.RecordingException
+.. autoexception:: rum.sinks.RecordingException
 
-.. autoexception:: discord.sinks.WaveSinkError
+.. autoexception:: rum.sinks.WaveSinkError
 
-.. autoexception:: discord.sinks.MP3SinkError
+.. autoexception:: rum.sinks.MP3SinkError
 
-.. autoexception:: discord.sinks.MP4SinkError
+.. autoexception:: rum.sinks.MP4SinkError
 
-.. autoexception:: discord.sinks.M4ASinkError
+.. autoexception:: rum.sinks.M4ASinkError
 
-.. autoexception:: discord.sinks.MKVSinkError
+.. autoexception:: rum.sinks.MKVSinkError
 
-.. autoexception:: discord.sinks.MKASinkError
+.. autoexception:: rum.sinks.MKASinkError
 
-.. autoexception:: discord.sinks.OGGSinkError
+.. autoexception:: rum.sinks.OGGSinkError
 
-.. autoexception:: discord.MissingVoiceDependenciesError
+.. autoexception:: rum.MissingVoiceDependenciesError

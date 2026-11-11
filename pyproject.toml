@@ -1,26 +1,24 @@
 [build-system]
 requires = [
     "setuptools>=77.0.3,<=80.9.0",
-    "setuptools-scm>=9.2,<=9.2.2",
 ]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "py-cord"
+name = "rum"
+version = "0.1.0"
 authors = [
-    { name = "Pycord Development" }
+    { name = "The rum team" }
 ]
-description = "A Python wrapper for the Discord API"
-readme = { content-type = "text/x-rst", file = "README.rst" }
-requires-python = ">=3.10, <3.15"
+readme = { content-type = "text/markdown", file = "README.md" }
+requires-python = ">=3.11, <3.15"
 license = "MIT"
 license-files = ["LICENSE"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -31,35 +29,40 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
-dynamic = ["version", "dependencies", "optional-dependencies"]
+# `description` and `keywords` are derived from README.md by setup.py so the
+# README stays the single source of truth for the project metadata.
+dynamic = [
+    "description",
+    "keywords",
+    "dependencies",
+    "optional-dependencies",
+]
 
 [project.urls]
-Homepage = "https://pycord.dev"
-Changelog = "https://docs.pycord.dev/en/master/changelog.html"
-Source = "https://github.com/Pycord-Development/pycord"
-Documentation = "https://docs.pycord.dev"
-Tracker = "https://github.com/Pycord-Development/pycord/issues"
-Funding = "https://patreon.com/pycord"
+Source = "https://github.com/breedservices/Rum"
+Issues = "https://github.com/breedservices/Rum/issues"
+Upstream = "https://github.com/Pycord-Development/pycord"
 
 [tool.setuptools]
 packages = [
+    "rum",
+    "rum.types",
+    "rum.sinks",
+    "rum.ui",
+    "rum.webhook",
+    "rum.commands",
+    "rum.ext.commands",
+    "rum.ext.tasks",
+    "rum.ext.pages",
+    "rum.ext.bridge",
+    "rum.bin",
+    "rum.voice",
     "discord",
-    "discord.types",
-    "discord.sinks",
-    "discord.ui",
-    "discord.webhook",
-    "discord.commands",
-    "discord.ext.commands",
-    "discord.ext.tasks",
-    "discord.ext.pages",
-    "discord.ext.bridge",
-    "discord.bin",
-    "discord.voice",
 ]
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements/_.txt" }
-readme = { content-type = "text/x-rst", file = "README.rst" }
+readme = { content-type = "text/markdown", file = "README.md" }
 
 [tool.setuptools.dynamic.optional-dependencies]
 docs = { file = "requirements/docs.txt" }
@@ -76,13 +79,13 @@ dev = [
     "bandit==1.9.4",
     "flake8==7.3.0",
     "tox>=4.27.0",
-    "tox-gh>=1.5.0"
+    "tox-gh>=1.5.0",
+    "uv>=0.5.0",
 ]
 test = [
     "pytest~=9.2.0",
     "pytest-asyncio~=1.4.0",
 ]
-[tool.setuptools_scm]
 
 [tool.black]
 target-version = ['py310', 'py311', 'py312', 'py313', 'py314']
@@ -104,7 +107,7 @@ extension-pkg-whitelist = [
     "pydantic",
     "ujson"
 ]
-py-version = 3.10
+py-version = 3.11
 
 [tool.pylint.messages_control]
 enable = [
@@ -126,7 +129,7 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["3.14", "3.13", "3.12", "3.11", "3.10", "3.14-novoice"]
+env_list = ["3.14", "3.13", "3.12", "3.11", "3.14-novoice"]
 
 [tool.tox.env_run_base]
 description = "run unit tests"
@@ -149,4 +152,3 @@ extras = []
 "3.13" = ["3.13"]
 "3.12" = ["3.12"]
 "3.11" = ["3.11"]
-"3.10" = ["3.10"]

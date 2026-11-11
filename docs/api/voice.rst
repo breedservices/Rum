@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Voice Related
 =============
@@ -6,15 +6,15 @@ Voice Related
 Objects
 -------
 
-.. attributetable:: discord.voice.VoiceClient
+.. attributetable:: rum.voice.VoiceClient
 
-.. autoclass:: discord.voice.VoiceClient()
+.. autoclass:: rum.voice.VoiceClient()
     :members:
     :exclude-members: connect, on_voice_state_update, on_voice_server_update
 
-.. attributetable:: discord.voice.VoiceProtocol
+.. attributetable:: rum.voice.VoiceProtocol
 
-.. autoclass:: discord.voice.VoiceProtocol
+.. autoclass:: rum.voice.VoiceProtocol
     :members:
 
 .. attributetable:: AudioSource
@@ -50,6 +50,6 @@ Objects
 Opus Library
 ------------
 
-.. autofunction:: discord.opus.load_opus
+.. autofunction:: rum.opus.load_opus
 
-.. autofunction:: discord.opus.is_loaded
+.. autofunction:: rum.opus.is_loaded

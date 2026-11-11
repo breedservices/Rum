@@ -1,6 +1,6 @@
 :orphan:
 
-.. currentmodule:: discord
+.. currentmodule:: rum
 .. _cogs:
 
 Cogs
@@ -11,7 +11,7 @@ There comes a point in your bot's development when you want to organize a collec
 The gist:
 
 - Each cog is a Python class that subclasses :class:`.Cog`.
-- Every command is marked with the :func:`discord.command` decorator or the corresponding shortcut command decorator.
+- Every command is marked with the :func:`rum.command` decorator or the corresponding shortcut command decorator.
 - Every listener is marked with the :meth:`.Cog.listener` decorator.
 - Cogs are then registered with the :meth:`.Bot.add_cog` call.
 - Cogs are subsequently removed with the :meth:`.Bot.remove_cog` call.
@@ -23,19 +23,19 @@ This example cog defines a ``Greetings`` category for your commands, with a sing
 
 .. code-block:: python3
 
-    class Greetings(discord.Cog):
+    class Greetings(rum.Cog):
         def __init__(self, bot):
             self.bot = bot
             self._last_member = None
 
-        @discord.Cog.listener()
+        @rum.Cog.listener()
         async def on_member_join(self, member):
             channel = member.guild.system_channel
             if channel is not None:
                 await channel.send(f'Welcome {member.mention}.')
 
-        @discord.slash_command()
-        async def hello(self, ctx, *, member: discord.Member = None):
+        @rum.slash_command()
+        async def hello(self, ctx, *, member: rum.Member = None):
             """Says hello"""
             member = member or ctx.author
             if self._last_member is None or self._last_member.id != member.id:
@@ -69,7 +69,7 @@ Just as we remove a cog by its name, we can also retrieve it by its name as well
 .. code-block:: python3
     :emphasize-lines: 22,24
 
-    class Economy(discord.Cog):
+    class Economy(rum.Cog):
         ...
 
         async def withdraw_money(self, member, money):
@@ -80,14 +80,14 @@ Just as we remove a cog by its name, we can also retrieve it by its name as well
             # implementation here
             ...
 
-    class Gambling(discord.Cog):
+    class Gambling(rum.Cog):
         def __init__(self, bot):
             self.bot = bot
 
         def coinflip(self):
             return random.randint(0, 1)
 
-        @discord.slash_command()
+        @rum.slash_command()
         async def gamble(self, ctx, money: int):
             """Gambles some money."""
             economy = self.bot.get_cog('Economy')

@@ -1,9 +1,9 @@
 # This example requires the `message_content` privileged intent for prefixed commands.
 
-import discord
-from discord.ext import commands
+import rum
+from rum.ext import commands
 
-intents = discord.Intents.default()
+intents = rum.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(
@@ -11,39 +11,39 @@ bot = commands.Bot(
 )
 
 
-class MyModal(discord.ui.DesignerModal):
+class MyModal(rum.ui.DesignerModal):
     def __init__(self, *args, **kwargs) -> None:
-        first_input = discord.ui.Label(
+        first_input = rum.ui.Label(
             "Short Input",
-            discord.ui.InputText(
+            rum.ui.InputText(
                 placeholder="Placeholder Test",
             ),
         )
-        second_input = discord.ui.Label(
+        second_input = rum.ui.Label(
             "Longer Input",
-            discord.ui.InputText(
+            rum.ui.InputText(
                 placeholder="Placeholder Test",
                 value="Longer Value\nSuper Long Value",
-                style=discord.InputTextStyle.long,
+                style=rum.InputTextStyle.long,
             ),
             description="You can also describe the purpose of this input.",
         )
-        select = discord.ui.Label(
+        select = rum.ui.Label(
             "What's your favorite color?",
-            discord.ui.Select(
+            rum.ui.Select(
                 placeholder="Select a color",
                 options=[
-                    discord.SelectOption(label="Red", emoji="🟥"),
-                    discord.SelectOption(label="Green", emoji="🟩"),
-                    discord.SelectOption(label="Blue", emoji="🟦"),
+                    rum.SelectOption(label="Red", emoji="🟥"),
+                    rum.SelectOption(label="Green", emoji="🟩"),
+                    rum.SelectOption(label="Blue", emoji="🟦"),
                 ],
                 required=False,
             ),
             description="If it is not listed, skip this question.",
         )
-        file = discord.ui.Label(
+        file = rum.ui.Label(
             "What's your favorite picture?",
-            discord.ui.FileUpload(
+            rum.ui.FileUpload(
                 max_values=1,
                 required=False,
             ),
@@ -52,7 +52,7 @@ class MyModal(discord.ui.DesignerModal):
         super().__init__(
             first_input,
             second_input,
-            discord.ui.TextDisplay(
+            rum.ui.TextDisplay(
                 "# Personal Questions"
             ),  # TextDisplay does NOT use Label
             select,
@@ -61,24 +61,24 @@ class MyModal(discord.ui.DesignerModal):
             **kwargs,
         )
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: rum.Interaction):
         await interaction.response.defer()
-        embed = discord.Embed(
+        embed = rum.Embed(
             title="Your Modal Results",
             fields=[
-                discord.EmbedField(
+                rum.EmbedField(
                     name="First Input", value=self.children[0].item.value, inline=False
                 ),
-                discord.EmbedField(
+                rum.EmbedField(
                     name="Second Input", value=self.children[1].item.value, inline=False
                 ),
-                discord.EmbedField(
+                rum.EmbedField(
                     name="Favorite Color",
                     value=self.children[3].item.values[0],
                     inline=False,
                 ),
             ],
-            color=discord.Color.random(),
+            color=rum.Color.random(),
         )
         attachment = (
             self.children[4].item.values[0] if self.children[4].item.values else None
@@ -92,14 +92,14 @@ class MyModal(discord.ui.DesignerModal):
 
 
 @bot.slash_command(name="modaltest")
-async def modal_slash(ctx: discord.ApplicationContext):
+async def modal_slash(ctx: rum.ApplicationContext):
     """Shows an example of a modal dialog being invoked from a slash command."""
     modal = MyModal(title="Slash Command Modal")
     await ctx.send_modal(modal)
 
 
 @bot.message_command(name="messagemodal")
-async def modal_message(ctx: discord.ApplicationContext, message: discord.Message):
+async def modal_message(ctx: rum.ApplicationContext, message: rum.Message):
     """Shows an example of a modal dialog being invoked from a message command."""
     modal = MyModal(title="Message Command Modal")
     modal.title = f"Modal for Message ID: {message.id}"
@@ -107,7 +107,7 @@ async def modal_message(ctx: discord.ApplicationContext, message: discord.Messag
 
 
 @bot.user_command(name="usermodal")
-async def modal_user(ctx: discord.ApplicationContext, member: discord.Member):
+async def modal_user(ctx: rum.ApplicationContext, member: rum.Member):
     """Shows an example of a modal dialog being invoked from a user command."""
     modal = MyModal(title="User Command Modal")
     modal.title = f"Modal for User: {member.display_name}"
@@ -118,29 +118,29 @@ async def modal_user(ctx: discord.ApplicationContext, member: discord.Member):
 async def modaltest(ctx: commands.Context):
     """Shows an example of modals being invoked from an interaction component (e.g. a button or select menu)"""
 
-    class MyView(discord.ui.View):
-        @discord.ui.button(label="Modal Test", style=discord.ButtonStyle.primary)
+    class MyView(rum.ui.View):
+        @rum.ui.button(label="Modal Test", style=rum.ButtonStyle.primary)
         async def button_callback(
-            self, button: discord.ui.Button, interaction: discord.Interaction
+            self, button: rum.ui.Button, interaction: rum.Interaction
         ):
             modal = MyModal(title="Modal Triggered from Button")
             await interaction.response.send_modal(modal)
 
-        @discord.ui.select(
+        @rum.ui.select(
             placeholder="Pick Your Modal",
             min_values=1,
             max_values=1,
             options=[
-                discord.SelectOption(
+                rum.SelectOption(
                     label="First Modal", description="Shows the first modal"
                 ),
-                discord.SelectOption(
+                rum.SelectOption(
                     label="Second Modal", description="Shows the second modal"
                 ),
             ],
         )
         async def select_callback(
-            self, select: discord.ui.Select, interaction: discord.Interaction
+            self, select: rum.ui.Select, interaction: rum.Interaction
         ):
             modal = MyModal(title="Temporary Title")
             modal.title = select.values[0]

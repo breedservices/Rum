@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from discord import (
+from rum import (
     ApplicationContext,
     Bot,
     ButtonStyle,
@@ -10,7 +10,7 @@ from discord import (
     SeparatorSpacingSize,
     User,
 )
-from discord.ui import (
+from rum.ui import (
     ActionRow,
     Button,
     Container,

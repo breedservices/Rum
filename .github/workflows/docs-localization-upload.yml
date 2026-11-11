@@ -3,7 +3,7 @@ name: "Multilingual Docs Upload"
 on:
   push:
     paths:
-      - "discord/**"
+      - "rum/**"
       - "docs/**"
     branches: [ master ]
   workflow_dispatch:

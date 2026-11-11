@@ -1,9 +1,9 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 API Reference
 =============
 
-The reference manual that follows details the API of Pycord's bridge command extension module.
+The reference manual that follows details the API of rum's bridge command extension module.
 
 .. note::
 
@@ -19,9 +19,9 @@ Bots
 Bot
 ~~~
 
-.. attributetable:: discord.ext.bridge.Bot
+.. attributetable:: rum.ext.bridge.Bot
 
-.. autoclass:: discord.ext.bridge.Bot
+.. autoclass:: rum.ext.bridge.Bot
     :members:
 
     .. automethod:: Bot.add_bridge_command()
@@ -35,9 +35,9 @@ Bot
 AutoShardedBot
 ~~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.bridge.AutoShardedBot
+.. attributetable:: rum.ext.bridge.AutoShardedBot
 
-.. autoclass:: discord.ext.bridge.AutoShardedBot
+.. autoclass:: rum.ext.bridge.AutoShardedBot
     :members:
 
 Event Reference
@@ -46,7 +46,7 @@ Event Reference
 These events function similar to :ref:`the regular events <discord-api-events>`, except they
 are custom to the bridge extension module.
 
-.. function:: discord.ext.bridge.on_bridge_command_error(ctx, error)
+.. function:: rum.ext.bridge.on_bridge_command_error(ctx, error)
 
     An error handler that is called when an error is raised
     inside a command either through user input error, check
@@ -57,7 +57,7 @@ are custom to the bridge extension module.
     :param error: The error that was raised.
     :type error: :class:`.CommandError` derived
 
-.. function:: discord.ext.bridge.on_bridge_command(ctx)
+.. function:: rum.ext.bridge.on_bridge_command(ctx)
 
     An event that is called when a command is found and is about to be invoked.
 
@@ -67,7 +67,7 @@ are custom to the bridge extension module.
     :param ctx: The invocation context.
     :type ctx: :class:`.Context`
 
-.. function:: discord.ext.bridge.on_bridge_command_completion(ctx)
+.. function:: rum.ext.bridge.on_bridge_command_completion(ctx)
 
     An event that is called when a command has completed its invocation.
 
@@ -83,49 +83,49 @@ Commands
 BridgeCommand
 ~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.bridge.BridgeCommand
+.. attributetable:: rum.ext.bridge.BridgeCommand
 
-.. autoclass:: discord.ext.bridge.BridgeCommand
+.. autoclass:: rum.ext.bridge.BridgeCommand
     :members:
 
 BridgeCommandGroup
 ~~~~~~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.bridge.BridgeCommandGroup
+.. attributetable:: rum.ext.bridge.BridgeCommandGroup
 
-.. autoclass:: discord.ext.bridge.BridgeCommandGroup
+.. autoclass:: rum.ext.bridge.BridgeCommandGroup
     :members:
 
 Decorators
 ~~~~~~~~~~
-.. automethod:: discord.ext.bridge.bridge_command()
+.. automethod:: rum.ext.bridge.bridge_command()
     :decorator:
 
-.. automethod:: discord.ext.bridge.bridge_group()
+.. automethod:: rum.ext.bridge.bridge_group()
     :decorator:
 
-.. automethod:: discord.ext.bridge.map_to()
+.. automethod:: rum.ext.bridge.map_to()
     :decorator:
 
-.. automethod:: discord.ext.bridge.guild_only()
+.. automethod:: rum.ext.bridge.guild_only()
     :decorator:
 
-.. automethod:: discord.ext.bridge.is_nsfw()
+.. automethod:: rum.ext.bridge.is_nsfw()
     :decorator:
 
-.. automethod:: discord.ext.bridge.has_permissions()
+.. automethod:: rum.ext.bridge.has_permissions()
     :decorator:
 
 Command Subclasses
 ~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: discord.ext.bridge.BridgeExtCommand
+.. autoclass:: rum.ext.bridge.BridgeExtCommand
 
-.. autoclass:: discord.ext.bridge.BridgeExtGroup
+.. autoclass:: rum.ext.bridge.BridgeExtGroup
 
-.. autoclass:: discord.ext.bridge.BridgeSlashCommand
+.. autoclass:: rum.ext.bridge.BridgeSlashCommand
 
-.. autoclass:: discord.ext.bridge.BridgeSlashGroup
+.. autoclass:: rum.ext.bridge.BridgeSlashGroup
 
 Context
 -------
@@ -133,28 +133,28 @@ Context
 BridgeContext
 ~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.bridge.BridgeContext
+.. attributetable:: rum.ext.bridge.BridgeContext
 
-.. autoclass:: discord.ext.bridge.BridgeContext
+.. autoclass:: rum.ext.bridge.BridgeContext
     :members:
     :exclude-members: _respond, _defer, _edit, _get_super
 
 BridgeContext Subclasses
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. attributetable:: discord.ext.bridge.BridgeApplicationContext
+.. attributetable:: rum.ext.bridge.BridgeApplicationContext
 
-.. autoclass:: discord.ext.bridge.BridgeApplicationContext
+.. autoclass:: rum.ext.bridge.BridgeApplicationContext
     :members:
 
-.. attributetable:: discord.ext.bridge.BridgeExtContext
+.. attributetable:: rum.ext.bridge.BridgeExtContext
 
-.. autoclass:: discord.ext.bridge.BridgeExtContext
+.. autoclass:: rum.ext.bridge.BridgeExtContext
     :members:
 
-.. attributetable:: discord.ext.bridge.Context
+.. attributetable:: rum.ext.bridge.Context
 
-.. autoclass:: discord.ext.bridge.Context
+.. autoclass:: rum.ext.bridge.Context
 
     Alias of :data:`typing.Union` [ :class:`.BridgeExtContext`, :class:`.BridgeApplicationContext` ] for typing convenience.
 
@@ -163,13 +163,13 @@ Options
 
 Shortcut Decorators
 ~~~~~~~~~~~~~~~~~~~
-.. autofunction:: discord.ext.bridge.bridge_option
+.. autofunction:: rum.ext.bridge.bridge_option
     :decorator:
 
 Objects
 ~~~~~~~
 
-.. attributetable:: discord.ext.bridge.BridgeOption
+.. attributetable:: rum.ext.bridge.BridgeOption
 
-.. autoclass:: discord.ext.bridge.BridgeOption
+.. autoclass:: rum.ext.bridge.BridgeOption
     :members:

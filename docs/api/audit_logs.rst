@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 .. _discord-api-audit-logs:
 

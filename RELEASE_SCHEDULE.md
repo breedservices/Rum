@@ -1,8 +1,13 @@
-# Pycord Release Schedule
+# rum Release Schedule
 
 Status: Active
 
-Authors: <Paillat-dev paillat@pycord.dev>
+> **Note**
+> rum is a fork of [Pycord](https://github.com/Pycord-Development/pycord) and currently
+> inherits Pycord's release schedule and versioning policy as documented below. The
+> schedule is maintained by **The rum team** going forward.
+
+Authors: <Paillat-dev paillat@pycord.dev> (upstream), The rum team (rum)
 
 ## Purpose & Prior Precedent
 

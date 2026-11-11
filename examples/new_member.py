@@ -1,10 +1,10 @@
-import discord
+import rum
 
-intents = discord.Intents.default()
-intents.members = True  # This intent requires "Server Member Intent" to be enabled at https://discord.com/developers
+intents = rum.Intents.default()
+intents.members = True  # This intent requires "Server Member Intent" to be enabled at https://rum.com/developers
 # ^ This may give you `read-only` warning, just ignore it.
 
-bot = discord.Bot(intents=intents)
+bot = rum.Bot(intents=intents)
 
 
 @bot.event
@@ -13,7 +13,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_member_join(member: discord.Member):
+async def on_member_join(member: rum.Member):
     guild = member.guild
     if (
         guild.system_channel is not None

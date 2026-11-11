@@ -1,6 +1,8 @@
 import os
+import re
 import sys
 from importlib.metadata import version as get_version
+from pathlib import Path
 
 old_changelog = os.path.join(os.path.dirname(__file__), "..", "CHANGELOG.md")
 new_changelog = os.path.join(os.path.dirname(__file__), "changelog.md")
@@ -77,7 +79,7 @@ typehints_document_overloads = False
 # napoleon_attr_annotations = False
 
 extlinks = {
-    "issue": ("https://github.com/Pycord-Development/pycord/issues/%s", "GH-%s"),
+    "issue": ("https://github.com/breedservices/Rum/issues/%s", "GH-%s"),
     "dpy-issue": ("https://github.com/Rapptz/discord.py/issues/%s", "GH-%s"),
 }
 
@@ -106,21 +108,24 @@ source_suffix = {
 
 master_doc = "index"
 
-project = "Pycord"
-copyright = "2015-2021, Rapptz & 2021-present, Pycord Development"
+project = "rum"
+copyright = "2015-2021, Rapptz & 2021-2026, Pycord Development & 2026-present, The rum team"
 
 # The full version, including alpha/beta/rc tags.
-release = get_version("py-cord")
+try:
+    release = get_version("rum")
+except Exception:
+    # The package is not installed; read the version from pyproject.toml.
+    with open(Path(__file__).resolve().parent.parent / "pyproject.toml") as _fp:
+        _content = _fp.read()
+    _match = re.search(r'^version\s*=\s*"([^"]+)"', _content, flags=re.MULTILINE)
+    release = _match.group(1) if _match else "0.0.0"
 
 # The short X.Y version.
 version = ".".join(release.split(".")[:2])
 
-# This assumes a tag is available for final releases
-branch = (
-    "master"
-    if "a" in version or "b" in version or "rc" in version or "dev" in release
-    else f"v{release}"
-)
+# The default branch the documentation links point at.
+branch = "master"
 
 html_title = f"{project} v{version} Documentation"
 
@@ -149,18 +154,18 @@ html_theme = "furo"
 html_context = {
     "discord_invite": "https://pycord.dev/discord",
     "discord_extensions": [
-        ("discord.ext.commands", "ext/commands"),
-        ("discord.ext.tasks", "ext/tasks"),
-        ("discord.ext.pages", "ext/pages"),
-        ("discord.ext.bridge", "ext/bridge"),
+        ("rum.ext.commands", "ext/commands"),
+        ("rum.ext.tasks", "ext/tasks"),
+        ("rum.ext.pages", "ext/pages"),
+        ("rum.ext.bridge", "ext/bridge"),
     ],
 }
 
 resource_links = {
     "discord": "https://pycord.dev/discord",
-    "issues": "https://github.com/Pycord-Development/pycord/issues",
-    "discussions": "https://github.com/Pycord-Development/pycord/discussions",
-    "examples": f"https://github.com/Pycord-Development/pycord/tree/{branch}/examples",
+    "issues": "https://github.com/breedservices/Rum/issues",
+    "discussions": "https://github.com/breedservices/Rum/discussions",
+    "examples": f"https://github.com/breedservices/Rum/tree/{branch}/examples",
     "guide": "https://guide.pycord.dev/",
 }
 
@@ -186,7 +191,7 @@ base_colors = {
 }
 
 html_theme_options = {
-    "source_repository": "https://github.com/Pycord-Development/pycord",
+    "source_repository": "https://github.com/breedservices/Rum",
     "source_branch": "master",
     "source_directory": "docs/",
     "light_css_variables": {
@@ -282,7 +287,7 @@ linkcheck_ignore = [
     r"https://pycord.dev/",
     r"https://pycord.dev/.*",
     r"https://packages.debian.org/.*",
-    r"https://github.com/Pycord-Development/pycord/issues/new\?template=bug_report.yml",
+    r"https://github.com/breedservices/Rum/issues/new\?template=bug_report.yml",
     r"https://discord.com/developers/.*",
 ]
 
@@ -297,7 +302,7 @@ linkcheck_exclude_documents = [
 
 linkcheck_anchors_ignore_for_url = [r"https://github.com/Delitefully/DiscordLists"]
 
-modindex_common_prefix = ["discord."]
+modindex_common_prefix = ["rum."]
 suppress_warnings = ["autosectionlabel.*"]
 myst_enable_extensions = [
     "amsmath",

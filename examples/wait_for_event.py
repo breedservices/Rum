@@ -1,16 +1,16 @@
 import random
 from asyncio import TimeoutError
 
-import discord
+import rum
 
-intents = discord.Intents.default()
+intents = rum.Intents.default()
 intents.message_content = (
     True  # < This may give you `read-only` warning, just ignore it.
 )
-# This intent requires "Message Content Intent" to be enabled at https://discord.com/developers
+# This intent requires "Message Content Intent" to be enabled at https://rum.com/developers
 
 
-bot = discord.Bot(intents=intents)
+bot = rum.Bot(intents=intents)
 
 
 @bot.event
@@ -23,10 +23,10 @@ async def on_ready():
 
 
 @bot.slash_command(name="guess", description="Guess a number between 1 and 10!")
-async def guess_number(ctx: discord.ApplicationContext):
+async def guess_number(ctx: rum.ApplicationContext):
     await ctx.respond("Type in your number. *(It should be between 1 and 10)*")
 
-    def is_valid_guess(m: discord.Message):
+    def is_valid_guess(m: rum.Message):
         # This function checks three things at once:
         # - The author of the message we've received via
         #   the wait_for is the same as command author.
@@ -40,7 +40,7 @@ async def guess_number(ctx: discord.ApplicationContext):
     answer = random.randint(1, 10)
 
     try:
-        guess: discord.Message = await bot.wait_for(
+        guess: rum.Message = await bot.wait_for(
             "message", check=is_valid_guess, timeout=5.0
         )
     except TimeoutError:

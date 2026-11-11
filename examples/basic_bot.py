@@ -3,15 +3,15 @@
 
 import random
 
-import discord
-from discord.ext import commands
+import rum
+from rum.ext import commands
 
 description = """
-An example bot to showcase the discord.ext.commands extension module.
+An example bot to showcase the rum.ext.commands extension module.
 There are a number of utility commands being showcased here.
 """
 
-intents = discord.Intents.default()
+intents = rum.Intents.default()
 intents.members = True
 intents.message_content = True
 
@@ -62,7 +62,7 @@ async def repeat(ctx: commands.Context, times: int, *, content: str = "repeating
 
 
 @bot.command()
-async def joined(ctx: commands.Context, member: discord.Member):
+async def joined(ctx: commands.Context, member: rum.Member):
     """Says when a member joined."""
     await ctx.send(f"{member.name} joined in {member.joined_at}")
 

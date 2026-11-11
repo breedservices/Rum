@@ -147,7 +147,7 @@ jobs:
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools setuptools_scm twine build
+          pip install setuptools twine uv
           pip install -r $REQ_FILE
       - name: "Prepare and Update CHANGELOG.md"
         id: changelog-update
@@ -173,6 +173,42 @@ jobs:
             --date "$DATE"
           git add CHANGELOG.md
           git commit -m "chore(release): update CHANGELOG.md for version $VERSION"
+      - name: "Set Package Version"
+        id: set-version
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          python3 - "$VERSION" <<'PY'
+          import re
+          import sys
+
+          version = sys.argv[1]
+          path = "pyproject.toml"
+          with open(path, encoding="utf-8") as file:
+              content = file.read()
+
+          updated, count = re.subn(
+              r'^version\s*=\s*"[^"]+"',
+              f'version = "{version}"',
+              content,
+              count=1,
+              flags=re.MULTILINE,
+          )
+          if count != 1:
+              raise SystemExit("Could not update the version in pyproject.toml")
+
+          with open(path, "w", encoding="utf-8") as file:
+              file.write(updated)
+          print(f"Set version to {version}")
+          PY
+          git config user.name "NyuwBot"
+          git config user.email "nyuw@aitsys.dev"
+          git add pyproject.toml
+          git commit -m "chore(release): set version to $VERSION"
+          git push origin HEAD:$BRANCH -f
       - name: "Commit and Push Changelog to ${{ github.ref_name }}"
         id: commit-main-branch
         shell: bash
@@ -208,13 +244,28 @@ jobs:
       - name: "Verify Version"
         id: python-version-verify
         shell: bash
-        run: python -m setuptools_scm
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          ACTUAL=$(python3 -c "
+          import re
+          with open('pyproject.toml', encoding='utf-8') as file:
+              content = file.read()
+          match = re.search(r'^version\s*=\s*\"([^\"]+)\"', content, flags=re.MULTILINE)
+          print(match.group(1) if match else '')
+          ")
+          if [ "$ACTUAL" != "$VERSION" ]; then
+            echo "::error::pyproject.toml version ($ACTUAL) does not match the release version ($VERSION)"
+            exit 1
+          fi
+          echo "Version $ACTUAL verified."
       - name: "Build Package"
         id: python-version-build
         shell: bash
         run: |
-          python3 -m build --sdist
-          python3 -m build --wheel
+          uv build --sdist
+          uv build --wheel
       - name: "Create GitHub Release"
         uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         id: gh-release
@@ -233,10 +284,13 @@ jobs:
           target_commitish: ${{ github.ref_name }}
 
       - name: "Publish package distributions to PyPI"
+        # rum is not published on PyPI. This step only runs if a PyPI token
+        # has been configured for the repository.
+        if: ${{ secrets.PYPI_TOKEN != '' }}
         uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         env:
           name: "pypi"
-          url: "https://pypi.org/p/py-cord"
+          url: "https://pypi.org/p/rum"
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           user: __token__
@@ -258,11 +312,13 @@ jobs:
           fetch-tags: true
 
       - name: "Sync and activate version on Read the Docs"
+        # Only runs when a Read the Docs project has been configured.
+        if: ${{ secrets.READTHEDOCS_TOKEN != '' }}
         env:
           READTHEDOCS_TOKEN: ${{ secrets.READTHEDOCS_TOKEN }}
         run: |
           python3 scripts/release_rtd_versions.py \
-            --project pycord \
+            --project rum \
             --version "${{ needs.pre_config.outputs.version }}" \
             --sync
 

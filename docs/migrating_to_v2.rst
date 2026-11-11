@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 .. _migrating_2_0:
 
@@ -47,7 +47,7 @@ Timezone-aware Time
 
 .. code-block:: python
 
-    embed = discord.Embed(
+    embed = rum.Embed(
         title = "Pi Day 2021 in UTC",
         timestamp = datetime(2021, 3, 14, 15, 9, 2, tzinfo=timezone.utc)
     )
@@ -102,7 +102,7 @@ Webhook Changes
 
 .. code-block:: python
 
-    webhook = discord.SyncWebhook.from_url(
+    webhook = rum.SyncWebhook.from_url(
         f"https://discord.com/api/webhooks/{id}/{token}"
     )
     webhook.send("Hello from Pycord 2.0")
@@ -111,7 +111,7 @@ Webhook Changes
 .. code-block:: python
 
     async with aiohttp.ClientSession() as session:
-        webhook = discord.Webhook.partial(
+        webhook = rum.Webhook.partial(
             id,
             token,
             session=session

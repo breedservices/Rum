@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Application Commands
 ====================
@@ -7,13 +7,13 @@ Application Commands
 Command Permission Decorators
 -----------------------------
 
-.. autofunction:: discord.commands.default_permissions
+.. autofunction:: rum.commands.default_permissions
     :decorator:
 
-.. autofunction:: discord.commands.guild_only
+.. autofunction:: rum.commands.guild_only
     :decorator:
 
-.. autofunction:: discord.commands.is_nsfw
+.. autofunction:: rum.commands.is_nsfw
     :decorator:
 
 
@@ -23,19 +23,19 @@ Commands
 Shortcut Decorators
 ~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: discord.commands.application_command
+.. autofunction:: rum.commands.application_command
     :decorator:
 
-.. autofunction:: discord.commands.command
+.. autofunction:: rum.commands.command
     :decorator:
 
-.. autofunction:: discord.commands.slash_command
+.. autofunction:: rum.commands.slash_command
     :decorator:
 
-.. autofunction:: discord.commands.user_command
+.. autofunction:: rum.commands.user_command
     :decorator:
 
-.. autofunction:: discord.commands.message_command
+.. autofunction:: rum.commands.message_command
     :decorator:
 
 Objects
@@ -67,7 +67,7 @@ Options
 
 Shortcut Decorators
 ~~~~~~~~~~~~~~~~~~~
-.. autofunction:: discord.commands.option
+.. autofunction:: rum.commands.option
     :decorator:
 
 Objects

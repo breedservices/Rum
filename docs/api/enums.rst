@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 
 .. _discord-api-enums:
@@ -1417,10 +1417,10 @@ of :class:`enum.Enum`.
         - :attr:`~AuditLogDiff.description`
         - :attr:`~AuditLogDiff.channel`
         - :attr:`~AuditLogDiff.privacy_level`
-        - :attr:`~discord.ScheduledEvent.location`
-        - :attr:`~discord.ScheduledEvent.status`
-        - :attr:`~discord.ScheduledEventLocation.type`
-        - :attr:`~discord.ScheduledEvent.image`
+        - :attr:`~rum.ScheduledEvent.location`
+        - :attr:`~rum.ScheduledEvent.status`
+        - :attr:`~rum.ScheduledEventLocation.type`
+        - :attr:`~rum.ScheduledEvent.image`
 
         .. versionadded:: 2.0
 
@@ -1438,10 +1438,10 @@ of :class:`enum.Enum`.
         - :attr:`~AuditLogDiff.description`
         - :attr:`~AuditLogDiff.channel`
         - :attr:`~AuditLogDiff.privacy_level`
-        - :attr:`~discord.ScheduledEvent.location`
-        - :attr:`~discord.ScheduledEvent.status`
-        - :attr:`~discord.ScheduledEventLocation.type`
-        - :attr:`~discord.ScheduledEvent.image`
+        - :attr:`~rum.ScheduledEvent.location`
+        - :attr:`~rum.ScheduledEvent.status`
+        - :attr:`~rum.ScheduledEventLocation.type`
+        - :attr:`~rum.ScheduledEvent.image`
 
         .. versionadded:: 2.0
 
@@ -1459,10 +1459,10 @@ of :class:`enum.Enum`.
         - :attr:`~AuditLogDiff.description`
         - :attr:`~AuditLogDiff.channel`
         - :attr:`~AuditLogDiff.privacy_level`
-        - :attr:`~discord.ScheduledEvent.location`
-        - :attr:`~discord.ScheduledEvent.status`
-        - :attr:`~discord.ScheduledEventLocation.type`
-        - :attr:`~discord.ScheduledEvent.image`
+        - :attr:`~rum.ScheduledEvent.location`
+        - :attr:`~rum.ScheduledEvent.status`
+        - :attr:`~rum.ScheduledEventLocation.type`
+        - :attr:`~rum.ScheduledEvent.image`
 
         .. versionadded:: 2.0
 

@@ -17,21 +17,31 @@ runs:
       uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
         python-version: ${{ inputs.python-version }}
-        cache: "pip"
-        cache-dependency-path: |
-          pyproject.toml
-          requirements/*.txt
+
+    - name: "Install uv"
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install uv
+
+    - name: "Cache uv"
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: .uv_cache
+        key: uv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          uv-${{ runner.os }}-${{ inputs.python-version }}-
 
     - name: "Install dependencies"
       if: ${{ inputs.install-voice != 'true' }}
       shell: bash
       run: |
-        python -m pip install --upgrade pip
-        pip install . --group dev
+        uv sync --group dev
+        echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH
 
     - name: "Install dependencies with voice extra"
       if: ${{ inputs.install-voice == 'true' }}
       shell: bash
       run: |
-        python -m pip install --upgrade pip
-        pip install ".[voice]" --group dev
+        uv sync --group dev --extra voice
+        echo "$GITHUB_WORKSPACE/.venv/bin" >> $GITHUB_PATH

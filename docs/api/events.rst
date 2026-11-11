@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 .. _discord-api-events:
 
@@ -16,9 +16,9 @@ For example:
 .. code-block:: python
     :emphasize-lines: 17, 22
 
-    import discord
+    import rum
 
-    class MyClient(discord.Client):
+    class MyClient(rum.Client):
         async def on_message(self, message):
             if message.author == self.user:
                 return
@@ -27,18 +27,18 @@ For example:
                 await message.channel.send('Hello World!')
 
 
-    intents = discord.Intents.default()
+    intents = rum.Intents.default()
     intents.message_content = True # Needed to see message content
     client = MyClient(intents=intents)
 
     # Overrides the 'on_message' method defined in MyClient
     @client.event
-    async def on_message(message: discord.Message):
+    async def on_message(message: rum.Message):
         print(f"Received {message.content}")
 
     # Assigns an ADDITIONAL handler
     @client.listen()
-    async def on_message(message: discord.Message):
+    async def on_message(message: rum.Message):
         print(f"Received {message.content}")
 
     # Runs only for the 1st event dispatch. Can be useful for listening to 'on_ready'
@@ -586,7 +586,7 @@ Interactions
 
         This is a low level function that is not generally meant to be used.
         If you are working with components, consider using the callbacks associated
-        with the :class:`~discord.ui.View` instead as it provides a nicer user experience.
+        with the :class:`~rum.ui.View` instead as it provides a nicer user experience.
 
     .. versionadded:: 2.0
 

@@ -10,38 +10,38 @@ They are mainly there for usage with :func:`isinstance` and :func:`issubclass`\.
 This library has a module related to abstract base classes, in which all the ABCs are subclasses of
 :class:`typing.Protocol`.
 
-.. attributetable:: discord.abc.Snowflake
+.. attributetable:: rum.abc.Snowflake
 
-.. autoclass:: discord.abc.Snowflake()
+.. autoclass:: rum.abc.Snowflake()
     :members:
 
-.. attributetable:: discord.abc.User
+.. attributetable:: rum.abc.User
 
-.. autoclass:: discord.abc.User()
+.. autoclass:: rum.abc.User()
     :members:
 
-.. attributetable:: discord.abc.PrivateChannel
+.. attributetable:: rum.abc.PrivateChannel
 
-.. autoclass:: discord.abc.PrivateChannel()
+.. autoclass:: rum.abc.PrivateChannel()
     :members:
 
-.. attributetable:: discord.abc.GuildChannel
+.. attributetable:: rum.abc.GuildChannel
 
-.. autoclass:: discord.abc.GuildChannel()
+.. autoclass:: rum.abc.GuildChannel()
     :members:
 
-.. attributetable:: discord.abc.Messageable
+.. attributetable:: rum.abc.Messageable
 
-.. autoclass:: discord.abc.Messageable()
+.. autoclass:: rum.abc.Messageable()
     :members:
     :exclude-members: history, typing
 
-    .. automethod:: discord.abc.Messageable.history
+    .. automethod:: rum.abc.Messageable.history
         :async-for:
 
-    .. automethod:: discord.abc.Messageable.typing
+    .. automethod:: rum.abc.Messageable.typing
         :async-with:
 
-.. attributetable:: discord.abc.Connectable
+.. attributetable:: rum.abc.Connectable
 
-.. autoclass:: discord.abc.Connectable()
+.. autoclass:: rum.abc.Connectable()

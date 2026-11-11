@@ -2,7 +2,7 @@
 
 .. _quickstart:
 
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Quickstart
 ==========
@@ -23,12 +23,12 @@ It looks something like this:
 
 .. code-block:: python3
 
-    import discord
+    import rum
 
-    intents = discord.Intents.default()
+    intents = rum.Intents.default()
     intents.message_content = True
 
-    client = discord.Client(intents=intents)
+    client = rum.Client(intents=intents)
 
     @client.event
     async def on_ready():
@@ -44,7 +44,7 @@ It looks something like this:
 
     client.run('your token here')
 
-Let's name this file ``example_bot.py``. Make sure not to name it ``discord.py`` as that'll conflict
+Let's name this file ``example_bot.py``. Make sure not to name it ``rum.py`` as that'll conflict
 with the library.
 
 There's a lot going on here, so let's walk you through it step by step:
@@ -94,9 +94,9 @@ It looks something like this:
 
 .. code-block:: python3
 
-    import discord
+    import rum
 
-    bot = discord.Bot()
+    bot = rum.Bot()
 
     @bot.event
     async def on_ready():

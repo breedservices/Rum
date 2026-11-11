@@ -2,11 +2,11 @@ import asyncio
 import random
 from datetime import time, timezone
 
-import discord
-from discord.ext import tasks
+import rum
+from rum.ext import tasks
 
 
-class MyClient(discord.Client):
+class MyClient(rum.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

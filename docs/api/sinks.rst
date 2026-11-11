@@ -1,4 +1,4 @@
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 Sinks
 =====
@@ -6,39 +6,39 @@ Sinks
 Core
 ----
 
-.. autoclass:: discord.sinks.Filters
+.. autoclass:: rum.sinks.Filters
     :members:
 
-.. autoclass:: discord.sinks.Sink
+.. autoclass:: rum.sinks.Sink
     :members:
 
-.. autoclass:: discord.sinks.AudioData
+.. autoclass:: rum.sinks.AudioData
     :members:
 
-.. autoclass:: discord.sinks.RawData
+.. autoclass:: rum.sinks.RawData
     :members:
 
 
 Sink Classes
 ------------
 
-.. autoclass:: discord.sinks.WaveSink
+.. autoclass:: rum.sinks.WaveSink
     :members:
 
-.. autoclass:: discord.sinks.MP3Sink
+.. autoclass:: rum.sinks.MP3Sink
     :members:
 
-.. autoclass:: discord.sinks.MP4Sink
+.. autoclass:: rum.sinks.MP4Sink
     :members:
 
-.. autoclass:: discord.sinks.M4ASink
+.. autoclass:: rum.sinks.M4ASink
     :members:
 
-.. autoclass:: discord.sinks.MKVSink
+.. autoclass:: rum.sinks.MKVSink
     :members:
 
-.. autoclass:: discord.sinks.MKASink
+.. autoclass:: rum.sinks.MKASink
     :members:
 
-.. autoclass:: discord.sinks.OGGSink
+.. autoclass:: rum.sinks.OGGSink
     :members:

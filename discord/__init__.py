@@ -1,124 +1,79 @@
 """
-Discord API Wrapper
-~~~~~~~~~~~~~~~~~~~
+Compatibility package for :mod:`rum`.
 
-A basic wrapper for the Discord API.
-
-:copyright: (c) 2015-2021 Rapptz & (c) 2021-present Pycord Development
-:license: MIT, see LICENSE for more details.
+``import discord`` is kept working for backwards compatibility with Pycord.
+rum is the actual library; this package simply re-exports it and makes the
+``discord.*`` submodule tree resolve to the very same module objects, so
+``isinstance`` checks and class identities stay consistent across both names.
 """
 
-__title__ = "pycord"
-__author__ = "Pycord Development"
-__license__ = "MIT"
-__copyright__ = "Copyright 2015-2021 Rapptz & Copyright 2021-present Pycord Development"
+from __future__ import annotations
 
-__path__ = __import__("pkgutil").extend_path(__path__, __name__)
+import sys
+from importlib import import_module
+from importlib.abc import MetaPathFinder
+from importlib.machinery import ModuleSpec
+from types import ModuleType
+from typing import Any, Sequence
 
-import logging
-from typing import TYPE_CHECKING
+import rum as _rum
 
-# We need __version__ to be imported first
-# isort: off
-from ._version import *
+__all__ = getattr(_rum, "__all__", None) or [
+    name for name in dir(_rum) if not name.startswith("_")
+]
 
-# isort: on
+# Re-export the public API of rum so `discord.Client` etc. work.
+for _name in dir(_rum):
+    if not _name.startswith("_"):
+        globals()[_name] = getattr(_rum, _name)
 
-
-from . import abc, opus, sinks, ui, utils
-from .activity import *
-from .appinfo import *
-from .application_role_connection import *
-from .asset import *
-from .audit_logs import *
-from .automod import *
-from .bot import *
-from .channel import *
-from .client import *
-from .cog import *
-from .collectibles import *
-from .colour import *
-from .commands import *
-from .components import *
-from .embeds import *
-from .emoji import *
-from .enums import *
-from .errors import *
-from .file import *
-from .flags import *
-from .guild import *
-from .http import *
-from .incidents import *
-from .integrations import *
-from .interactions import *
-from .invite import *
-from .member import *
-from .mentions import *
-from .message import *
-from .monetization import *
-from .object import *
-from .onboarding import *
-from .partial_emoji import *
-from .permissions import *
-from .player import *
-from .poll import *
-from .primary_guild import *
-from .raw_models import *
-from .reaction import *
-from .role import *
-from .scheduled_events import *
-from .shard import *
-from .shared_client_theme import *
-from .soundboard import *
-from .stage_instance import *
-from .sticker import *
-from .team import *
-from .template import *
-from .threads import *
-from .user import *
-from .webhook import *
-from .welcome_screen import *
-from .widget import *
-
-if TYPE_CHECKING:
-    from typing import Generic, TypeVar
-
-    from typing_extensions import deprecated
-
-    from discord.voice import VoiceClient as VoiceClientC
-    from discord.voice import VoiceProtocol as VoiceProtocolC
-
-    C = TypeVar("C", bound=Client)
-
-    @deprecated(
-        "discord.VoiceClient is deprecated in favour of discord.voice.VoiceClient since 2.7 and will be removed in 3.0",
-    )
-    class VoiceClient(VoiceClientC): ...
-
-    @deprecated(
-        "discord.VoiceProtocol is deprecated in favour of discord.voice.VoiceProtocol since 2.7 and will be removed in 3.0",
-    )
-    class VoiceProtocol(VoiceProtocolC[C], Generic[C]): ...
-
-else:
-    from .utils import warn_deprecated
-
-    def __getattr__(name: str) -> object:
-        if name == "VoiceClient":
-            warn_deprecated(
-                "discord.VoiceClient", "discord.voice.VoiceClient", "2.7", "3.0"
-            )
-            from .voice import VoiceClient
-
-            return VoiceClient
-        if name == "VoiceProtocol":
-            warn_deprecated(
-                "discord.VoiceProtocol", "discord.voice.VoiceProtocol", "2.7", "3.0"
-            )
-            from .voice import VoiceProtocol
-
-            return VoiceProtocol
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+# Keep the metadata in sync with rum.
+__title__ = _rum.__title__
+__author__ = _rum.__author__
+__license__ = _rum.__license__
+__copyright__ = _rum.__copyright__
+__version__ = _rum.__version__
+version_info = _rum.version_info
 
 
-logging.getLogger(__name__).addHandler(logging.NullHandler())
+class _AliasFinder(MetaPathFinder):
+    """Resolve ``discord.<sub>`` imports to the already-loaded ``rum.<sub>``."""
+
+    def find_spec(
+        self,
+        fullname: str,
+        path: Sequence[str] | None = None,
+        target: ModuleType | None = None,
+    ) -> ModuleSpec | None:
+        if not fullname.startswith("discord."):
+            return None
+
+        rum_name = "rum." + fullname[len("discord.") :]
+        try:
+            module = import_module(rum_name)
+        except ImportError:
+            return None
+
+        spec = ModuleSpec(fullname, _AliasLoader(module))
+        spec.submodule_search_locations = getattr(module, "__path__", None)
+        return spec
+
+
+class _AliasLoader:
+    """Loader that returns an existing module instead of executing new code."""
+
+    def __init__(self, module: ModuleType) -> None:
+        self.module = module
+
+    def create_module(self, spec: ModuleSpec) -> ModuleType:
+        return self.module
+
+    def exec_module(self, module: ModuleType) -> None:
+        # The module already exists and is fully initialised.
+        return None
+
+
+# Make `import discord` return the rum module itself so that top level
+# attributes (discord.Client, discord.Intents, ...) are the *same* objects.
+sys.modules[__name__] = _rum
+sys.meta_path.insert(0, _AliasFinder())

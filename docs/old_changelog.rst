@@ -1,5 +1,5 @@
 :orphan:
-.. currentmodule:: discord
+.. currentmodule:: rum
 
 .. |commands| replace:: [:ref:`ext.commands <discord_ext_commands>`]
 .. |tasks| replace:: [:ref:`ext.tasks <discord_ext_tasks>`]
@@ -25,11 +25,11 @@ v2.0.0
 - Slash commands, User commands, and Message commands (:issue:`31`)
 - Message Content privileged intent (:issue:`332`)
 - Voice receive API (:issue:`532`)
-- discord.ext.pages (Paginators) (:issue:`589`)
+- rum.ext.pages (Paginators) (:issue:`589`)
 - Input Text and Modal components (:issue:`630`)
 - Discord API version changed from 9 to 10 (:issue:`1012`)
 - Application permissions v2 (:issue:`1129`)
-- discord.ext.bridge (slash and prefixed commands) (:issue:`1131`)
+- rum.ext.bridge (slash and prefixed commands) (:issue:`1131`)
 - :meth:`Client.get_message` (:issue:`1141`)
 - Application Command Localization (:issue:`1185`)
 - Guild Ban List Paginated (:issue:`1217`)
@@ -262,7 +262,7 @@ Miscellaneous
 
 - Members are now loaded during ``GUILD_MEMBER_UPDATE`` events if :attr:`MemberCacheFlags.joined` is set. (:dpy-issue:`5930`)
 - |commands| :class:`MemberConverter <ext.commands.MemberConverter>` now properly lazily fetches members if not available from cache.
-    - This is the same as having ``discord.Member`` as the type-hint.
+    - This is the same as having ``rum.Member`` as the type-hint.
 - :meth:`Guild.chunk` now allows concurrent calls without spamming the gateway with requests.
 
 .. _vp1p5p0:
@@ -469,7 +469,7 @@ Miscellaneous
 
 - For performance reasons ``websockets`` has been dropped in favour of ``aiohttp.ws``.
 - The blocking logging message now shows the stack trace of where the main thread was blocking
-- The domain name was changed from ``discordapp.com`` to ``discord.com`` to prepare for the required domain migration
+- The domain name was changed from ``discordapp.com`` to ``rum.com`` to prepare for the required domain migration
 - Reduce memory usage when reconnecting due to stale references being held by the message cache (:dpy-issue:`5133`)
 - Optimize :meth:`abc.GuildChannel.permissions_for` by not creating as many temporary objects (20-32% savings).
 - |commands| Raise :exc:`~ext.commands.CommandRegistrationError` instead of :exc:`ClientException` when a duplicate error is registered (:dpy-issue:`4217`)
@@ -805,7 +805,7 @@ New Features
 - Add :meth:`Attachment.read` to fetch the bytes content of an attachment (:dpy-issue:`2118`)
 - Add support for voice kicking by passing ``None`` to :meth:`Member.move_to`.
 
-``discord.ext.commands``
+``rum.ext.commands``
 ++++++++++++++++++++++++
 
 - Add new :func:`~.commands.dm_only` check.
@@ -826,7 +826,7 @@ Bug Fixes
 - Fix bug where updating your own user did not update your member instances.
 - Tighten constraints of ``__eq__`` in :class:`Spotify` objects (:dpy-issue:`2113`, :dpy-issue:`2117`)
 
-``discord.ext.commands``
+``rum.ext.commands``
 ++++++++++++++++++++++++
 
 - Fix lambda converters in a non-module context (e.g. ``eval``).
@@ -845,7 +845,7 @@ Miscellaneous
 - The loop cleanup facility has been rewritten again.
 - The signal handling in :meth:`Client.run` has been removed.
 
-``discord.ext.commands``
+``rum.ext.commands``
 ++++++++++++++++++++++++
 
 - Custom exception classes are now used for all default checks in the library (:dpy-issue:`2101`)
@@ -1181,7 +1181,7 @@ New Features
 - Added :data:`version_info` named tuple to check version info of the library.
 - Login credentials are now cached to have a faster login experience. You can disable this by passing in ``cache_auth=False``
   when constructing a :class:`Client`.
-- New utility function, :func:`discord.utils.get` to simplify retrieval of items based on attributes.
+- New utility function, :func:`rum.utils.get` to simplify retrieval of items based on attributes.
 - All data classes now support ``!=``, ``==``, ``hash(obj)`` and ``str(obj)``.
 - Added :meth:`Client.get_bans` to get banned members from a server.
 - Added :meth:`Client.invites_from` to get currently active invites in a server.
@@ -1191,7 +1191,7 @@ New Features
 - Added a way to remove the messages of the user that just got banned in :meth:`Client.ban`.
 - Added :meth:`Client.wait_until_ready` to facilitate easy creation of tasks that require the client cache to be ready.
 - Added :meth:`Client.wait_until_login` to facilitate easy creation of tasks that require the client to be logged in.
-- Add :class:`discord.Game` to represent any game with custom text to send to :meth:`Client.change_status`.
+- Add :class:`rum.Game` to represent any game with custom text to send to :meth:`Client.change_status`.
 - Add :attr:`Message.nonce` attribute.
 - Add :meth:`Member.permissions_in` as another way of doing :meth:`Channel.permissions_for`.
 - Add :meth:`Client.move_member` to move a member to another voice channel.

@@ -2,10 +2,10 @@
 # and the 'message_content' privileged intent for prefixed commands.
 
 
-import discord
-from discord.ext import commands
+import rum
+from rum.ext import commands
 
-intents = discord.Intents.default()
+intents = rum.Intents.default()
 intents.members = True
 intents.message_content = True
 
@@ -13,19 +13,19 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"), intents=inten
 
 
 @bot.command()
-async def userinfo(ctx: commands.Context, user: discord.User):
+async def userinfo(ctx: commands.Context, user: rum.User):
     # In the command signature above, you can see that the `user`
-    # parameter is type hinted to `discord.User`. This means that
+    # parameter is type hinted to `rum.User`. This means that
     # during command invocation we will attempt to convert
-    # the value passed as `user` to a `discord.User` instance.
-    # The documentation notes what can be converted and, in the case of `discord.User`,
+    # the value passed as `user` to a `rum.User` instance.
+    # The documentation notes what can be converted and, in the case of `rum.User`,
     # you pass an ID, mention or username (discriminator optional)
     # E.g. 90339695967350784, @Desch or Desch#3091
 
     # NOTE: Type hinting acts as a converter within the `commands` framework only.
     # In standard Python, it is used for documentation and IDE assistance purposes.
 
-    # If the conversion is successful, we will have a `discord.User`
+    # If the conversion is successful, we will have a `rum.User`
     # instance and can do the following:
     user_id = user.id
     username = user.name
@@ -46,7 +46,7 @@ class ChannelOrMemberConverter(commands.Converter):
     async def convert(self, ctx: commands.Context, argument: str):
         # In this example we have made a custom converter.
         # This checks if an input is convertible to a
-        # `discord.Member` or `discord.TextChannel` instance from the
+        # `rum.Member` or `rum.TextChannel` instance from the
         # input the user has given us using the pre-existing converters
         # that the library provides.
 
@@ -89,22 +89,22 @@ async def notify(ctx: commands.Context, target: ChannelOrMemberConverter):
 
 
 @bot.command()
-async def ignore(ctx: commands.Context, target: discord.Member | discord.TextChannel):
+async def ignore(ctx: commands.Context, target: rum.Member | rum.TextChannel):
     # This command signature utilises the `typing.Union` typehint.
     # The `commands` framework attempts a conversion of each type in this Union *in order*.
-    # So, it will attempt to convert whatever is passed to `target` to a `discord.Member` instance.
-    # If that fails, it will attempt to convert it to a `discord.TextChannel` instance.
+    # So, it will attempt to convert whatever is passed to `target` to a `rum.Member` instance.
+    # If that fails, it will attempt to convert it to a `rum.TextChannel` instance.
     # See: https://docs.pycord.dev/en/master/ext/commands/commands.html#typing-union
     # NOTE: If a Union typehint converter fails it will raise `commands.BadUnionArgument`
     # instead of `commands.BadArgument`.
 
     # To check the resulting type, `isinstance` is used
-    if isinstance(target, discord.Member):
+    if isinstance(target, rum.Member):
         await ctx.send(
             f"Member found: {target.mention}, adding them to the ignore list."
         )
     elif isinstance(
-        target, discord.TextChannel
+        target, rum.TextChannel
     ):  # This could be an `else` but for completeness' sake.
         await ctx.send(
             f"Channel found: {target.mention}, adding it to the ignore list."

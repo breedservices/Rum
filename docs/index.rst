@@ -1,11 +1,11 @@
-Welcome to Pycord
-=================
+Welcome to rum
+==============
 
 .. image:: /images/snake.svg
 .. image:: /images/snake_dark.svg
 
-Pycord is a modern, easy to use, feature-rich, and async ready API wrapper
-for Discord.
+rum is a modern, easy to use, feature-rich, and async ready API wrapper
+for Discord. It is a fork of Pycord, maintained by The rum team.
 
 **Features:**
 
@@ -14,6 +14,7 @@ for Discord.
 - Command extension to aid with bot creation
 - Easy to use with an object oriented design
 - Optimised for both speed and memory
+- Pluggable caches for anything normally kept in RAM
 
 Getting started
 ---------------
