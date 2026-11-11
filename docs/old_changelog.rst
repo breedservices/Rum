@@ -469,7 +469,7 @@ Miscellaneous
 
 - For performance reasons ``websockets`` has been dropped in favour of ``aiohttp.ws``.
 - The blocking logging message now shows the stack trace of where the main thread was blocking
-- The domain name was changed from ``discordapp.com`` to ``rum.com`` to prepare for the required domain migration
+- The domain name was changed from ``discordapp.com`` to ``discord.com`` to prepare for the required domain migration
 - Reduce memory usage when reconnecting due to stale references being held by the message cache (:dpy-issue:`5133`)
 - Optimize :meth:`abc.GuildChannel.permissions_for` by not creating as many temporary objects (20-32% savings).
 - |commands| Raise :exc:`~ext.commands.CommandRegistrationError` instead of :exc:`ClientException` when a duplicate error is registered (:dpy-issue:`4217`)

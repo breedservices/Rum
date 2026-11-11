@@ -4,7 +4,7 @@ intents = rum.Intents.default()
 intents.message_content = (
     True  # < This may give you `read-only` warning, just ignore it.
 )
-# This intent requires "Message Content Intent" to be enabled at https://rum.com/developers
+# This intent requires "Message Content Intent" to be enabled at https://discord.com/developers
 
 
 bot = rum.Bot(intents=intents)

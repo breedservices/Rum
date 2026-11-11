@@ -53,6 +53,34 @@ bot.run("TOKEN")
 rum is the actual library. If you prefer compatibility-style imports, `import discord`
 also works and resolves to the very same modules.
 
+## Logging
+
+rum uses the standard [`logging`](https://docs.python.org/3/library/logging.html)
+module. The library loggers are named `rum` and its submodules, e.g. `rum.client`,
+`rum.gateway` and `rum.http`.
+
+The quickest way to see what the library is doing:
+
+```py
+import logging
+
+import rum
+
+rum.utils.setup_logging(level=logging.DEBUG)
+```
+
+Or configure it yourself:
+
+```py
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+```
+
 ## Development
 
 This project uses [uv](https://docs.astral.sh/uv/) for dependency management and builds.

@@ -2,7 +2,7 @@ import rum
 
 intents = rum.Intents.default()
 intents.members = True  # < This may give you `read-only` warning, just ignore it.
-# This intent requires "Server Members Intent" to be enabled at https://rum.com/developers
+# This intent requires "Server Members Intent" to be enabled at https://discord.com/developers
 
 
 bot = rum.Bot(intents=intents)

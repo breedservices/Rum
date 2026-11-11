@@ -9,9 +9,9 @@ encode lightweight cache-event records (for logging/telemetry). The Discord
 objects themselves remain in memory (they are not serialized), but msgspec is
 used in the cache."""
 
-
 from __future__ import annotations
 
+import logging
 from collections import OrderedDict
 from collections.abc import Iterator, MutableMapping
 from typing import Any
@@ -19,6 +19,13 @@ from typing import Any
 import msgspec
 
 import rum
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)-8s %(name)s: %(message)s",
+)
+logger = logging.getLogger("cache_example")
+logging.getLogger("rum").setLevel(logging.DEBUG)
 
 
 class CacheEvent(msgspec.Struct):
@@ -47,7 +54,9 @@ class MsgspecInstrumentedMapping(MutableMapping):
             rec_key = str(key)
         event = CacheEvent(cache=self.name, op=op, key=rec_key, size=len(self._data))
         # msgspec is used here to encode cache events efficiently.
-        self._events.append(self._encoder.encode(event))
+        encoded = self._encoder.encode(event)
+        self._events.append(encoded)
+        logger.debug("cache event: %s", encoded.decode())
 
     def __getitem__(self, key: Any) -> Any:
         value = self._data[key]
@@ -103,13 +112,17 @@ class MsgspecCacheProvider(rum.DefaultCacheProvider):
 
     def create_user_cache(self):
         # Keep bounded in-memory user cache; events encoded with msgspec.
+        logger.info("Creating user cache (max_items=50000)")
         return MsgspecInstrumentedMapping("users", max_items=50_000)
 
     def create_guild_cache(self):
+        logger.info("Creating guild cache")
         return MsgspecInstrumentedMapping("guilds")
 
     def create_guild_member_cache(self, guild):
-        return MsgspecInstrumentedMapping(f"guild:{getattr(guild, 'id', '?')}:members")
+        name = f"guild:{getattr(guild, 'id', '?')}:members"
+        logger.info("Creating member cache: %s", name)
+        return MsgspecInstrumentedMapping(name)
 
 
 # Create the bot with the custom cache provider. The provider has to be
@@ -119,8 +132,8 @@ bot = rum.Bot(cache_provider=MsgspecCacheProvider())
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user} (ID: {bot.user.id})")
-    print("------")
+    logger.info("Logged in as %s (ID: %s)", bot.user, bot.user.id)
+    logger.info("------")
 
 
 @bot.slash_command(description="Show custom cache stats")
@@ -128,6 +141,12 @@ async def cache_stats(ctx: rum.ApplicationContext):
     provider = ctx.bot._connection.cache_provider
     user_cache = ctx.bot._connection._users
     events = getattr(user_cache, "dump_events", lambda: [])()
+    logger.info(
+        "cache_stats invoked by %s: users_cached=%d events=%d",
+        ctx.author,
+        len(user_cache),
+        len(events),
+    )
     await ctx.respond(
         f"provider={type(provider).__name__} users_cached={len(user_cache)} "
         f"user_cache_events={len(events)}",
@@ -137,5 +156,5 @@ async def cache_stats(ctx: rum.ApplicationContext):
 
 # (Replace "token" with your bot token to run this example.)
 if __name__ == "__main__":
-    print("Starting bot... press Ctrl+C to stop it.")
-    bot.run("MTU3MDE4NjU4MDkzNTcwNDY0Ng.G-foqs.0iSvPKYTyy3Y6hHOe3Q9hOSrAgBrG39fCSMaXk")
+    logger.info("Starting bot... press Ctrl+C to stop it.")
+    bot.run("MTU3MDExOTUyNzE1NTYzNDE3Ng.GzZFvw.d0B-oPGSXDVoBuJxPGgY2AzixTi47n5k5lgmrw")

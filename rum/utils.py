@@ -118,6 +118,7 @@ __all__ = (
     "remove_markdown",
     "resolve_invite",
     "resolve_template",
+    "setup_logging",
     "sleep_until",
     "snowflake_time",
     "time_snowflake",
@@ -179,6 +180,65 @@ else:
     OptionChoice = Any
 
 T = TypeVar("T")
+
+
+def setup_logging(
+    *,
+    handler: logging.Handler = MISSING,
+    formatter: logging.Formatter = MISSING,
+    level: int = MISSING,
+    root: bool = True,
+) -> None:
+    """Set up the library's loggers.
+
+    rum uses the standard :mod:`logging` module, so this is only a
+    convenience wrapper around it. The library loggers are named ``rum`` and
+    its submodules, e.g. ``rum.client``, ``rum.gateway`` and ``rum.http``.
+
+    Parameters
+    ----------
+    handler: :class:`logging.Handler`
+        The handler to attach. Defaults to a :class:`logging.StreamHandler`.
+    formatter: :class:`logging.Formatter`
+        The formatter to use for the handler. Defaults to
+        ``"[%(asctime)s] [%(levelname)s] %(name)s: %(message)s"``.
+    level: :class:`int`
+        The log level to use. Defaults to :data:`logging.INFO`.
+    root: :class:`bool`
+        Whether to attach the handler to the root logger instead of only to
+        the ``rum`` logger. Defaults to ``True``.
+
+    Examples
+    --------
+    .. code-block:: python3
+
+        import logging
+
+        import rum
+
+        rum.utils.setup_logging(level=logging.DEBUG)
+    """
+    if level is MISSING:
+        level = logging.INFO
+
+    if handler is MISSING:
+        handler = logging.StreamHandler()
+
+    if formatter is MISSING:
+        formatter = logging.Formatter(
+            "[%(asctime)s] [%(levelname)s] %(name)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+
+    if root:
+        logger = logging.getLogger()
+    else:
+        library, _, _ = __name__.partition(".")
+        logger = logging.getLogger(library)
+
+    handler.setFormatter(formatter)
+    logger.setLevel(level)
+    logger.addHandler(handler)
 T_co = TypeVar("T_co", covariant=True)
 _Iter = Iterator[T] | AsyncIterator[T]
 

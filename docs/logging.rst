@@ -30,7 +30,7 @@ outputting them to the console the following snippet can be used::
     import rum
     import logging
 
-    logger = logging.getLogger('discord')
+    logger = logging.getLogger('rum')
     logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(filename='rum.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
@@ -39,6 +39,18 @@ outputting them to the console the following snippet can be used::
 This is recommended, especially at verbose levels such as ``INFO``
 and ``DEBUG``, as there are a lot of events logged and it would clog the
 stdout of your program.
+
+As a convenience, :func:`rum.utils.setup_logging` sets all of this up for
+you::
+
+    import logging
+
+    import rum
+
+    rum.utils.setup_logging(level=logging.DEBUG)
+
+The library loggers are named ``rum`` and its submodules, e.g.
+``rum.client``, ``rum.gateway`` and ``rum.http``.
 
 
 
