@@ -68,6 +68,16 @@ uv run pytest
 uv build
 ```
 
+Extras are selected with `--extra`, e.g. `uv sync --extra speed --extra voice`.
+
+If you prefer pip, the extras must be quoted — otherwise the shell expands
+`[speed]` as a glob pattern and fails with `zsh: no matches found: [speed]`:
+
+```sh
+uv pip install -e ".[speed]"
+uv pip install -e ".[voice]"
+```
+
 The project metadata (summary and keywords) is derived from this file's
 `readme-metadata` block by `scripts/readme_metadata.py`, so the README stays the
 single source of truth. A CI job verifies the built package matches it.

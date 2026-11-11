@@ -109,6 +109,26 @@ However, for the quick and dirty:
 
 Congratulations. You now have a virtual environment all set up.
 
+Installing from a Source Checkout
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To work on rum itself, clone the repository and install it in editable mode::
+
+    $ git clone git@github.com:breedservices/Rum.git
+    $ cd Rum
+    $ pip install -e ".[voice]"
+
+.. note::
+
+    The extras must be quoted. Without the quotes the shell expands ``[voice]``
+    as a glob pattern and the command fails with
+    ``zsh: no matches found: [voice]``.
+
+Alternatively, use `uv <https://docs.astral.sh/uv/>`_ which handles extras
+without any quoting::
+
+    $ uv sync --group dev --group test --extra voice
+
 Basic Concepts
 --------------
 
