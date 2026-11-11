@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/link.py
+import os
 from urllib.parse import quote_plus
 
 import rum
@@ -36,4 +39,4 @@ async def on_ready():
     print("------")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

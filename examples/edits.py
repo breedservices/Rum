@@ -1,4 +1,7 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/edits.py
 import asyncio
+import os
 
 import rum
 
@@ -34,4 +37,4 @@ async def on_message_edit(before: rum.Message, after: rum.Message):
     await before.channel.send(msg)
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

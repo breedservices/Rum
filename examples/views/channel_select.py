@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/channel_select.py
+import os
 import rum
 
 # Channel selects (dropdowns) are a new type of select menu/dropdown Discord has added so users can select channels from a dropdown.
@@ -42,4 +45,4 @@ async def on_ready() -> None:
     print("------")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

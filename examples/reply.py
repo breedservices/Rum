@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/reply.py
+import os
 import rum
 
 intents = rum.Intents.default()
@@ -25,4 +28,4 @@ async def on_message(message: rum.Message):
         await message.reply("Hello!", mention_author=True)
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

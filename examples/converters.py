@@ -1,7 +1,10 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/converters.py
 # This example requires the 'members' privileged intent to use the Member converter,
 # and the 'message_content' privileged intent for prefixed commands.
 
 
+import os
 import rum
 from rum.ext import commands
 
@@ -123,4 +126,4 @@ async def multiply(ctx: commands.Context, number: int, maybe: bool):
     await ctx.send(str(number * 5))
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

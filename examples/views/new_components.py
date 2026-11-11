@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/new_components.py
+import os
 from io import BytesIO
 
 from rum import (
@@ -84,4 +87,4 @@ async def show_view(ctx: ApplicationContext):
     await ctx.respond(view=MyView(ctx.author), files=[file])
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_cog.py
 # This example demonstrates a standalone cog file with the bot instance in a separate file.
 
+import os
 import rum
 from rum.ext import commands
 
@@ -26,4 +29,4 @@ def setup(bot):
 # The basic bot instance in a separate file should look something like this:
 # bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"))
 # bot.load_extension("slash_cog")
-# bot.run("TOKEN")
+# bot.run(os.environ["BOT_TOKEN"])

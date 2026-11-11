@@ -175,12 +175,22 @@ class ApplicationCommandMixin(ABC):
         ):
             command.integration_types = self._bot.default_command_integration_types
 
-        for cmd in self.pending_application_commands:
+        # Carry over the id of an already registered command with the same
+        # name so that it is updated instead of created.
+        for cmd in self._application_commands.values():
             if cmd == command:
                 command.id = cmd.id
-                self._application_commands[command.id] = command
                 break
-        self._pending_application_commands.append(command)
+
+        # Registering the same command twice would make Discord reject the
+        # whole payload with "Application command names must be unique", so
+        # replace the pending command instead of adding a duplicate.
+        for index, cmd in enumerate(self._pending_application_commands):
+            if cmd == command:
+                self._pending_application_commands[index] = command
+                break
+        else:
+            self._pending_application_commands.append(command)
 
     def remove_application_command(
         self, command: ApplicationCommand

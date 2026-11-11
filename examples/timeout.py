@@ -1,4 +1,7 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/timeout.py
 import datetime
+import os
 
 import rum
 
@@ -23,4 +26,4 @@ async def timeout(
     """
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/new_member.py
+import os
 import rum
 
 intents = rum.Intents.default()
@@ -21,4 +24,4 @@ async def on_member_join(member: rum.Member):
         await guild.system_channel.send(f"Welcome {member.mention} to {guild.name}!")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

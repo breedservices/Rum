@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_perms.py
+import os
 import rum
 
 bot = rum.Bot()
@@ -26,4 +29,4 @@ If the member viewing commands does not have the required permissions, the comma
 """
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

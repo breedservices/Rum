@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/deleted.py
+import os
 import rum
 
 intents = rum.Intents.default()
@@ -31,4 +34,4 @@ async def on_message_delete(message: rum.Message):
     await message.channel.send(msg)
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

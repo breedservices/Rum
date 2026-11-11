@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_groups.py
+import os
 import rum
 
 bot = rum.Bot()
@@ -5,13 +8,12 @@ bot = rum.Bot()
 # If you use commands.Bot, @bot.slash_command should be used for
 # slash commands. You can use @bot.slash_command with rum.Bot as well.
 
-math = bot.create_group(
-    "math", "Commands related to mathematics."
-)  # Create a slash command group
+# Create a slash command group:
+math = bot.create_group("math", "Commands related to mathematics.")
 
-# Another way, creating the class manually:
-
-math = rum.SlashCommandGroup("math", "Commands related to mathematics.")
+# The group can also be created manually, but only one of the two ways may
+# be used, otherwise the command name would be registered twice:
+# math = rum.SlashCommandGroup("math", "Commands related to mathematics.")
 
 
 @math.command()  # Create a slash command under the math group
@@ -21,4 +23,4 @@ async def add(ctx: rum.ApplicationContext, num1: int, num2: int):
 
 
 bot.add_application_command(math)
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/persistent.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
+import os
 import rum
 from rum.ext import commands
 
@@ -74,4 +77,4 @@ async def prepare(ctx: commands.Context):
     await ctx.send("What's your favourite colour?", view=PersistentView())
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

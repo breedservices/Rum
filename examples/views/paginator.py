@@ -1,3 +1,5 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/paginator.py
 # Docs: https://docs.pycord.dev/en/master/ext/pages/index.html
 
 # This example demonstrates a standalone cog file with the bot instance in a separate file.
@@ -6,6 +8,7 @@
 # better organization and doing so is not required for using ext.pages.
 
 import asyncio
+import os
 
 import rum
 from rum.commands import SlashCommandGroup
@@ -338,4 +341,4 @@ def setup(bot):
 # intents.message_content = True  # required for prefixed commands
 # bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"), intents=intents)
 # bot.load_extension("paginator")
-# bot.run("TOKEN")
+# bot.run(os.environ["BOT_TOKEN"])

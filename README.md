@@ -69,7 +69,13 @@ See the examples for working implementations:
 - [`examples/custom_cache_msgspec.py`](./examples/custom_cache_msgspec.py) — an
   instrumented in-memory cache that encodes cache events with `msgspec`
 - [`examples/custom_cache_json_file.py`](./examples/custom_cache_json_file.py) — a
-  cache that persists to JSON files on disk with `msgspec`
+  pure disk cache that stores every entry in its own JSON file
+
+All examples read the bot token from the `BOT_TOKEN` environment variable:
+
+```sh
+BOT_TOKEN=your-token uv run examples/basic_bot.py
+```
 
 ## Logging
 

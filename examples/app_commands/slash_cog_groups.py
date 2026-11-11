@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_cog_groups.py
 # This example requires the 'members' privileged intent to use the Member converter.
 
+import os
 import rum
 from rum.commands import SlashCommandGroup
 from rum.ext import commands
@@ -53,4 +56,4 @@ class Example(commands.Cog):
 
 
 bot.add_cog(Example(bot))  # Put in a setup function for cog files
-bot.run("TOKEN")  # Main file
+bot.run(os.environ["BOT_TOKEN"])  # Main file

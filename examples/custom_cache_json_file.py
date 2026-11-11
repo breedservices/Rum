@@ -1,12 +1,18 @@
-"""A JSON file backed cache for rum, using msgspec.
+"""A pure disk backed cache for rum, using msgspec.
 
 This example requires the 'msgspec' library::
 
     uv pip install msgspec
 
-It shows how to back rum's caches with files on disk instead of RAM. The
-caches are written as JSON with msgspec, which is a lot faster than the
-standard library's ``json`` module, and are read back when the bot starts.
+It shows how to back rum's caches with files on disk. Nothing is kept in
+RAM: every entry is stored in its own JSON file and read back when it is
+accessed. The files are encoded and decoded with msgspec, which is a lot
+faster than the standard library's ``json`` module.
+
+Because every lookup reads a file, this is much slower than the default
+in-memory caches. It is meant as a demonstration of what the cache
+provider API allows, not as a recommendation. Use SQLite or a key/value
+store if you want an external cache that is actually fast.
 
 Discord objects are not directly serialisable, they hold references to the
 connection state and the guild. To persist them, each object is projected
@@ -14,16 +20,22 @@ onto the API payload shape it was built from, and rebuilt from that payload
 when the file is read again. The projections below are deliberately explicit
 so it is clear what is stored on disk.
 
-The files are written to a directory (``rum-cache`` by default) and are
-updated at most once every few seconds, plus once when the bot stops.
+The guild member cache is stored on disk, one file per member::
+
+    rum-cache/
+    └── guilds/
+        └── 1548399850905665648/
+            └── members/
+                ├── 1490331071940657283.json
+                └── ...
+
+Set the ``BOT_TOKEN`` environment variable to run the example::
+
+    BOT_TOKEN=your-token uv run examples/custom_cache_json_file.py
 """
 
-from __future__ import annotations
-
-import atexit
 import logging
 import os
-import time
 from collections.abc import Callable, Iterator, MutableMapping
 from pathlib import Path
 from typing import Any
@@ -36,19 +48,23 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)-8s %(name)s: %(message)s",
 )
-logger = logging.getLogger("json_file_cache")
+logger = logging.getLogger("json_disk_cache")
 
-#: How long to wait before writing a cache back to disk.
-FLUSH_INTERVAL = 5.0
+#: Where the cache files are stored.
+CACHE_DIRECTORY = Path(os.environ.get("RUM_CACHE_DIR", "rum-cache"))
 
 
-class JsonFileCache(MutableMapping[int, Any]):
-    """A mutable mapping that persists its entries to a JSON file.
+class JsonDiskCache(MutableMapping[int, Any]):
+    """A mutable mapping that stores every entry in its own JSON file.
+
+    Nothing is kept in memory, apart from the entry ids, which are needed
+    to implement ``__len__`` and ``__iter__`` without listing the directory
+    on every call.
 
     Parameters
     ----------
-    path: :class:`pathlib.Path`
-        The file the cache is stored in.
+    directory: :class:`pathlib.Path`
+        The directory the entries are stored in.
     dump: Callable
         Turns a cached object into a JSON serialisable record.
     load: Callable
@@ -57,96 +73,74 @@ class JsonFileCache(MutableMapping[int, Any]):
 
     def __init__(
         self,
-        path: Path,
+        directory: Path,
         *,
         dump: Callable[[Any], dict[str, Any]],
         load: Callable[[dict[str, Any]], Any],
     ) -> None:
-        self.path = path
+        self.directory = Path(directory)
         self._dump = dump
         self._load = load
-        self._data: dict[int, Any] = {}
-        self._dirty = False
-        self._last_flush = 0.0
-        self._read()
+        self.directory.mkdir(parents=True, exist_ok=True)
+        self._ids: set[int] | None = None
 
-    # -- persistence ---------------------------------------------------
+    def _path(self, key: int) -> Path:
+        return self.directory / f"{key}.json"
 
-    def _read(self) -> None:
-        """Load the cache from disk, ignoring anything that cannot be read."""
-        try:
-            raw = self.path.read_bytes()
-        except OSError:
-            return
-
-        if not raw:
-            return
-
-        try:
-            records = msgspec.json.decode(raw)
-        except msgspec.DecodeError as exc:
-            logger.warning("Could not decode %s: %s", self.path, exc)
-            return
-
-        for key, record in records.items():
-            try:
-                self._data[int(key)] = self._load(record)
-            except Exception as exc:  # a stale entry should not break the bot
-                logger.warning("Skipping cached entry %s: %s", key, exc)
-
-        logger.info("Loaded %d entries from %s", len(self._data), self.path)
-
-    def _write(self) -> None:
-        """Write the cache to disk."""
-        records = {str(key): self._dump(value) for key, value in self._data.items()}
-
-        # Write to a temporary file first so a crash cannot leave a
-        # half-written cache behind.
-        temporary = self.path.with_name(self.path.name + ".tmp")
-        try:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            temporary.write_bytes(msgspec.json.encode(records))
-            os.replace(temporary, self.path)
-        except OSError as exc:
-            logger.warning("Could not write %s: %s", self.path, exc)
-            return
-
-        logger.info("Wrote %d entries to %s", len(records), self.path)
-
-    def flush(self) -> None:
-        """Write the cache to disk if it changed."""
-        if self._dirty:
-            self._dirty = False
-            self._last_flush = time.monotonic()
-            self._write()
-
-    def _touch(self) -> None:
-        """Mark the cache as changed and write it out eventually."""
-        self._dirty = True
-        if time.monotonic() - self._last_flush >= FLUSH_INTERVAL:
-            self.flush()
+    def _index(self) -> set[int]:
+        """The ids of the cached entries, read from disk once."""
+        if self._ids is None:
+            self._ids = {
+                int(path.stem)
+                for path in self.directory.glob("*.json")
+                if path.stem.isdigit()
+            }
+            logger.info("Found %d entries in %s", len(self._ids), self.directory)
+        return self._ids
 
     # -- MutableMapping ------------------------------------------------
 
     def __getitem__(self, key: int) -> Any:
-        return self._data[key]
+        path = self._path(key)
+        try:
+            raw = path.read_bytes()
+        except FileNotFoundError:
+            raise KeyError(key) from None
+
+        try:
+            return self._load(msgspec.json.decode(raw))
+        except Exception as exc:  # a stale entry should not break the bot
+            logger.warning("Could not read %s: %s", path, exc)
+            raise KeyError(key) from exc
 
     def __setitem__(self, key: int, value: Any) -> None:
-        self._data[key] = value
-        self._touch()
+        self.directory.mkdir(parents=True, exist_ok=True)
+        record = self._dump(value)
+
+        # Write to a temporary file first so a crash cannot leave a
+        # half-written entry behind.
+        path = self._path(key)
+        temporary = path.with_name(path.name + ".tmp")
+        temporary.write_bytes(msgspec.json.encode(record))
+        os.replace(temporary, path)
+
+        self._index().add(key)
 
     def __delitem__(self, key: int) -> None:
-        del self._data[key]
-        self._touch()
+        try:
+            self._path(key).unlink()
+        except FileNotFoundError:
+            raise KeyError(key) from None
+        self._index().discard(key)
 
     def __iter__(self) -> Iterator[int]:
-        return iter(self._data)
+        return iter(sorted(self._index()))
 
     def __len__(self) -> int:
-        return len(self._data)
+        return len(self._index())
 
     def __repr__(self) -> str:
-        return f"<JsonFileCache {self.path.name} entries={len(self._data)}>"
+        return f"<JsonDiskCache {self.directory}>"
 
 
 # -- projections -------------------------------------------------------
@@ -186,59 +180,38 @@ def member_to_record(member: rum.Member) -> dict[str, Any]:
     }
 
 
-class JsonFileCacheProvider(rum.DefaultCacheProvider):
+class JsonDiskCacheProvider(rum.DefaultCacheProvider):
     """A cache provider that stores the user and member caches on disk.
 
     Every other cache is kept in memory, which keeps the example short. A
     real implementation would usually want to persist more of them.
     """
 
-    def __init__(self, directory: str | Path = "rum-cache") -> None:
+    def __init__(self, directory: str | Path = CACHE_DIRECTORY) -> None:
         super().__init__()
         self.directory = Path(directory)
-        self._caches: list[JsonFileCache] = []
-
-    def _cache(self, name: str, **kwargs: Any) -> JsonFileCache:
-        cache = JsonFileCache(self.directory / f"{name}.json", **kwargs)
-        self._caches.append(cache)
-        return cache
 
     def create_user_cache(self) -> MutableMapping[int, Any]:
-        state = self.state
-        if state is None:  # pragma: no cover - the library always sets this
-            return {}
-
-        return self._cache(
-            "users",
-            dump=user_to_record,
-            load=lambda record: rum.User(state=state, data=record),
-        )
+        # The global user cache is deliberately kept in memory.
+        #
+        # rum evicts a user from the cache when the User object is garbage
+        # collected (see User.__del__). A cache that does not hold on to the
+        # objects it hands out would therefore evict every user right after
+        # it was stored, which for a disk cache means deleting the file
+        # again. The guild member cache below is not affected by this.
+        return {}
 
     def create_guild_member_cache(self, guild: Any) -> MutableMapping[int, Any]:
         state = guild._state
-        guild_id = guild.id
 
-        return self._cache(
-            f"guild_{guild_id}_members",
+        return JsonDiskCache(
+            self.directory / "guilds" / str(guild.id) / "members",
             dump=member_to_record,
-            load=lambda record: rum.Member(
-                data=record, guild=guild, state=state
-            ),
+            load=lambda record: rum.Member(data=record, guild=guild, state=state),
         )
 
-    def flush(self) -> None:
-        """Write every cache to disk."""
-        for cache in self._caches:
-            cache.flush()
 
-
-provider = JsonFileCacheProvider()
-
-
-@atexit.register
-def _flush_on_exit() -> None:
-    provider.flush()
-
+provider = JsonDiskCacheProvider()
 
 intents = rum.Intents.default()
 intents.members = True
@@ -249,24 +222,32 @@ bot = rum.Bot(cache_provider=provider, intents=intents)
 @bot.event
 async def on_ready():
     logger.info("Logged in as %s (ID: %s)", bot.user, bot.user.id)
+    logger.info("Cache directory: %s", provider.directory.resolve())
     connection = bot._connection
-    logger.info("Restored %d users from disk", len(connection._users))
+    logger.info("Cached users: %d", len(connection._users))
     for guild in bot.guilds:
-        logger.info(
-            "Restored %d members for guild %s", len(guild._members), guild.name
-        )
+        logger.info("Cached members for %s: %d", guild.name, len(guild._members))
 
 
-@bot.slash_command(description="Show the on-disk cache files")
+@bot.slash_command(description="Show the on-disk cache directory")
 async def cache_files(ctx: rum.ApplicationContext):
-    files = sorted(provider.directory.glob("*.json"))
-    lines = [f"cache directory: `{provider.directory}`"]
-    for path in files:
-        size = path.stat().st_size
-        lines.append(f"- `{path.name}` ({size} bytes)")
-    await ctx.respond("\n".join(lines) or "no cache files yet", ephemeral=True)
+    root = provider.directory.resolve()
+    files = list(root.rglob("*.json")) if root.exists() else []
+    total = sum(path.stat().st_size for path in files)
+    lines = [
+        f"cache directory: `{root}`",
+        f"entries on disk: {len(files)} ({total} bytes)",
+    ]
+    await ctx.respond("\n".join(lines), ephemeral=True)
 
 
 if __name__ == "__main__":
+    token = os.environ.get("BOT_TOKEN")
+    if not token:
+        raise SystemExit(
+            "Set the BOT_TOKEN environment variable to run this example, e.g.\n"
+            "    BOT_TOKEN=your-token uv run examples/custom_cache_json_file.py"
+        )
+
     logger.info("Starting bot... press Ctrl+C to stop it.")
-    bot.run("TOKEN")
+    bot.run(token)

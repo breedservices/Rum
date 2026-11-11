@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/reaction_roles.py
+import os
 import rum
 
 intents = rum.Intents.default()
@@ -98,4 +101,4 @@ async def on_raw_reaction_remove(payload: rum.RawReactionActionEvent):
         pass
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

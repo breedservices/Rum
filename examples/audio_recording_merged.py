@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/audio_recording_merged.py
+import os
 import io
 
 import pydub  # pip install pydub==0.25.1
@@ -110,4 +113,4 @@ async def leave(ctx: rum.ApplicationContext):
     await ctx.respond("Left!")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

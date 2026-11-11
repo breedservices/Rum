@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/counter.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
+import os
 import rum
 from rum.ext import commands
 
@@ -43,4 +46,4 @@ async def counter(ctx: commands.Context):
     await ctx.send("Press!", view=Counter())
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

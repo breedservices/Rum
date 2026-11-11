@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_users.py
+import os
 import rum
 
 # debug_guilds must not be set if we want to set contexts and integration_types on commands
@@ -30,4 +33,4 @@ async def say_hello(ctx: rum.ApplicationContext):
 # permission disabled, the response will always be ephemeral.
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

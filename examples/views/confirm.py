@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/confirm.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
+import os
 import rum
 from rum.ext import commands
 
@@ -63,4 +66,4 @@ async def ask(ctx: commands.Context):
         print("Cancelled...")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

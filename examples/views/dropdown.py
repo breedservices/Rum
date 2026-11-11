@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/dropdown.py
+import os
 import rum
 
 
@@ -75,4 +78,4 @@ async def on_ready():
     print("------")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

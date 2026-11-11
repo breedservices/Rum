@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_options.py
+import os
 import rum
 from rum import option
 
@@ -69,4 +72,4 @@ async def say(
         await ctx.respond("You didn't give me a file to reply with! :sob:")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

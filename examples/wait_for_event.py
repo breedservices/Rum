@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/wait_for_event.py
+import os
 import random
 from asyncio import TimeoutError
 
@@ -52,4 +55,4 @@ async def guess_number(ctx: rum.ApplicationContext):
         await guess.reply(f"Oops. It is actually {answer}.", mention_author=True)
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

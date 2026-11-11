@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/cooldown.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
+import os
 import rum
 from rum.ext import commands
 
@@ -69,4 +72,4 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
         raise error
 
 
-bot.run("MTU3MDExOTUyNzE1NTYzNDE3Ng.GzZFvw.d0B-oPGSXDVoBuJxPGgY2AzixTi47n5k5lgmrw")
+bot.run(os.environ["BOT_TOKEN"])

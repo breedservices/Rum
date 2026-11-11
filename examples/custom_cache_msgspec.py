@@ -1,3 +1,5 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/custom_cache_msgspec.py
 """This example requires the 'msgspec' library.
 You can install it with: uv pip install msgspec
 It demonstrates how to plug a custom cache provider into rum.
@@ -14,6 +16,7 @@ from __future__ import annotations
 import logging
 from collections import OrderedDict
 from collections.abc import Iterator, MutableMapping
+import os
 from typing import Any
 
 import msgspec
@@ -189,4 +192,4 @@ async def cache_stats(ctx: rum.ApplicationContext):
 # (Replace "token" with your bot token to run this example.)
 if __name__ == "__main__":
     logger.info("Starting bot... press Ctrl+C to stop it.")
-    bot.run("MTU3MDExOTUyNzE1NTYzNDE3Ng.GzZFvw.d0B-oPGSXDVoBuJxPGgY2AzixTi47n5k5lgmrw")
+    bot.run(os.environ["BOT_TOKEN"])

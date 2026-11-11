@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/info.py
 # This example requires the 'members' privileged intent to use the Member converter.
 
+import os
 import rum
 
 intents = rum.Intents.default()
@@ -45,4 +48,4 @@ async def info(ctx: rum.ApplicationContext, user: rum.Member = None):
     await ctx.respond(embeds=[embed])  # Sends the embed
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

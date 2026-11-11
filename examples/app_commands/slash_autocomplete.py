@@ -1,4 +1,7 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/slash_autocomplete.py
 from functools import partial
+import os
 
 import rum
 from rum.commands import option
@@ -233,4 +236,4 @@ async def get_vegetable(ctx: rum.ApplicationContext, choice: str):
     await ctx.respond(f'You picked "{choice}"')
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

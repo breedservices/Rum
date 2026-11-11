@@ -1,3 +1,5 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/soundboard.py
 import asyncio
 import logging
 import os
@@ -9,7 +11,6 @@ import rum
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
-TOKEN = os.getenv("TOKEN")
 
 bot = rum.Bot()
 
@@ -167,4 +168,4 @@ class SoundboardCog(rum.Cog):
 
 bot.add_cog(SoundboardCog(bot))
 
-bot.run(TOKEN)
+bot.run(os.environ["BOT_TOKEN"])

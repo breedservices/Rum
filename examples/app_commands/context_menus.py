@@ -1,5 +1,8 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/context_menus.py
 # This example requires the 'members' privileged intent to use the Member converter.
 
+import os
 import rum
 
 intents = rum.Intents.default()
@@ -25,4 +28,4 @@ async def show_id(
     await ctx.respond(f"{ctx.author.name}, here's the message id: {message.id}!")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

@@ -1,6 +1,9 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/basic_voice.py
 # This example requires the 'message_content' privileged intent for prefixed commands.
 
 import asyncio
+import os
 
 import youtube_dl
 
@@ -148,4 +151,4 @@ async def on_ready():
 
 
 bot.add_cog(Music(bot))
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])

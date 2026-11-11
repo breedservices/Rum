@@ -1,3 +1,6 @@
+# Set the BOT_TOKEN environment variable before running this example:
+#     BOT_TOKEN=your-token uv run examples/community_invites.py
+import os
 import rum
 from rum.utils import users_to_csv
 
@@ -65,4 +68,4 @@ async def get_invite_target_users(ctx: rum.ApplicationContext, code: str):
     await ctx.respond(f"Target user IDs: {user_ids}")
 
 
-bot.run("TOKEN")
+bot.run(os.environ["BOT_TOKEN"])
