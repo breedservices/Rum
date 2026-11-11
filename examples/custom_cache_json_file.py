@@ -190,16 +190,22 @@ class JsonDiskCacheProvider(rum.DefaultCacheProvider):
     def __init__(self, directory: str | Path = CACHE_DIRECTORY) -> None:
         super().__init__()
         self.directory = Path(directory)
+        # The caches do not keep the Discord objects alive, so rum must not
+        # evict the user cache when a User object is garbage collected.
+        # Otherwise every user would be dropped from the cache right after
+        # it was stored.
+        self.keeps_object_references = False
 
     def create_user_cache(self) -> MutableMapping[int, Any]:
-        # The global user cache is deliberately kept in memory.
-        #
-        # rum evicts a user from the cache when the User object is garbage
-        # collected (see User.__del__). A cache that does not hold on to the
-        # objects it hands out would therefore evict every user right after
-        # it was stored, which for a disk cache means deleting the file
-        # again. The guild member cache below is not affected by this.
-        return {}
+        state = self.state
+        if state is None:  # pragma: no cover - the library always sets this
+            return {}
+
+        return JsonDiskCache(
+            self.directory / "users",
+            dump=user_to_record,
+            load=lambda record: rum.User(state=state, data=record),
+        )
 
     def create_guild_member_cache(self, guild: Any) -> MutableMapping[int, Any]:
         state = guild._state

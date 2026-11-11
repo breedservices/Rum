@@ -485,6 +485,15 @@ class ConnectionState:
             return copied_user
 
     def deref_user(self, user_id: int) -> None:
+        # rum evicts a user from the cache when the User object is garbage
+        # collected. Caches that do not keep a reference to the objects they
+        # hold (an external store for example) would lose their entries
+        # immediately, so the eviction is skipped for them.
+        provider = getattr(self, "cache_provider", None)
+        if provider is not None and not getattr(
+            provider, "keeps_object_references", True
+        ):
+            return
         self._users.pop(user_id, None)
 
     def create_user(self, data: UserPayload) -> User:

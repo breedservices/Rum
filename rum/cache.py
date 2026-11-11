@@ -84,11 +84,19 @@ class DefaultCacheProvider:
         The connection state the provider is attached to. The library sets this
         before it creates any cache, so implementations can use it to rebuild
         Discord objects when loading a cache from an external store.
+    keeps_object_references: :class:`bool`
+        Whether the caches keep a reference to the Discord objects they store.
+        rum evicts a user from the user cache when the :class:`~discord.User`
+        object is garbage collected. A cache that does not hold on to the
+        objects, such as one backed by an external store, would lose its
+        entries straight away, so set this to ``False`` for those. Defaults
+        to ``True``.
     """
 
     def __init__(self, *, max_messages: int | None = 1000) -> None:
         self.max_messages = max_messages
         self.state: ConnectionState | None = None
+        self.keeps_object_references: bool = True
 
     # Global/state caches
 
