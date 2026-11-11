@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/slash_groups.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# slash_groups.py
 import os
 import rum
 
@@ -23,4 +26,4 @@ async def add(ctx: rum.ApplicationContext, num1: int, num2: int):
 
 
 bot.add_application_command(math)
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

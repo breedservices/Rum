@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/confirm.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# confirm.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import os
@@ -66,4 +69,4 @@ async def ask(ctx: commands.Context):
         print("Cancelled...")
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

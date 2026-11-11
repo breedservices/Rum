@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/context_menus.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# context_menus.py
 # This example requires the 'members' privileged intent to use the Member converter.
 
 import os
@@ -28,4 +31,4 @@ async def show_id(
     await ctx.respond(f"{ctx.author.name}, here's the message id: {message.id}!")
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

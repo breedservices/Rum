@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/bridge_commands.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# bridge_commands.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import asyncio
@@ -71,4 +74,4 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
         raise error  # Raise other errors so they aren't ignored
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

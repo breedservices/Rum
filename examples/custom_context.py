@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/custom_context.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# custom_context.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import os
@@ -89,4 +92,4 @@ async def slash_guess(ctx: MyApplicationContext, number: int):
 # let people do very malicious things with your
 # bot. Try to use a file or something to keep
 # them private, and don't commit it to GitHub.
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

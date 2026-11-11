@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/tic_tac_toe.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# tic_tac_toe.py
 # This example requires the 'message_content' privileged intent for prefixed commands.
 
 
@@ -143,4 +146,4 @@ async def on_ready():
     print("------")
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

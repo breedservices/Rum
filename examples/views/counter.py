@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/counter.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# counter.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import os
@@ -46,4 +49,4 @@ async def counter(ctx: commands.Context):
     await ctx.send("Press!", view=Counter())
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

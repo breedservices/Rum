@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/slash_basic.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# slash_basic.py
 # This example requires the 'members' privileged intent to use the Member converter.
 
 import os
@@ -46,4 +49,4 @@ async def joined(ctx: rum.ApplicationContext, member: rum.Member = None):
 
 
 # To learn how to add descriptions and choices to options, check slash_options.py
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

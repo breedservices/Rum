@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/modal_dialogs.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# modal_dialogs.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import os
@@ -153,4 +156,4 @@ async def modaltest(ctx: commands.Context):
     await ctx.send("Click Button, Receive Modal", view=view)
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

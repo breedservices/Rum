@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/soundboard.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# soundboard.py
 import asyncio
 import logging
 import os
@@ -168,4 +171,4 @@ class SoundboardCog(rum.Cog):
 
 bot.add_cog(SoundboardCog(bot))
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

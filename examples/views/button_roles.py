@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/button_roles.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# button_roles.py
 import os
 import rum
 from rum.ext import commands
@@ -113,4 +116,4 @@ def setup(bot):
 # The basic bot instance in a separate file should look something like this:
 # bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"))
 # bot.load_extension("button_roles")
-# bot.run(os.environ["BOT_TOKEN"])
+# bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

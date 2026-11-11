@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/slash_users.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# slash_users.py
 import os
 import rum
 
@@ -33,4 +36,4 @@ async def say_hello(ctx: rum.ApplicationContext):
 # permission disabled, the response will always be ephemeral.
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

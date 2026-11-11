@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/converters.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# converters.py
 # This example requires the 'members' privileged intent to use the Member converter,
 # and the 'message_content' privileged intent for prefixed commands.
 
@@ -126,4 +129,4 @@ async def multiply(ctx: commands.Context, number: int, maybe: bool):
     await ctx.send(str(number * 5))
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/paginator.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# paginator.py
 # Docs: https://docs.pycord.dev/en/master/ext/pages/index.html
 
 # This example demonstrates a standalone cog file with the bot instance in a separate file.
@@ -341,4 +344,4 @@ def setup(bot):
 # intents.message_content = True  # required for prefixed commands
 # bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"), intents=intents)
 # bot.load_extension("paginator")
-# bot.run(os.environ["BOT_TOKEN"])
+# bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

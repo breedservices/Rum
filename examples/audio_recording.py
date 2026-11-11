@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/audio_recording.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# audio_recording.py
 import os
 from enum import Enum
 
@@ -64,4 +67,4 @@ async def stop(ctx: rum.ApplicationContext):
         await ctx.respond("Not recording in this guild.")
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/audio_recording_merged.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# audio_recording_merged.py
 import os
 import io
 
@@ -113,4 +116,4 @@ async def leave(ctx: rum.ApplicationContext):
     await ctx.respond("Left!")
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))

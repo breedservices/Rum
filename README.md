@@ -71,10 +71,12 @@ See the examples for working implementations:
 - [`examples/custom_cache_json_file.py`](./examples/custom_cache_json_file.py) — a
   pure disk cache that stores every entry in its own JSON file
 
-All examples read the bot token from the `BOT_TOKEN` environment variable:
+All examples read the bot token from the `BOT_TOKEN` environment variable, or
+from the `.env` file in the repository root:
 
 ```sh
-BOT_TOKEN=your-token uv run examples/basic_bot.py
+export BOT_TOKEN=your-token          # or put it in .env
+uv run examples/basic_bot.py
 ```
 
 ## Logging

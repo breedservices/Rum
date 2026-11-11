@@ -1,5 +1,8 @@
 # Set the BOT_TOKEN environment variable before running this example:
-#     BOT_TOKEN=your-token uv run examples/persistent.py
+#     export BOT_TOKEN=your-token
+# It can also be set in the .env file in the repository root.
+#
+# persistent.py
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import os
@@ -77,4 +80,4 @@ async def prepare(ctx: commands.Context):
     await ctx.send("What's your favourite colour?", view=PersistentView())
 
 
-bot.run(os.environ["BOT_TOKEN"])
+bot.run(os.environ.get("BOT_TOKEN", "TOKEN"))
