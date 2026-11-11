@@ -1,6 +1,6 @@
 import rum
 
-bot = rum.Bot(debug_guilds=[...])
+bot = rum.Bot()
 
 
 @bot.slash_command()

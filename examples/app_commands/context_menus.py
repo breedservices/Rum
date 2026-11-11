@@ -5,7 +5,7 @@ import rum
 intents = rum.Intents.default()
 intents.members = True
 
-bot = rum.Bot(debug_guilds=[...], intents=intents)
+bot = rum.Bot(intents=intents)
 # Remove debug_guilds and set guild_ids in the slash command decorators
 # to restrict specific commands to the supplied guild IDs.
 

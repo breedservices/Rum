@@ -22,7 +22,7 @@ class DropdownView(rum.ui.View):
         )
 
 
-bot: rum.Bot = rum.Bot(debug_guilds=[...])
+bot: rum.Bot = rum.Bot()
 
 
 @bot.slash_command()

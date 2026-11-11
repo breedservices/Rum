@@ -9,7 +9,7 @@ intents = rum.Intents.default()
 intents.message_content = True
 
 bot = bridge.Bot(
-    command_prefix=commands.when_mentioned_or("!"), debug_guilds=[...], intents=intents
+    command_prefix=commands.when_mentioned_or("!"), intents=intents
 )
 
 
@@ -19,7 +19,7 @@ async def ping(ctx: bridge.BridgeContext):
 
 
 @bot.bridge_command()
-@rum.option("value", choices=[1, 2, 3])
+@bridge.bridge_option("value", choices=[1, 2, 3])
 async def choose(ctx: bridge.BridgeContext, value: int):
     await ctx.respond(f"You chose: {value}!")
 
@@ -30,7 +30,7 @@ async def welcome(ctx: bridge.BridgeContext, member: rum.Member):
 
 
 @bot.bridge_command()
-@rum.option("seconds", choices=range(1, 11))
+@bridge.bridge_option("seconds", choices=range(1, 11))
 async def wait(ctx: bridge.BridgeContext, seconds: int = 5):
     await ctx.defer()
     await asyncio.sleep(seconds)

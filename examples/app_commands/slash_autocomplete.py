@@ -3,7 +3,7 @@ from functools import partial
 import rum
 from rum.commands import option
 
-bot = rum.Bot(debug_guilds=[...])
+bot = rum.Bot()
 
 COLORS = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
 

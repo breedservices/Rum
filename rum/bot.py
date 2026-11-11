@@ -77,6 +77,30 @@ C = TypeVar("C", bound=MessageCommand | SlashCommand | UserCommand)
 CoroFunc = Callable[..., Coroutine[Any, Any, Any]]
 CFT = TypeVar("CFT", bound=CoroFunc)
 
+def _sanitize_guild_ids(guild_ids: Any) -> list[int] | None:
+    """Return the given guild ids with any invalid entries removed.
+
+    Placeholder values such as ``...`` (which is what ``Ellipsis`` evaluates
+    to) are commonly used in examples to mark a value as "fill this in".
+    Passing those straight to Discord results in a ``400 Bad Request``
+    response, so they are filtered out here.
+    """
+    if guild_ids is None:
+        return None
+    if isinstance(guild_ids, int) and not isinstance(guild_ids, bool):
+        return [guild_ids]
+    try:
+        entries = list(guild_ids)
+    except TypeError:
+        return None
+
+    return [
+        guild_id
+        for guild_id in entries
+        if isinstance(guild_id, int) and not isinstance(guild_id, bool)
+    ]
+
+
 __all__ = (
     "ApplicationCommandMixin",
     "Bot",
@@ -142,7 +166,7 @@ class ApplicationCommandMixin(ABC):
             raise TypeError("The provided command is a sub-command of group")
 
         if self._bot.debug_guilds and command.guild_ids is None:
-            command.guild_ids = self._bot.debug_guilds
+            command.guild_ids = _sanitize_guild_ids(self._bot.debug_guilds)
         if self._bot.default_command_contexts and command.contexts is None:
             command.contexts = self._bot.default_command_contexts
         if (
@@ -769,7 +793,12 @@ class ApplicationCommandMixin(ABC):
             Whether to delete existing commands that are not in the list of commands to register. Defaults to True.
         """
 
-        check_guilds = list(set((check_guilds or []) + (self._bot.debug_guilds or [])))
+        check_guilds = list(
+            set(
+                (_sanitize_guild_ids(check_guilds) or [])
+                + (_sanitize_guild_ids(self._bot.debug_guilds) or [])
+            )
+        )
 
         if commands is None:
             commands = self.pending_application_commands
@@ -789,7 +818,7 @@ class ApplicationCommandMixin(ABC):
             cmd_guild_ids: list[int] = []
             for cmd in commands:
                 if cmd.guild_ids is not None:
-                    cmd_guild_ids.extend(cmd.guild_ids)
+                    cmd_guild_ids.extend(_sanitize_guild_ids(cmd.guild_ids) or [])
             if check_guilds is not None:
                 cmd_guild_ids.extend(check_guilds)
             for guild_id in set(cmd_guild_ids):
@@ -1354,7 +1383,7 @@ class BotBase(ApplicationCommandMixin, CogMixin, ABC):
         self.owner_ids = options.get("owner_ids", set())
         self.auto_sync_commands = options.get("auto_sync_commands", True)
 
-        self.debug_guilds = options.pop("debug_guilds", None)
+        self.debug_guilds = _sanitize_guild_ids(options.pop("debug_guilds", None))
         self.default_command_contexts = options.pop(
             "default_command_contexts",
             {

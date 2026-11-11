@@ -53,7 +53,7 @@ intents = rum.Intents.default()
 intents.message_content = True
 
 bot = MyBot(
-    command_prefix=commands.when_mentioned_or("!"), debug_guilds=[...], intents=intents
+    command_prefix=commands.when_mentioned_or("!"), intents=intents
 )
 
 

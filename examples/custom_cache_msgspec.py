@@ -20,8 +20,6 @@ import msgspec
 
 import rum
 
-bot = rum.Bot()
-
 
 class CacheEvent(msgspec.Struct):
     cache: str
@@ -114,6 +112,11 @@ class MsgspecCacheProvider(rum.DefaultCacheProvider):
         return MsgspecInstrumentedMapping(f"guild:{getattr(guild, 'id', '?')}:members")
 
 
+# Create the bot with the custom cache provider. The provider has to be
+# passed when the client is constructed, so the bot is created only once.
+bot = rum.Bot(cache_provider=MsgspecCacheProvider())
+
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
@@ -132,9 +135,7 @@ async def cache_stats(ctx: rum.ApplicationContext):
     )
 
 
-# Pass the custom cache provider when creating the client.
 # (Replace "token" with your bot token to run this example.)
 if __name__ == "__main__":
-    bot = rum.Bot(cache_provider=MsgspecCacheProvider())
-    # bot.run("token")
-    print("Custom cache example loaded. Set a token and run bot.run(...).")
+    print("Starting bot... press Ctrl+C to stop it.")
+    bot.run("MTU3MDE4NjU4MDkzNTcwNDY0Ng.G-foqs.0iSvPKYTyy3Y6hHOe3Q9hOSrAgBrG39fCSMaXk")

@@ -7,7 +7,7 @@ from rum.ext import commands
 intents = rum.Intents.default()
 intents.members = True
 
-bot = rum.Bot(debug_guilds=[...], intents=intents, owner_id=...)  # Main file
+bot = rum.Bot(intents=intents, owner_id=...)  # Main file
 
 
 class Example(commands.Cog):

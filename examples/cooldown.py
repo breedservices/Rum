@@ -7,7 +7,7 @@ intents = rum.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or("!"), debug_guilds=[...], intents=intents
+    command_prefix=commands.when_mentioned_or("!"), debug_guilds=[1548399850905665648], intents=intents
 )
 bypassing_users = []  # used in the dynamic cooldown below
 
@@ -69,4 +69,4 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
         raise error
 
 
-bot.run("TOKEN")
+bot.run("MTU3MDExOTUyNzE1NTYzNDE3Ng.GzZFvw.d0B-oPGSXDVoBuJxPGgY2AzixTi47n5k5lgmrw")

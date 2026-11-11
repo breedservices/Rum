@@ -21,7 +21,7 @@ class Google(rum.ui.View):
         # super().__init__(rum.ui.Button(label="Click Here", url=url))
 
 
-bot = rum.Bot(debug_guilds=[...])
+bot = rum.Bot()
 
 
 @bot.slash_command()

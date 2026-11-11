@@ -55,7 +55,7 @@ class DropdownView(rum.ui.View):
         # super().__init__(Dropdown(self.bot))
 
 
-bot = rum.Bot(debug_guilds=[...])
+bot = rum.Bot()
 
 
 @bot.slash_command()

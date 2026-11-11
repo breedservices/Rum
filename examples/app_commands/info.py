@@ -6,7 +6,7 @@ intents = rum.Intents.default()
 intents.members = True
 
 bot = rum.Bot(
-    debug_guilds=[...],
+    # debug_guilds=[123456789012345678],  # only sync commands in these guilds
     description="An example to showcase how to extract info about users.",
     intents=intents,
 )
