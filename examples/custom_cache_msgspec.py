@@ -127,7 +127,14 @@ class MsgspecCacheProvider(rum.DefaultCacheProvider):
 
 # Create the bot with the custom cache provider. The provider has to be
 # passed when the client is constructed, so the bot is created only once.
-bot = rum.Bot(cache_provider=MsgspecCacheProvider())
+#
+# The "members" intent is enabled so that users are actually cached. Without
+# it rum replaces ``store_user`` with ``create_user`` and the user cache
+# stays empty. Note that bot accounts are never cached regardless.
+intents = rum.Intents.default()
+intents.members = True
+
+bot = rum.Bot(cache_provider=MsgspecCacheProvider(), intents=intents)
 
 
 @bot.event
@@ -138,20 +145,45 @@ async def on_ready():
 
 @bot.slash_command(description="Show custom cache stats")
 async def cache_stats(ctx: rum.ApplicationContext):
-    provider = ctx.bot._connection.cache_provider
-    user_cache = ctx.bot._connection._users
-    events = getattr(user_cache, "dump_events", lambda: [])()
+    connection = ctx.bot._connection
+    provider = connection.cache_provider
+
+    caches = {
+        "users": connection._users,
+        "guilds": connection._guilds,
+        "emojis": connection._emojis,
+        "stickers": connection._stickers,
+        "polls": connection._polls,
+        "sounds": connection._sounds,
+        "messages": connection._messages,
+    }
+
+    sizes = {name: len(cache) for name, cache in caches.items()}
+
+    # Every cache created by the provider is an instrumented mapping, so the
+    # recorded events can be decoded back into plain dictionaries.
+    events = []
+    for name, cache in caches.items():
+        dump = getattr(cache, "dump_events", None)
+        if dump is not None:
+            events.extend(dump())
+
     logger.info(
-        "cache_stats invoked by %s: users_cached=%d events=%d",
+        "cache_stats invoked by %s: provider=%s sizes=%s events=%d",
         ctx.author,
-        len(user_cache),
+        type(provider).__name__,
+        sizes,
         len(events),
     )
-    await ctx.respond(
-        f"provider={type(provider).__name__} users_cached={len(user_cache)} "
-        f"user_cache_events={len(events)}",
-        ephemeral=True,
-    )
+
+    lines = [f"provider: `{type(provider).__name__}`", "cache sizes:"]
+    lines.extend(f"- {name}: {size}" for name, size in sizes.items())
+    lines.append(f"total recorded cache events: {len(events)}")
+    if events:
+        lines.append("last 3 events:")
+        lines.extend(f"- `{event}`" for event in events[-3:])
+
+    await ctx.respond("\n".join(lines), ephemeral=True)
 
 
 # (Replace "token" with your bot token to run this example.)

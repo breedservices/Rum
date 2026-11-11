@@ -439,6 +439,9 @@ class Guild(Hashable):
         # of the attr in __slots__
 
         self._state: ConnectionState = state
+        # Set the ID up front so that cache providers can namespace their
+        # caches per guild. `_from_data` sets it again to the same value.
+        self.id: int = int(data["id"])
         provider = getattr(state, "cache_provider", None)
         if provider is None:
             self._channels: dict[int, GuildChannel] = {}
