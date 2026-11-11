@@ -77,10 +77,18 @@ class DefaultCacheProvider:
         Maximum number of messages to keep in the default message cache. ``None``
         disables the message cache. Defaults to ``1000`` to match library
         behavior when not specified by the client.
+
+    Attributes
+    ----------
+    state: Optional[:class:`~discord.state.ConnectionState`]
+        The connection state the provider is attached to. The library sets this
+        before it creates any cache, so implementations can use it to rebuild
+        Discord objects when loading a cache from an external store.
     """
 
     def __init__(self, *, max_messages: int | None = 1000) -> None:
         self.max_messages = max_messages
+        self.state: ConnectionState | None = None
 
     # Global/state caches
 

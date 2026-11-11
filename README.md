@@ -53,6 +53,24 @@ bot.run("TOKEN")
 rum is the actual library. If you prefer compatibility-style imports, `import discord`
 also works and resolves to the very same modules.
 
+## Caching
+
+Anything rum keeps in RAM can be swapped out through a **cache provider**. Pass one
+to the client and it is used for every cache the library creates:
+
+```py
+import rum
+
+bot = rum.Bot(cache_provider=MyProvider())
+```
+
+See the examples for working implementations:
+
+- [`examples/custom_cache_msgspec.py`](./examples/custom_cache_msgspec.py) — an
+  instrumented in-memory cache that encodes cache events with `msgspec`
+- [`examples/custom_cache_json_file.py`](./examples/custom_cache_json_file.py) — a
+  cache that persists to JSON files on disk with `msgspec`
+
 ## Logging
 
 rum uses the standard [`logging`](https://docs.python.org/3/library/logging.html)

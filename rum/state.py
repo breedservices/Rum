@@ -252,6 +252,10 @@ class ConnectionState:
         self.cache_provider = options.pop("cache_provider", None)
         if self.cache_provider is None:
             self.cache_provider = DefaultCacheProvider(max_messages=self.max_messages)
+        # Let the provider know which state it belongs to. Custom providers
+        # need it to rebuild Discord objects when loading from an external
+        # store, and it has to be set before any cache is created.
+        self.cache_provider.state = self
 
         self.dispatch: Callable = dispatch
         self.handlers: dict[str, Callable] = handlers
