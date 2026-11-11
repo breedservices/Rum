@@ -53,6 +53,7 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
+from http.client import HTTPMessage
 from inspect import isawaitable as _isawaitable
 from inspect import signature as _signature
 from operator import attrgetter
@@ -852,12 +853,70 @@ else:
     _from_json = json.loads
 
 
+def _decode_header_value(value: Any) -> Any:
+    """Decode a single HTTP header value into a :class:`str`.
+
+    ``wreq`` returns header names and values as read-only ``memoryview``
+    objects, so they have to be decoded before they can be compared against
+    strings or parsed as numbers.
+    """
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        return bytes(value).decode("utf-8", "replace")
+    return value
+
+
+def _decode_headers(headers: Any) -> "HTTPMessage":
+    """Return the given headers as a case-insensitive mapping of strings.
+
+    The returned object supports ``headers.get("Content-Type")`` style access
+    regardless of the casing used by the server, which matches the behaviour
+    of the header containers used by other HTTP clients.
+    """
+    message = HTTPMessage()
+    if headers is None:
+        return message
+
+    items: Any = None
+    getter = getattr(headers, "items", None)
+    if getter is not None:
+        try:
+            items = list(getter())
+        except Exception:
+            items = None
+
+    if items is None:
+        # ``wreq.HeaderMap`` has no ``items()`` but iterates over
+        # ``(name, value)`` pairs.
+        try:
+            items = [tuple(entry) for entry in headers]
+        except Exception:
+            items = []
+
+    for entry in items:
+        try:
+            name, value = entry
+        except (TypeError, ValueError):
+            continue
+        decoded_name = _decode_header_value(name)
+        decoded_value = _decode_header_value(value)
+        if decoded_name is None:
+            continue
+        message[decoded_name] = decoded_value
+
+    return message
+
+
 def _parse_ratelimit_header(request: Any, *, use_clock: bool = False) -> float:
-    reset_after: str | None = request.headers.get("X-Ratelimit-Reset-After")
+    headers = _decode_headers(getattr(request, "headers", None))
+    reset_after: str | None = headers.get("X-Ratelimit-Reset-After")
     if not use_clock and reset_after:
         return float(reset_after)
 
-    reset = request.headers.get("X-Ratelimit-Reset")
+    reset = headers.get("X-Ratelimit-Reset")
     if reset is not None:
         try:
             utc = datetime.timezone.utc
@@ -867,7 +926,7 @@ def _parse_ratelimit_header(request: Any, *, use_clock: bool = False) -> float:
         except (TypeError, ValueError, OSError):
             pass
 
-    retry_after = request.headers.get("Retry-After")
+    retry_after = headers.get("Retry-After")
     if retry_after is not None:
         try:
             return max(float(retry_after), 0.0)
@@ -1661,4 +1720,21 @@ def _get_event_loop() -> asyncio.AbstractEventLoop:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
         return loop
-    return asyncio.get_event_loop()
+
+    try:
+        return asyncio.get_running_loop()
+    except RuntimeError:
+        pass
+
+    # Not running inside a loop. On Python 3.12+ ``get_event_loop()`` emits a
+    # DeprecationWarning when it has to create the loop implicitly, so the
+    # loop is created explicitly instead. This keeps the behaviour consistent
+    # across Python versions and avoids warning the user.
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            return asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop

@@ -132,12 +132,16 @@ def _headers_get(headers: Any, key: str, default: Any = None) -> Any:
     if headers is None:
         return default
     try:
-        return headers.get(key)
+        value = headers.get(key)
     except Exception:
         try:
-            return headers[key]
+            value = headers[key]
         except Exception:
             return default
+    decoded = utils._decode_header_value(value)
+    if decoded is None:
+        return default
+    return decoded
 
 
 async def parse_response(
@@ -242,7 +246,9 @@ class _ResponseProxy:
     def __init__(self, response: Any) -> None:
         self._response = response
         self.status = _status_int(getattr(response, "status", 0))
-        self.headers = getattr(response, "headers", {}) or {}
+        # wreq exposes headers as memoryviews, so decode them into a
+        # case-insensitive mapping of plain strings.
+        self.headers = utils._decode_headers(getattr(response, "headers", None))
         # Best-effort reason/phrase extraction across wreq response implementations.
         status_obj = getattr(response, "status", None)
         reason = getattr(response, "reason", None)
@@ -255,6 +261,12 @@ class _ResponseProxy:
                 reason = None
         if reason is None and status_obj is not None and not isinstance(status_obj, int):
             reason = getattr(status_obj, "reason", None)
+        if reason is None and status_obj is not None and not isinstance(status_obj, int):
+            # wreq's StatusCode renders as "<code> <reason>", e.g. "401 Unauthorized".
+            try:
+                reason = str(status_obj)
+            except Exception:
+                reason = None
         self.reason = str(reason or "")
 
 
@@ -435,11 +447,14 @@ class HTTPClient:
                             part_kwargs["mime"] = content_type
                         parts.append(Part(name, value, **part_kwargs))
                     req_kwargs["multipart"] = Multipart(*parts)
-                    req_kwargs.pop("data", None)
+                    req_kwargs.pop("body", None)
                     req_kwargs.pop("json", None)
                 elif "json" in req_kwargs:
                     # Encode JSON payloads with msgspec when available (utils._to_json).
-                    req_kwargs["data"] = utils._to_json(req_kwargs.pop("json")).encode("utf-8")
+                    # wreq expects the raw request body under "body".
+                    req_kwargs["body"] = utils._to_json(req_kwargs.pop("json")).encode(
+                        "utf-8"
+                    )
 
                 try:
                     async with self.__session.request(

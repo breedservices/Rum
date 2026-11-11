@@ -198,18 +198,12 @@ class AsyncWebhookAdapter:
                         )
                         raw = await response.text()
                         data = raw or None
-                        ctype = None
-                        try:
-                            ctype = response.headers.get("Content-Type")
-                        except Exception:
-                            ctype = None
+                        headers = utils._decode_headers(getattr(response, "headers", None))
+                        ctype = headers.get("Content-Type")
                         if data and ctype and "application/json" in ctype:
                             data = json.loads(data)
 
-                        try:
-                            remaining = response.headers.get("X-Ratelimit-Remaining")
-                        except Exception:
-                            remaining = None
+                        remaining = headers.get("X-Ratelimit-Remaining")
                         if remaining == "0" and status != 429:
                             delta = utils._parse_ratelimit_header(response)
                             _log.debug(
@@ -226,11 +220,7 @@ class AsyncWebhookAdapter:
                             return data
 
                         if status == 429:
-                            via = None
-                            try:
-                                via = response.headers.get("Via")
-                            except Exception:
-                                via = None
+                            via = headers.get("Via")
                             if not via:
                                 raise HTTPException(response, data)
 
@@ -238,12 +228,9 @@ class AsyncWebhookAdapter:
                             if isinstance(data, dict):
                                 retry_after = data.get("retry_after")
                             if retry_after is None:
-                                try:
-                                    retry_after = response.headers.get("Retry-After") or response.headers.get(
-                                        "X-Ratelimit-Reset-After"
-                                    )
-                                except Exception:
-                                    retry_after = None
+                                retry_after = headers.get(
+                                    "Retry-After"
+                                ) or headers.get("X-Ratelimit-Reset-After")
                             try:
                                 retry_after = float(retry_after)
                             except (TypeError, ValueError):
