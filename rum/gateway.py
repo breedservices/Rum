@@ -34,11 +34,10 @@ import sys
 import threading
 import time
 import traceback
-import zlib
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, NamedTuple
 
-import wreq
+from websockets.exceptions import ConnectionClosed
 
 from . import utils
 from .activity import BaseActivity
@@ -52,6 +51,21 @@ if TYPE_CHECKING:
     from .state import ConnectionState
 
 _log = logging.getLogger(__name__)
+
+try:  # Python 3.14 and later
+    from compression import zstd
+
+    def _decompress(data: bytes) -> bytes:
+        """Decompresses a zstd frame of the gateway."""
+        return zstd.decompress(data)
+
+except ImportError:  # pragma: no cover
+    import zstandard
+
+    def _decompress(data: bytes) -> bytes:
+        """Decompresses a zstd frame of the gateway."""
+        return zstandard.ZstdDecompressor().decompress(data)
+
 
 __all__ = (
     "DiscordWebSocket",
@@ -225,10 +239,12 @@ class KeepAliveHandler(threading.Thread):
             _log.warning(self.behind_msg, self.shard_id, self.latency)
 
 
-class _WreqWebSocketAdapter:
+class _WebSocketAdapter:
+    """Adapts a websockets connection to what the gateway expects."""
+
     __slots__ = ("_ws", "_closed", "_close_code")
 
-    def __init__(self, ws: wreq.WebSocket) -> None:
+    def __init__(self, ws: Any) -> None:
         self._ws = ws
         self._closed = False
         self._close_code: int | None = None
@@ -241,28 +257,21 @@ class _WreqWebSocketAdapter:
     def close_code(self) -> int | None:
         return self._close_code
 
-    async def receive(self, timeout: float | None = None) -> wreq.Message | None:
-        td = None
-        if timeout is not None:
-            td = datetime.timedelta(seconds=timeout)
-        msg = await self._ws.recv(timeout=td)
-        if msg is None:
+    async def receive(self, timeout: float | None = None) -> str | bytes | None:
+        try:
+            return await self._ws.recv(timeout=timeout)
+        except ConnectionClosed as exc:
             self._closed = True
+            self._close_code = exc.rcvd.code if exc.rcvd is not None else 1000
             return None
-        if getattr(msg, "close", None) is not None:
-            try:
-                code, _reason = msg.close
-                self._close_code = int(code) if code is not None else 1000
-            except Exception:
-                self._close_code = 1000
-            self._closed = True
-        return msg
+        except asyncio.TimeoutError:
+            return None
 
     async def send_str(self, data: str) -> None:
-        await self._ws.send(wreq.Message.from_text(data))
+        await self._ws.send(data)
 
     async def send_bytes(self, data: bytes) -> None:
-        await self._ws.send(wreq.Message.from_binary(data))
+        await self._ws.send(data)
 
     async def close(self, code: int = 4000, message: bytes = b"") -> bool:
         if self._closed:
@@ -319,11 +328,11 @@ class DiscordWebSocket:
         *,
         loop: asyncio.AbstractEventLoop,
     ) -> None:
-        # Accept raw wreq.WebSocket or adapter
-        if isinstance(socket, _WreqWebSocketAdapter):
+        # Accept a raw websockets connection or an adapter
+        if isinstance(socket, _WebSocketAdapter):
             self.socket = socket
         else:
-            self.socket = _WreqWebSocketAdapter(socket)
+            self.socket = _WebSocketAdapter(socket)
         self.loop: asyncio.AbstractEventLoop = loop
 
         # an empty dispatcher to prevent crashes
@@ -338,7 +347,7 @@ class DiscordWebSocket:
         self.session_id: str | None = None
         self.sequence: int | None = None
         self.resume_gateway_url: str | None = None
-        self._zlib: zlib._Decompress = zlib.decompressobj()
+
         self._buffer: bytearray = bytearray()
         self._close_code: int | None = None
         self._rate_limiter: GatewayRatelimiter = GatewayRatelimiter()
@@ -485,12 +494,12 @@ class DiscordWebSocket:
             bmsg = bytes(msg)
             self._buffer.extend(bmsg)
 
-            # zlib-stream transport compression: wait for the frame suffix.
+            # zstd-stream transport compression: wait for the frame suffix.
             if len(self._buffer) < 4 or self._buffer[-4:] != b"\x00\x00\xff\xff":
                 return
-            msg = self._zlib.decompress(self._buffer)
-            msg = msg.decode("utf-8")
+            frame = bytes(self._buffer[:-4])
             self._buffer = bytearray()
+            msg = _decompress(frame).decode("utf-8")
 
         self.log_receive(msg)
         msg = utils._from_json(msg)
@@ -630,36 +639,17 @@ class DiscordWebSocket:
             msg = await self.socket.receive(timeout=self._max_heartbeat_timeout)
             if msg is None:
                 raise WebSocketClosure
-            if getattr(msg, "text", None) is not None:
-                await self.received_message(msg.text)
-            elif getattr(msg, "binary", None) is not None:
-                b = msg.binary
-                await self.received_message(bytes(b) if b is not None else b"")
-            elif getattr(msg, "close", None) is not None:
-                _log.debug("Received close message: %s", msg)
-                raise WebSocketClosure
-            elif getattr(msg, "data", None) is not None:
-                # fallback
-                data = msg.data
-                if isinstance(data, memoryview):
-                    data = bytes(data)
-                if isinstance(data, (bytes, bytearray)):
-                    await self.received_message(bytes(data))
-                else:
-                    await self.received_message(str(data))
+            if isinstance(msg, (bytes, bytearray)):
+                await self.received_message(bytes(msg))
             else:
-                _log.debug("Received unknown websocket message: %s", msg)
+                await self.received_message(str(msg))
         except (asyncio.TimeoutError, WebSocketClosure) as e:
             # Ensure the keep alive handler is closed
             if self._keep_alive:
                 self._keep_alive.stop()
                 self._keep_alive = None
 
-            timeout_exc = getattr(getattr(wreq, "exceptions", None), "TimeoutError", None)
-            is_timeout = isinstance(e, asyncio.TimeoutError) or (
-                isinstance(timeout_exc, type) and isinstance(e, timeout_exc)
-            )
-            if is_timeout:
+            if isinstance(e, asyncio.TimeoutError):
                 _log.info("Timed out receiving packet. Attempting a reconnect.")
                 raise ReconnectWebSocket(self.shard_id) from None
 
@@ -673,16 +663,14 @@ class DiscordWebSocket:
                     self.socket, shard_id=self.shard_id, code=code
                 ) from None
         except Exception as e:
-            timeout_exc = getattr(getattr(wreq, "exceptions", None), "TimeoutError", None)
-            if isinstance(timeout_exc, type) and isinstance(e, timeout_exc):
+            if isinstance(e, asyncio.TimeoutError):
                 if self._keep_alive:
                     self._keep_alive.stop()
                     self._keep_alive = None
                 _log.info("Timed out receiving packet. Attempting a reconnect.")
                 raise ReconnectWebSocket(self.shard_id) from None
 
-            ws_exc = getattr(getattr(wreq, "exceptions", None), "WebSocketError", None)
-            if isinstance(ws_exc, type) and isinstance(e, ws_exc):
+            if isinstance(e, (ConnectionClosed, OSError)):
                 if self._keep_alive:
                     self._keep_alive.stop()
                     self._keep_alive = None

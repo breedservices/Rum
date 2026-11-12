@@ -239,6 +239,8 @@ def setup_logging(
     handler.setFormatter(formatter)
     logger.setLevel(level)
     logger.addHandler(handler)
+
+
 T_co = TypeVar("T_co", covariant=True)
 _Iter = Iterator[T] | AsyncIterator[T]
 
@@ -914,12 +916,7 @@ else:
 
 
 def _decode_header_value(value: Any) -> Any:
-    """Decode a single HTTP header value into a :class:`str`.
-
-    ``wreq`` returns header names and values as read-only ``memoryview``
-    objects, so they have to be decoded before they can be compared against
-    strings or parsed as numbers.
-    """
+    """Decode a single HTTP header value into a string."""
     if value is None:
         return None
     if isinstance(value, str):
@@ -949,7 +946,7 @@ def _decode_headers(headers: Any) -> "HTTPMessage":
             items = None
 
     if items is None:
-        # ``wreq.HeaderMap`` has no ``items()`` but iterates over
+        # some header containers have no ``items()`` but iterate over
         # ``(name, value)`` pairs.
         try:
             items = [tuple(entry) for entry in headers]

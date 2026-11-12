@@ -51,10 +51,11 @@ def show_version() -> None:
 
     try:
         import importlib.metadata
-        wreq_version = importlib.metadata.version("wreq")
+
+        httpcore_version = importlib.metadata.version("httpcore")
     except Exception:
-        wreq_version = getattr(__import__("wreq"), "__version__", "unknown")
-    entries.append(f"- wreq v{wreq_version}")
+        httpcore_version = getattr(__import__("httpcore"), "__version__", "unknown")
+    entries.append(f"- httpcore v{httpcore_version}")
     uname = platform.uname()
     entries.append("- system info: {0.system} {0.release} {0.version}".format(uname))
     print("\n".join(entries))

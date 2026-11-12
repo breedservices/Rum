@@ -35,7 +35,6 @@ import traceback
 from collections.abc import Awaitable, Callable, Sequence
 from typing import Any, Generic, TypeVar, cast
 
-import wreq
 
 import rum
 from rum.backoff import ExponentialBackoff
@@ -115,11 +114,7 @@ class Loop(Generic[LF]):
             OSError,
             rum.GatewayNotFound,
             rum.ConnectionClosed,
-            wreq.exceptions.RequestError,
-            wreq.exceptions.ConnectionError,
-            wreq.exceptions.TimeoutError,
-            wreq.exceptions.WebSocketError,
-            wreq.exceptions.ProxyConnectionError,
+            *rum.http.NETWORK_ERRORS,
             asyncio.TimeoutError,
         )
 

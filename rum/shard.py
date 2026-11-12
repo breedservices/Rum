@@ -31,7 +31,7 @@ import logging
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, TypeVar
 
-import wreq
+from .http import NETWORK_ERRORS
 
 from .backoff import ExponentialBackoff
 from .client import Client
@@ -109,26 +109,13 @@ class Shard:
         self._reconnect = client._reconnect
         self._backoff: ExponentialBackoff = ExponentialBackoff()
         self._task: asyncio.Task | None = None
-        wreq_exc = getattr(wreq, "exceptions", None)
-        wreq_types = tuple(
-            t
-            for t in (
-                getattr(wreq_exc, "RequestError", None),
-                getattr(wreq_exc, "ConnectionError", None),
-                getattr(wreq_exc, "TimeoutError", None),
-                getattr(wreq_exc, "BodyError", None),
-                getattr(wreq_exc, "WebSocketError", None),
-                getattr(wreq_exc, "ProxyConnectionError", None),
-            )
-            if isinstance(t, type) and issubclass(t, BaseException)
-        )
         self._handled_exceptions: tuple[type[Exception], ...] = (
             OSError,
             HTTPException,
             GatewayNotFound,
             ConnectionClosed,
             asyncio.TimeoutError,
-            *wreq_types,
+            *NETWORK_ERRORS,
         )
 
     @property

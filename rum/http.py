@@ -27,14 +27,26 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import asyncio
+import http
 import importlib.metadata
 import logging
 import sys
 import time
+import uuid
 import weakref
 from collections import deque
-from collections.abc import AsyncGenerator, Coroutine, Iterable, Sequence
+from collections.abc import (
+    AsyncGenerator,
+    AsyncIterator,
+    Coroutine,
+    Iterable,
+    Mapping,
+    Sequence,
+)
+from contextlib import asynccontextmanager
+from http import HTTPStatus
 from types import TracebackType
+from urllib.parse import urlencode, urlsplit
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -42,8 +54,8 @@ from typing import (
 )
 from urllib.parse import quote as _uriquote
 
-import wreq
-from wreq import Multipart, Part
+import httpcore
+from websockets.asyncio.client import connect as websocket_connect
 
 from . import __version__, utils
 from .errors import (
@@ -107,12 +119,26 @@ if TYPE_CHECKING:
 
 API_VERSION: int = 10
 
+#: The errors of the transport that mean the connection broke, not the request.
+NETWORK_ERRORS: tuple[type[Exception], ...] = (
+    httpcore.ConnectError,
+    httpcore.ConnectTimeout,
+    httpcore.ReadError,
+    httpcore.ReadTimeout,
+    httpcore.WriteError,
+    httpcore.WriteTimeout,
+    httpcore.PoolTimeout,
+    httpcore.NetworkError,
+    httpcore.RemoteProtocolError,
+    httpcore.LocalProtocolError,
+)
 
-def _wreq_version() -> str:
+
+def _httpcore_version() -> str:
     try:
-        return importlib.metadata.version("wreq")
+        return importlib.metadata.version("httpcore")
     except Exception:
-        return getattr(wreq, "__version__", "unknown")
+        return getattr(httpcore, "__version__", "unknown")
 
 
 def _status_int(status: Any) -> int:
@@ -136,14 +162,21 @@ def _headers_get(headers: Any, key: str, default: Any = None) -> Any:
     try:
         value = headers.get(key)
     except Exception:
+        value = None
+    if value is None:
+        # the headers of a response are not always in the same case
+        lowered = key.lower()
         try:
-            value = headers[key]
+            items = headers.items()
         except Exception:
             return default
-    decoded = utils._decode_header_value(value)
-    if decoded is None:
+        for name, header_value in items:
+            if str(name).lower() == lowered:
+                value = header_value
+                break
+    if value is None:
         return default
-    return decoded
+    return utils._decode_header_value(value)
 
 
 async def parse_response(
@@ -248,27 +281,8 @@ class _ResponseProxy:
     def __init__(self, response: Any) -> None:
         self._response = response
         self.status = _status_int(getattr(response, "status", 0))
-        # wreq exposes headers as memoryviews, so decode them into a
-        # case-insensitive mapping of plain strings.
         self.headers = utils._decode_headers(getattr(response, "headers", None))
-        # Best-effort reason/phrase extraction across wreq response implementations.
-        status_obj = getattr(response, "status", None)
         reason = getattr(response, "reason", None)
-        if reason is None:
-            reason = getattr(status_obj, "canonical_reason", None)
-        if callable(reason):
-            try:
-                reason = reason()
-            except Exception:
-                reason = None
-        if reason is None and status_obj is not None and not isinstance(status_obj, int):
-            reason = getattr(status_obj, "reason", None)
-        if reason is None and status_obj is not None and not isinstance(status_obj, int):
-            # wreq's StatusCode renders as "<code> <reason>", e.g. "401 Unauthorized".
-            try:
-                reason = str(status_obj)
-            except Exception:
-                reason = None
         self.reason = str(reason or "")
 
 
@@ -352,6 +366,160 @@ class BanGuard:
             self._counted.popleft()
 
 
+class _HttpcoreResponse:
+    """A response of an httpcore request."""
+
+    __slots__ = ("_content", "_response")
+
+    def __init__(self, response: httpcore.Response) -> None:
+        self._response = response
+        self._content: bytes | None = None
+
+    @property
+    def status(self) -> int:
+        return self._response.status
+
+    @property
+    def headers(self) -> dict[str, str]:
+        return {
+            key.decode("latin-1"): value.decode("latin-1")
+            for key, value in self._response.headers
+        }
+
+    @property
+    def reason(self) -> str:
+        try:
+            return HTTPStatus(self._response.status).phrase
+        except ValueError:
+            return ""
+
+    async def aread(self) -> bytes:
+        if self._content is None:
+            self._content = await self._response.aread()
+        return self._content
+
+    async def bytes(self) -> bytes:
+        return await self.aread()
+
+    async def text(self, encoding: str = "utf-8") -> str:
+        return (await self.aread()).decode(encoding, errors="replace")
+
+    @property
+    def stream(self) -> AsyncIterator[bytes]:
+        return self._response.stream
+
+
+class Session:
+    """The HTTP session of the client, built on httpcore.
+
+    The session keeps the connections alive and holds nothing but the pool
+    itself in memory.
+
+    Parameters
+    ----------
+    proxy: :class:`str` | :obj:`None`
+        The proxy every request of the session goes through.
+    timeout: :class:`float`
+        How long a request may take, in seconds.
+    """
+
+    def __init__(self, *, proxy: str | None = None, timeout: float = 30.0) -> None:
+        self._timeout = timeout
+        self._pool = httpcore.AsyncConnectionPool(
+            proxy=httpcore.Proxy(url=proxy) if proxy else None,
+        )
+
+    @asynccontextmanager
+    async def request(
+        self,
+        method: str,
+        url: str,
+        *,
+        headers: Mapping[str, str] | None = None,
+        body: bytes | None = None,
+        json: Any = None,
+        multipart: Iterable[dict[str, Any]] | None = None,
+        params: Mapping[str, Any] | None = None,
+    ) -> AsyncIterator[_HttpcoreResponse]:
+        """Makes a request and returns the response."""
+        if params:
+            url = f"{url}?{urlencode(params)}"
+        headers = dict(headers or {})
+        if not any(key.lower() == "host" for key in headers):
+            headers["Host"] = urlsplit(url).netloc
+        if multipart is not None:
+            body, content_type = _multipart_body(multipart)
+            headers.setdefault("Content-Type", content_type)
+        elif json is not None:
+            body = utils._to_json(json).encode("utf-8")
+        if body is not None and not any(
+            key.lower() == "content-length" for key in headers
+        ):
+            headers["Content-Length"] = str(len(body))
+        request = httpcore.Request(
+            method,
+            url,
+            headers=[(key, value) for key, value in (headers or {}).items()],
+            content=body,
+            extensions={
+                "timeout": {
+                    "connect": self._timeout,
+                    "read": self._timeout,
+                    "write": self._timeout,
+                    "pool": self._timeout,
+                }
+            },
+        )
+        response = await self._pool.handle_async_request(request)
+        try:
+            yield _HttpcoreResponse(response)
+        finally:
+            await response.aclose()
+
+    @asynccontextmanager
+    async def get(self, url: str) -> AsyncIterator[_HttpcoreResponse]:
+        """Makes a GET request and returns the response."""
+        async with self.request("GET", url) as response:
+            yield response
+
+    async def aclose(self) -> None:
+        """Closes the session and its connections."""
+        await self._pool.aclose()
+
+    async def __aenter__(self) -> Session:
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        await self.aclose()
+
+
+def _multipart_body(form: Iterable[dict[str, Any]]) -> tuple[bytes, str]:
+    """Builds a multipart body and returns it with its content type."""
+    boundary = uuid.uuid4().hex
+    body = bytearray()
+    for params in form:
+        name = params.get("name")
+        value = params.get("value")
+        if hasattr(value, "read"):
+            value = value.read()
+        if isinstance(value, str):
+            value = value.encode("utf-8")
+        filename = params.get("filename")
+        content_type = params.get("content_type") or params.get("content-type")
+        body += f"--{boundary}\r\n".encode()
+        disposition = f'form-data; name="{name}"'
+        if filename is not None:
+            disposition += f'; filename="{filename}"'
+        body += f"Content-Disposition: {disposition}\r\n".encode()
+        if content_type is not None:
+            body += f"Content-Type: {content_type}\r\n".encode()
+        body += b"\r\n"
+        body += value
+        body += b"\r\n"
+    body += f"--{boundary}--\r\n".encode()
+    return bytes(body), f"multipart/form-data; boundary={boundary}"
+
+
 class HTTPClient:
     """Represents an HTTP client sending HTTP requests to the Discord API."""
 
@@ -368,7 +536,7 @@ class HTTPClient:
             _get_event_loop() if loop is None else loop
         )
         self.connector = connector
-        self.__session: wreq.Client = MISSING  # filled in static_login/recreate
+        self.__session: Session = MISSING  # filled in static_login/recreate
         self._locks: weakref.WeakValueDictionary = weakref.WeakValueDictionary()
         self._global_over: asyncio.Event = asyncio.Event()
         self._global_over.set()
@@ -381,17 +549,16 @@ class HTTPClient:
         self.use_clock: bool = not unsync_clock
         self._ban_guard = BanGuard()
 
-        user_agent = (
-            "DiscordBot (https://github.com/breedservices/Rum, {0}) Python/{1[0]}.{1[1]} wreq/{2}"
-        )
+        user_agent = "DiscordBot (https://github.com/breedservices/Rum, {0}) Python/{1[0]}.{1[1]} httpcore/{2}"
         self.user_agent: str = user_agent.format(
-            __version__, sys.version_info, _wreq_version()
+            __version__, sys.version_info, _httpcore_version()
         )
 
-    def _new_session(self) -> wreq.Client:
-        kwargs: dict[str, Any] = {"user_agent": self.user_agent}
-        # wreq manages connection pooling internally; connector/proxy_auth kept for API compat
-        return wreq.Client(**kwargs)
+    def _new_session(self) -> Session:
+        proxy = self.proxy
+        if proxy and "://" not in proxy:
+            proxy = f"http://{proxy}"
+        return Session(proxy=proxy)
 
     @property
     def ban_guard(self) -> BanGuard:
@@ -400,50 +567,35 @@ class HTTPClient:
 
     async def _close_session(self) -> None:
         if self.__session and self.__session is not MISSING:
-            close = getattr(self.__session, "close", None)
-            if close is not None:
-                try:
-                    result = close()
-                    if asyncio.iscoroutine(result):
-                        await result
-                except Exception:
-                    pass
+            try:
+                await self.__session.aclose()
+            except Exception:
+                pass
 
     def recreate(self) -> None:
         old = self.__session
         self.__session = self._new_session()
         if old and old is not MISSING:
             try:
-                close = getattr(old, "close", None)
-                if close is not None:
-                    result = close()
-                    if asyncio.iscoroutine(result):
-                        try:
-                            loop = asyncio.get_running_loop()
-                            loop.create_task(result)
-                        except RuntimeError:
-                            asyncio.run(result)
-            except Exception:
-                pass
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                return
+            loop.create_task(old.aclose())
 
     async def ws_connect(self, url: str, *, compress: int = 0) -> Any:
-        # `compress` is accepted for API compatibility with previous aiohttp-based
-        # implementation; wreq manages websocket transport/compression internally.
+        # `compress` is accepted for API compatibility, the compression of the
+        # gateway is done by the gateway itself.
         _ = compress
-        kwargs: dict[str, Any] = {
-            "headers": {
-                "User-Agent": self.user_agent,
-            },
-        }
-        if self.proxy is not None:
-            proxy = self.proxy
-            if isinstance(proxy, str):
-                try:
-                    proxy = wreq.Proxy.all(proxy)
-                except Exception:
-                    proxy = self.proxy
-            kwargs["proxy"] = proxy
-        return await self.__session.websocket(url, **kwargs)
+        proxy = self.proxy
+        if proxy and "://" not in proxy:
+            proxy = f"http://{proxy}"
+        return await websocket_connect(
+            url,
+            additional_headers={"User-Agent": self.user_agent},
+            proxy=proxy,
+            compression=None,
+            max_size=None,
+        )
 
     async def request(
         self,
@@ -455,6 +607,9 @@ class HTTPClient:
     ) -> Any:
         if self._ban_guard.revoked:
             raise LoginFailure("The token was rejected by Discord.")
+
+        if self.__session is MISSING:
+            self.__session = self._new_session()
 
         bucket = route.bucket
         method = route.method
@@ -524,33 +679,27 @@ class HTTPClient:
 
                 req_kwargs = dict(kwargs)
                 if form:
-                    # build multipart
-                    parts = []
-                    for params in form:
-                        name = params.get("name")
-                        value = params.get("value")
-                        filename = params.get("filename")
-                        content_type = params.get("content_type") or params.get("content-type")
-                        part_kwargs: dict[str, Any] = {}
-                        if filename is not None:
-                            part_kwargs["filename"] = filename
-                        if content_type is not None:
-                            part_kwargs["mime"] = content_type
-                        parts.append(Part(name, value, **part_kwargs))
-                    req_kwargs["multipart"] = Multipart(*parts)
-                    req_kwargs.pop("body", None)
+                    body, content_type = _multipart_body(form)
+                    req_kwargs["body"] = body
+                    req_kwargs.setdefault("headers", {})["Content-Type"] = content_type
                     req_kwargs.pop("json", None)
                 elif "json" in req_kwargs:
                     # Encode JSON payloads with msgspec when available (utils._to_json).
-                    # wreq expects the raw request body under "body".
                     req_kwargs["body"] = utils._to_json(req_kwargs.pop("json")).encode(
                         "utf-8"
                     )
+                params = req_kwargs.pop("params", None)
+                headers = req_kwargs.pop("headers", None)
+                body = req_kwargs.pop("body", None)
 
                 try:
                     await self._ban_guard.wait()
                     async with self.__session.request(
-                        getattr(wreq.Method, method), url, **req_kwargs
+                        method,
+                        url,
+                        headers=headers,
+                        body=body,
+                        params=params,
                     ) as response:
                         status = _status_int(response.status)
                         self._ban_guard.record(status)
@@ -684,32 +833,8 @@ class HTTPClient:
                         continue
                     raise
                 except Exception as e:
-                    # wreq connection/transport errors - retry a few times like OSError resets
-                    wreq_retry_types = tuple(
-                        t
-                        for t in (
-                            getattr(getattr(wreq, "exceptions", None), "RequestError", None),
-                            getattr(getattr(wreq, "exceptions", None), "ConnectionError", None),
-                            getattr(getattr(wreq, "exceptions", None), "TimeoutError", None),
-                            getattr(getattr(wreq, "exceptions", None), "BodyError", None),
-                            getattr(getattr(wreq, "exceptions", None), "WebSocketError", None),
-                            getattr(getattr(wreq, "exceptions", None), "ProxyConnectionError", None),
-                        )
-                        if isinstance(t, type) and issubclass(t, BaseException)
-                    )
-                    if tries < 4 and (
-                        (wreq_retry_types and isinstance(e, wreq_retry_types))
-                        or e.__class__.__name__
-                        in (
-                            "ConnectionError",
-                            "ConnectionResetError",
-                            "TimeoutError",
-                            "BodyError",
-                            "RequestError",
-                            "WebSocketError",
-                            "ProxyConnectionError",
-                        )
-                    ):
+                    # connection and transport errors - retry a few times like OSError resets
+                    if tries < 4 and isinstance(e, NETWORK_ERRORS):
                         await asyncio.sleep(1 + tries * 2)
                         continue
                     raise
@@ -746,18 +871,14 @@ class HTTPClient:
             status = _status_int(resp.status)
             proxy_resp = _ResponseProxy(resp)
             if status == 200:
-                async with resp.stream() as streamer:
-                    buf = bytearray()
-                    async for chunk in streamer:
-                        if hasattr(chunk, "tobytes"):
-                            buf.extend(chunk.tobytes())
-                        else:
-                            buf.extend(bytes(chunk))
-                        while len(buf) >= chunksize:
-                            yield bytes(buf[:chunksize])
-                            del buf[:chunksize]
-                    if buf:
-                        yield bytes(buf)
+                buf = bytearray()
+                async for chunk in resp.stream:
+                    buf.extend(chunk)
+                    while len(buf) >= chunksize:
+                        yield bytes(buf[:chunksize])
+                        del buf[:chunksize]
+                if buf:
+                    yield bytes(buf)
             elif status == 404:
                 raise NotFound(proxy_resp, "asset not found")
             elif status == 403:
@@ -3622,7 +3743,7 @@ class HTTPClient:
         except HTTPException as exc:
             raise GatewayNotFound() from exc
         if zlib:
-            value = "{0}?encoding={1}&v={2}&compress=zlib-stream"
+            value = "{0}?encoding={1}&v={2}&compress=zstd-stream"
         else:
             value = "{0}?encoding={1}&v={2}"
         return value.format(data["url"], encoding, API_VERSION)
@@ -3636,7 +3757,7 @@ class HTTPClient:
             raise GatewayNotFound() from exc
 
         if zlib:
-            value = "{0}?encoding={1}&v={2}&compress=zlib-stream"
+            value = "{0}?encoding={1}&v={2}&compress=zstd-stream"
         else:
             value = "{0}?encoding={1}&v={2}"
         return data["shards"], value.format(data["url"], encoding, API_VERSION)

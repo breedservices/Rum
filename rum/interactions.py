@@ -70,7 +70,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
-    from wreq import Client as ClientSession
+    from .http import Session as ClientSession
 
     from .channel import (
         CategoryChannel,

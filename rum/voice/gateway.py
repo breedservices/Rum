@@ -35,10 +35,8 @@ from collections import deque
 from collections.abc import Callable, Coroutine
 from typing import TYPE_CHECKING, Any
 
-import datetime
 
-import wreq
-from wreq import Message
+from websockets.exceptions import ConnectionClosed as WebSocketClosed
 
 from .utils.dependencies import HAS_DAVEY
 
@@ -160,13 +158,13 @@ class VoiceWebSocket(DiscordWebSocket):
         _log.debug(
             "Sending voice websocket binary frame: op: %s size: %d", op, len(data)
         )
-        await self.ws.send(Message.from_binary(packet))
+        await self.ws.send(packet)
 
     async def send_as_json(self, data: Any) -> None:
         _log.debug("Sending voice websocket frame: %s.", data)
         if data.get("op", None) == OpCodes.identify:
             _log.info("Identifying ourselves: %s", data)
-        await self.ws.send(Message.from_text(utils._to_json(data)))
+        await self.ws.send(utils._to_json(data))
 
     send_heartbeat = send_as_json
 
@@ -439,48 +437,27 @@ class VoiceWebSocket(DiscordWebSocket):
         await self.speak(SpeakingState.none)
 
     async def poll_event(self) -> None:
-        wreq_exc = getattr(wreq, "exceptions", None)
-        timeout_exc = getattr(wreq_exc, "TimeoutError", None)
-        ws_exc = getattr(wreq_exc, "WebSocketError", None)
-
         try:
-            msg = await self.ws.recv(timeout=datetime.timedelta(seconds=30))
+            msg = await self.ws.recv(timeout=30)
         except asyncio.TimeoutError as exc:
             raise exc
-        except Exception as exc:
-            if isinstance(timeout_exc, type) and isinstance(exc, timeout_exc):
-                raise asyncio.TimeoutError() from exc
-            if isinstance(ws_exc, type) and isinstance(exc, ws_exc):
-                _log.debug("Received websocket error: %s", exc)
-                raise ConnectionClosed(
-                    self.ws, shard_id=None, code=self._close_code
-                ) from exc
-            raise
+        except WebSocketClosed as exc:
+            _log.debug("Received websocket error: %s", exc)
+            raise ConnectionClosed(
+                self.ws, shard_id=None, code=self._close_code
+            ) from exc
 
-        if msg is None or getattr(msg, "close", None) is not None:
-            _log.debug("Received close frame: %s", msg)
-            if msg is not None and getattr(msg, "close", None) is not None:
-                try:
-                    self._close_code = int(msg.close[0])
-                except Exception:
-                    self._close_code = msg.close[0]
+        if msg is None:
+            _log.debug("Received close frame")
             raise ConnectionClosed(self.ws, shard_id=None, code=self._close_code)
 
-        if getattr(msg, "text", None) is not None:
-            _log.debug("Received text payload: %s", msg.text)
-            await self.received_message(utils._from_json(msg.text))
-        elif getattr(msg, "binary", None) is not None or getattr(msg, "data", None) is not None:
-            data = msg.binary if getattr(msg, "binary", None) is not None else msg.data
-            if data is None:
-                payload = b""
-            elif isinstance(data, memoryview):
-                payload = data.tobytes()
-            else:
-                payload = bytes(data)
+        if isinstance(msg, (bytes, bytearray)):
+            payload = bytes(msg)
             _log.debug("Received binary payload: size: %d", len(payload))
             await self.received_binary_message(payload)
         else:
-            _log.debug("Received unknown websocket payload: %s", msg)
+            _log.debug("Received text payload: %s", msg)
+            await self.received_message(utils._from_json(str(msg)))
 
     async def close(self, code: int = 1000) -> None:
         if self._keep_alive:
@@ -518,7 +495,7 @@ class VoiceWebSocket(DiscordWebSocket):
         gateway = f"wss://{state.endpoint}/?v=8"
         client = state.client
         http = client._state.http
-        socket = await http.ws_connect(gateway, compress=15)
+        socket = await http.ws_connect(gateway)
         ws = cls(socket, loop=client.loop, hook=hook, state=state)
         ws.gateway = gateway
         ws.seq_ack = seq_ack

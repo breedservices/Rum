@@ -35,8 +35,6 @@ from contextvars import ContextVar
 from typing import TYPE_CHECKING, Any, Literal, NamedTuple, overload
 from urllib.parse import quote as urlquote
 
-import wreq
-from wreq import Multipart, Part
 
 from .. import utils
 from ..asset import Asset
@@ -51,7 +49,7 @@ from ..errors import (
 )
 from ..file import VoiceMessage
 from ..flags import MessageFlags
-from ..http import Route
+from ..http import Route, Session
 from ..message import Attachment, Message
 from ..mixins import Hashable
 from ..object import Object
@@ -115,7 +113,7 @@ class AsyncWebhookAdapter:
     async def request(
         self,
         route: Route,
-        session: wreq.Client,
+        session: Session,
         *,
         payload: dict[str, Any] | None = None,
         multipart: list[dict[str, Any]] | None = None,
@@ -137,7 +135,7 @@ class AsyncWebhookAdapter:
 
         to_send_data = None
         to_send_json = None
-        to_send_multipart = None
+        to_send_multipart = multipart
         if payload is not None:
             headers["Content-Type"] = "application/json"
             to_send_json = payload
@@ -159,36 +157,18 @@ class AsyncWebhookAdapter:
                 for file in files:
                     file.reset(seek=attempt)
 
-                if multipart:
-                    parts = []
-                    for p in multipart:
-                        name = p.get("name")
-                        value = p.get("value")
-                        filename = p.get("filename")
-                        content_type = p.get("content_type") or p.get("content-type")
-                        part_kwargs = {}
-                        if filename is not None:
-                            part_kwargs["filename"] = filename
-                        if content_type is not None:
-                            part_kwargs["mime"] = content_type
-                        parts.append(Part(name, value, **part_kwargs))
-                    to_send_multipart = Multipart(*parts)
                 try:
-                    req_kwargs = {"headers": headers}
+                    req_kwargs: dict[str, Any] = {"headers": headers}
                     if params is not None:
-                        req_kwargs["query"] = params
+                        req_kwargs["params"] = params
                     if to_send_multipart is not None:
                         req_kwargs["multipart"] = to_send_multipart
                     elif to_send_json is not None:
                         req_kwargs["json"] = to_send_json
                     elif to_send_data is not None:
                         req_kwargs["body"] = to_send_data
-                    if proxy is not None:
-                        req_kwargs["proxy"] = proxy
-                    if proxy_auth is not None:
-                        req_kwargs["proxy_auth"] = proxy_auth
-                    async with session.request(getattr(wreq.Method, method), url, **req_kwargs) as response:
-                        status = response.status.as_int() if hasattr(response.status, "as_int") else int(response.status)
+                    async with session.request(method, url, **req_kwargs) as response:
+                        status = response.status
                         _log.debug(
                             "Webhook ID %s with %s %s has returned status code %s",
                             webhook_id,
@@ -198,8 +178,10 @@ class AsyncWebhookAdapter:
                         )
                         raw = await response.text()
                         data = raw or None
-                        headers = utils._decode_headers(getattr(response, "headers", None))
-                        ctype = headers.get("Content-Type")
+                        headers = dict(response.headers)
+                        ctype = headers.get("Content-Type") or headers.get(
+                            "content-type"
+                        )
                         if data and ctype and "application/json" in ctype:
                             data = json.loads(data)
 
@@ -275,7 +257,7 @@ class AsyncWebhookAdapter:
         webhook_id: int,
         *,
         token: str | None = None,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         reason: str | None = None,
@@ -295,7 +277,7 @@ class AsyncWebhookAdapter:
         webhook_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         reason: str | None = None,
@@ -316,7 +298,7 @@ class AsyncWebhookAdapter:
         token: str,
         payload: dict[str, Any],
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         reason: str | None = None,
@@ -338,7 +320,7 @@ class AsyncWebhookAdapter:
         token: str,
         payload: dict[str, Any],
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         reason: str | None = None,
@@ -363,7 +345,7 @@ class AsyncWebhookAdapter:
         webhook_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         payload: dict[str, Any] | None = None,
@@ -419,7 +401,7 @@ class AsyncWebhookAdapter:
         token: str,
         message_id: int,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         thread_id: int | None = None,
@@ -446,7 +428,7 @@ class AsyncWebhookAdapter:
         token: str,
         message_id: int,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         thread_id: int | None = None,
@@ -487,7 +469,7 @@ class AsyncWebhookAdapter:
         token: str,
         message_id: int,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         thread_id: int | None = None,
@@ -513,7 +495,7 @@ class AsyncWebhookAdapter:
         webhook_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
     ) -> Response[WebhookPayload | FollowerWebhookPayload]:
@@ -527,7 +509,7 @@ class AsyncWebhookAdapter:
         webhook_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
     ) -> Response[WebhookPayload | FollowerWebhookPayload]:
@@ -544,7 +526,7 @@ class AsyncWebhookAdapter:
         interaction_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         type: int,
@@ -609,7 +591,7 @@ class AsyncWebhookAdapter:
         application_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
     ) -> Response[MessagePayload]:
@@ -626,7 +608,7 @@ class AsyncWebhookAdapter:
         application_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         payload: dict[str, Any] | None = None,
@@ -654,7 +636,7 @@ class AsyncWebhookAdapter:
         application_id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
     ) -> Response[None]:
@@ -1206,15 +1188,15 @@ class Webhook(BaseWebhook):
     The second form involves creating a webhook object manually using the
     :meth:`~.Webhook.from_url` or :meth:`~.Webhook.partial` classmethods.
 
-    For example, creating a webhook from a URL and using :mod:`wreq`:
+    For example, creating a webhook from a URL and using :class:`Session`:
 
     .. code-block:: python3
 
-        from discord import Webhook
-        import wreq
+        from rum import Webhook
+        from rum.http import Session
 
         async def foo():
-            async with wreq.Client() as session:
+            async with Session() as session:
                 webhook = Webhook.from_url('url-here', session=session)
                 await webhook.send('Hello World', username='Foo')
 
@@ -1282,7 +1264,7 @@ class Webhook(BaseWebhook):
     def __init__(
         self,
         data: WebhookPayload | FollowerWebhookPayload,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         token: str | None = None,
@@ -1309,7 +1291,7 @@ class Webhook(BaseWebhook):
         id: int,
         token: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         bot_token: str | None = None,
@@ -1322,7 +1304,7 @@ class Webhook(BaseWebhook):
             The ID of the webhook.
         token: :class:`str`
             The authentication token of the webhook.
-        session: :class:`wreq.Client`
+        session: :class:`Session`
             The session to use to send requests with. Note
             that the library does not manage the session and
             will not close it.
@@ -1353,7 +1335,7 @@ class Webhook(BaseWebhook):
         cls,
         url: str,
         *,
-        session: wreq.Client,
+        session: Session,
         proxy: str | None = None,
         proxy_auth: Any | None = None,
         bot_token: str | None = None,
@@ -1364,7 +1346,7 @@ class Webhook(BaseWebhook):
         ----------
         url: :class:`str`
             The URL of the webhook.
-        session: :class:`wreq.Client`
+        session: :class:`Session`
             The session to use to send requests with. Note
             that the library does not manage the session and
             will not close it.

@@ -39,7 +39,7 @@ from typing import (
     TypeVar,
 )
 
-import wreq
+from .http import NETWORK_ERRORS
 from typing_extensions import Self, deprecated
 
 from . import utils
@@ -153,7 +153,7 @@ class Client:
         Defaults to ``None``, in which case the default event loop is used via
         :func:`asyncio.get_event_loop()` if it exists or one is created via :func:`asyncio.new_event_loop()`.
     connector: Any | :obj:`None`
-        Deprecated. Kept for backward compatibility; ignored with the wreq backend.
+        Deprecated. Kept for backward compatibility; ignored with the httpcore backend.
     proxy: :class:`str` | :obj:`None`
         Proxy URL.
     proxy_auth: Any | :obj:`None`
@@ -788,20 +788,7 @@ class Client:
                     gateway=self.ws.resume_gateway_url or ws_params.get("gateway"),
                 )
             except Exception as exc:
-                wreq_exc = getattr(wreq, "exceptions", None)
-                network_types = tuple(
-                    t
-                    for t in (
-                        getattr(wreq_exc, "RequestError", None),
-                        getattr(wreq_exc, "ConnectionError", None),
-                        getattr(wreq_exc, "TimeoutError", None),
-                        getattr(wreq_exc, "BodyError", None),
-                        getattr(wreq_exc, "WebSocketError", None),
-                        getattr(wreq_exc, "ProxyConnectionError", None),
-                    )
-                    if isinstance(t, type) and issubclass(t, BaseException)
-                )
-                if not network_types or not isinstance(exc, network_types):
+                if not isinstance(exc, NETWORK_ERRORS):
                     raise
 
                 self.dispatch("disconnect")

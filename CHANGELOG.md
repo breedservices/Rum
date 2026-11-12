@@ -38,6 +38,9 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Changed
 
+- Replaced the `wreq` backend with `httpcore` for the REST API and `websockets` for
+  the gateway and the voice gateway.
+- Changed the compression of the gateway from zlib to zstd.
 - Simplify and optimize the `utils.get()` function.
   ([#3283](https://github.com/Pycord-Development/pycord/pull/3283))
 - Changed `Label.set_radio_group()` and `Label.set_file_upload()` to no longer accept a
