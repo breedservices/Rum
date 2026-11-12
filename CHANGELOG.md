@@ -12,10 +12,40 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Added
 
+- Added per-kind cache rules (`CacheKind`, `CacheRule`, `RuledCache`,
+  `DefaultCacheProvider.cache_for` / `rule_for`) so caches can be enabled, capped,
+  given a TTL, or trimmed to selected fields per kind.
+- Added `examples/cache_rules.py` demonstrating cache rules.
+- Added support for `session_start_limit.max_concurrency`: `AutoShardedClient`
+  identifies shards in batches of the allowed size, waiting five seconds between
+  batches, and `HTTPClient.get_bot_gateway` now returns the concurrency limit.
+- Added a generated API reference under `docs/api/` (one page per module) and
+  `docs/generate_reference.py` to regenerate it from docstrings.
+- Added a sharding section to the quickstart guide.
+
 ### Changed
+
+- Replaced the Sphinx documentation with MDX pages that render directly on GitHub
+  (`docs/*.mdx`, `docs/ext/**`); the guides and extension docs are now plain
+  Markdown/MDX with links to the generated API reference and `CHANGELOG.md`.
+- Switched the packaging backend from setuptools to Hatchling, with dependencies and
+  extras declared in `pyproject.toml`.
+- Cleaned up the examples: fixed lint issues, renamed the duplicate
+  `pagetest_target` prefix command to `pagetest_target_prefix`, and made the
+  background/async examples read the bot token from `BOT_TOKEN`.
 
 ### Fixed
 
 ### Deprecated
 
 ### Removed
+
+- Removed the Sphinx build and its infrastructure (`docs/conf.py`,
+  `docs/extensions/`, templates/static assets, `docs/build/`, `docs/locales/`,
+  `docs/Makefile`, `make.bat`, and the `.rst` sources).
+- Removed Read the Docs and Crowdin configuration and workflows
+  (`.readthedocs.yml`, `crowdin.yml`, docs-check/localization/export workflows, and
+  the related release scripts).
+- Removed the `docs` optional-dependency/requirements set and the setuptools
+  packaging files (`setup.py`, `MANIFEST.in`, `requirements/*.txt`) replaced by the
+  Hatchling configuration.
