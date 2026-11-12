@@ -27,6 +27,7 @@ Tests for the user cache eviction behaviour.
 """
 
 import gc
+import time
 
 import rum
 from rum.cache import LRUCache
@@ -495,3 +496,50 @@ def test_the_permission_overwrites_of_a_guild_are_shared():
     assert len(channels) == 3
     first = channels[0]._overwrites[0]
     assert all(channel._overwrites[0] is first for channel in channels)
+
+
+def test_a_policy_bounds_the_cache_of_its_kind():
+    provider = rum.DefaultCacheProvider(
+        policies={rum.CacheKind.MEMBER: rum.CachePolicy(max_entries=2, ttl=60)}
+    )
+    cache = provider.create_guild_member_cache(None)
+    cache[1] = "a"
+    cache[2] = "b"
+    cache[3] = "c"
+    assert len(cache) == 2
+    assert 1 not in cache
+
+
+def test_a_disabled_policy_caches_nothing():
+    provider = rum.DefaultCacheProvider(
+        policies={rum.CacheKind.MEMBER: rum.CachePolicy(enabled=False)}
+    )
+    cache = provider.create_guild_member_cache(None)
+    cache[1] = "a"
+    assert len(cache) == 0
+
+
+def test_an_entry_expires_after_its_time_to_live():
+    provider = rum.DefaultCacheProvider(
+        policies={rum.CacheKind.MEMBER: rum.CachePolicy(max_entries=10, ttl=0.01)}
+    )
+    cache = provider.create_guild_member_cache(None)
+    cache[1] = "a"
+    time.sleep(0.05)
+    assert 1 not in cache
+
+
+def test_a_policy_keeps_only_the_fields_it_names():
+    class Thing:
+        __slots__ = ("id", "name", "topic")
+
+        def __init__(self):
+            self.id = 1
+            self.name = "name"
+            self.topic = "topic"
+
+    thing = Thing()
+    rum.trim_fields(thing, frozenset({"name"}))
+    assert thing.name == "name"
+    assert thing.topic is None
+    assert thing.id == 1
