@@ -36,8 +36,6 @@ from collections.abc import Callable, Coroutine
 from typing import TYPE_CHECKING, Any
 
 
-from websockets.exceptions import ConnectionClosed as WebSocketClosed
-
 from .utils.dependencies import HAS_DAVEY
 
 if HAS_DAVEY:
@@ -438,10 +436,10 @@ class VoiceWebSocket(DiscordWebSocket):
 
     async def poll_event(self) -> None:
         try:
-            msg = await asyncio.wait_for(self.ws.recv(), 30)
+            msg = await self.ws.recv(30)
         except asyncio.TimeoutError as exc:
             raise exc
-        except WebSocketClosed as exc:
+        except (ConnectionError, OSError) as exc:
             _log.debug("Received websocket error: %s", exc)
             raise ConnectionClosed(
                 self.ws, shard_id=None, code=self._close_code

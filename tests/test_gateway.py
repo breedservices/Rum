@@ -29,8 +29,12 @@ Tests for the gateway transport: the websocket and the zstd compression.
 import asyncio
 import json
 
+import h11
 import pytest
-from websockets.asyncio.server import serve
+import wsproto
+from wsproto.connection import Connection as WSConnection
+from wsproto.events import Message
+from wsproto.utilities import generate_accept_token
 
 from rum.gateway import DiscordWebSocket, _WebSocketAdapter, _ZstdStream
 from rum.http import HTTPClient
@@ -48,23 +52,68 @@ except ImportError:  # pragma: no cover
         return zstandard.ZstdCompressor().compress(data)
 
 
+async def _echo_server(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    """A websocket server that answers with a message and closes."""
+    http = h11.Connection(h11.SERVER)
+    key = ""
+    while True:
+        event = http.next_event()
+        if isinstance(event, h11.Request):
+            key = dict(event.headers).get(b"sec-websocket-key", b"")
+            break
+        if event is h11.NEED_DATA:
+            data = await reader.read(65536)
+            if not data:
+                writer.close()
+                return
+            http.receive_data(data)
+
+    writer.write(
+        http.send(
+            h11.InformationalResponse(
+                status_code=101,
+                headers=[
+                    ("Upgrade", "websocket"),
+                    ("Connection", "Upgrade"),
+                    (
+                        "Sec-WebSocket-Accept",
+                        generate_accept_token(key).decode("latin-1"),
+                    ),
+                ],
+            )
+        )
+    )
+    await writer.drain()
+
+    connection = WSConnection(wsproto.ConnectionType.SERVER)
+    while True:
+        data = await reader.read(65536)
+        if not data:
+            break
+        connection.receive_data(data)
+        event = next(connection.events(), None)
+        if event is None:
+            continue
+        if isinstance(event, Message):
+            writer.write(connection.send(Message(data="hello")))
+            await writer.drain()
+            writer.write(connection.send(wsproto.events.CloseConnection(code=4000)))
+            await writer.drain()
+            break
+    writer.close()
+
+
 @pytest.mark.asyncio
 async def test_the_gateway_sends_and_receives():
     """The gateway talks to a websocket server."""
-
-    async def handler(websocket):
-        await websocket.send("hello")
-        assert await websocket.recv() == "pong"
-        await websocket.close(4000, "bye")
-
-    server = await serve(handler, "127.0.0.1", 0)
+    server = await asyncio.start_server(_echo_server, "127.0.0.1", 0)
     port = server.sockets[0].getsockname()[1]
     client = HTTPClient()
     try:
         socket = await client.ws_connect(f"ws://127.0.0.1:{port}")
         adapter = _WebSocketAdapter(socket)
+        await adapter.send_str("ping")
         assert await adapter.receive(timeout=5) == "hello"
-        await adapter.send_str("pong")
         assert await adapter.receive(timeout=5) is None
         assert adapter.closed
         assert adapter.close_code == 4000
@@ -87,11 +136,7 @@ async def test_the_gateway_reads_a_message_over_several_messages():
 @pytest.mark.asyncio
 async def test_the_gateway_decompresses_a_zstd_message():
     """A compressed gateway message is decompressed."""
-
-    async def handler(websocket):
-        await websocket.recv()
-
-    server = await serve(handler, "127.0.0.1", 0)
+    server = await asyncio.start_server(_echo_server, "127.0.0.1", 0)
     port = server.sockets[0].getsockname()[1]
     client = HTTPClient()
     try:

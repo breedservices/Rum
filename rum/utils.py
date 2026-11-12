@@ -53,7 +53,6 @@ from collections.abc import (
     Mapping,
     Sequence,
 )
-from http.client import HTTPMessage
 from inspect import isawaitable as _isawaitable
 from inspect import signature as _signature
 from operator import attrgetter
@@ -926,14 +925,35 @@ def _decode_header_value(value: Any) -> Any:
     return value
 
 
-def _decode_headers(headers: Any) -> "HTTPMessage":
+class _Headers(dict):
+    """A mapping of headers that ignores the case of the names."""
+
+    def __init__(self, items: Iterable[tuple[Any, Any]] = ()) -> None:
+        super().__init__()
+        for name, value in items:
+            self[name] = value
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        super().__setitem__(str(key).lower(), value)
+
+    def __getitem__(self, key: Any) -> Any:
+        return super().__getitem__(str(key).lower())
+
+    def __contains__(self, key: Any) -> bool:
+        return super().__contains__(str(key).lower())
+
+    def get(self, key: Any, default: Any = None) -> Any:
+        return super().get(str(key).lower(), default)
+
+
+def _decode_headers(headers: Any) -> "_Headers":
     """Return the given headers as a case-insensitive mapping of strings.
 
     The returned object supports ``headers.get("Content-Type")`` style access
     regardless of the casing used by the server, which matches the behaviour
     of the header containers used by other HTTP clients.
     """
-    message = HTTPMessage()
+    message = _Headers()
     if headers is None:
         return message
 

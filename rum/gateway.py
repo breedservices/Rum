@@ -38,8 +38,6 @@ import traceback
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, NamedTuple
 
-from websockets.exceptions import ConnectionClosed as WebSocketClosed
-
 from . import utils
 from .activity import BaseActivity
 from .errors import ConnectionClosed, InvalidArgument
@@ -298,14 +296,11 @@ class _WebSocketAdapter:
         return self._close_code
 
     async def receive(self, timeout: float | None = None) -> str | bytes | None:
-        try:
-            if timeout is None:
-                return await self._ws.recv()
-            return await asyncio.wait_for(self._ws.recv(), timeout)
-        except WebSocketClosed as exc:
+        message = await self._ws.recv(timeout)
+        if message is None:
             self._closed = True
-            self._close_code = exc.rcvd.code if exc.rcvd is not None else 1000
-            return None
+            self._close_code = self._ws.close_code
+        return message
 
     async def send_str(self, data: str) -> None:
         await self._ws.send(data)
@@ -707,7 +702,7 @@ class DiscordWebSocket:
                 _log.info("Timed out receiving packet. Attempting a reconnect.")
                 raise ReconnectWebSocket(self.shard_id) from None
 
-            if isinstance(e, (WebSocketClosed, OSError)):
+            if isinstance(e, (ConnectionError, OSError)):
                 if self._keep_alive:
                     self._keep_alive.stop()
                     self._keep_alive = None

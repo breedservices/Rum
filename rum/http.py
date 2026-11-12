@@ -54,8 +54,7 @@ from typing import (
 )
 from urllib.parse import quote as _uriquote
 
-import httpcore
-from websockets.asyncio.client import connect as websocket_connect
+import h11
 
 from . import __version__, utils
 from .errors import (
@@ -68,6 +67,7 @@ from .errors import (
     NotFound,
 )
 from .file import VoiceMessage
+from .transport import Session, WebSocket, multipart_body
 from .soundboard import PartialSoundboardSound, SoundboardSound
 from .utils import MISSING, _get_event_loop
 
@@ -121,24 +121,20 @@ API_VERSION: int = 10
 
 #: The errors of the transport that mean the connection broke, not the request.
 NETWORK_ERRORS: tuple[type[Exception], ...] = (
-    httpcore.ConnectError,
-    httpcore.ConnectTimeout,
-    httpcore.ReadError,
-    httpcore.ReadTimeout,
-    httpcore.WriteError,
-    httpcore.WriteTimeout,
-    httpcore.PoolTimeout,
-    httpcore.NetworkError,
-    httpcore.RemoteProtocolError,
-    httpcore.LocalProtocolError,
+    ConnectionError,
+    ConnectionResetError,
+    TimeoutError,
+    OSError,
+    h11.RemoteProtocolError,
+    h11.LocalProtocolError,
 )
 
 
-def _httpcore_version() -> str:
+def _h11_version() -> str:
     try:
-        return importlib.metadata.version("httpcore")
+        return importlib.metadata.version("h11")
     except Exception:
-        return getattr(httpcore, "__version__", "unknown")
+        return getattr(h11, "__version__", "unknown")
 
 
 def _status_int(status: Any) -> int:
@@ -366,160 +362,6 @@ class BanGuard:
             self._counted.popleft()
 
 
-class _HttpcoreResponse:
-    """A response of an httpcore request."""
-
-    __slots__ = ("_content", "_response")
-
-    def __init__(self, response: httpcore.Response) -> None:
-        self._response = response
-        self._content: bytes | None = None
-
-    @property
-    def status(self) -> int:
-        return self._response.status
-
-    @property
-    def headers(self) -> dict[str, str]:
-        return {
-            key.decode("latin-1"): value.decode("latin-1")
-            for key, value in self._response.headers
-        }
-
-    @property
-    def reason(self) -> str:
-        try:
-            return HTTPStatus(self._response.status).phrase
-        except ValueError:
-            return ""
-
-    async def aread(self) -> bytes:
-        if self._content is None:
-            self._content = await self._response.aread()
-        return self._content
-
-    async def bytes(self) -> bytes:
-        return await self.aread()
-
-    async def text(self, encoding: str = "utf-8") -> str:
-        return (await self.aread()).decode(encoding, errors="replace")
-
-    @property
-    def stream(self) -> AsyncIterator[bytes]:
-        return self._response.stream
-
-
-class Session:
-    """The HTTP session of the client, built on httpcore.
-
-    The session keeps the connections alive and holds nothing but the pool
-    itself in memory.
-
-    Parameters
-    ----------
-    proxy: :class:`str` | :obj:`None`
-        The proxy every request of the session goes through.
-    timeout: :class:`float`
-        How long a request may take, in seconds.
-    """
-
-    def __init__(self, *, proxy: str | None = None, timeout: float = 30.0) -> None:
-        self._timeout = timeout
-        self._pool = httpcore.AsyncConnectionPool(
-            proxy=httpcore.Proxy(url=proxy) if proxy else None,
-        )
-
-    @asynccontextmanager
-    async def request(
-        self,
-        method: str,
-        url: str,
-        *,
-        headers: Mapping[str, str] | None = None,
-        body: bytes | None = None,
-        json: Any = None,
-        multipart: Iterable[dict[str, Any]] | None = None,
-        params: Mapping[str, Any] | None = None,
-    ) -> AsyncIterator[_HttpcoreResponse]:
-        """Makes a request and returns the response."""
-        if params:
-            url = f"{url}?{urlencode(params)}"
-        headers = dict(headers or {})
-        if not any(key.lower() == "host" for key in headers):
-            headers["Host"] = urlsplit(url).netloc
-        if multipart is not None:
-            body, content_type = _multipart_body(multipart)
-            headers.setdefault("Content-Type", content_type)
-        elif json is not None:
-            body = utils._to_json(json).encode("utf-8")
-        if body is not None and not any(
-            key.lower() == "content-length" for key in headers
-        ):
-            headers["Content-Length"] = str(len(body))
-        request = httpcore.Request(
-            method,
-            url,
-            headers=[(key, value) for key, value in (headers or {}).items()],
-            content=body,
-            extensions={
-                "timeout": {
-                    "connect": self._timeout,
-                    "read": self._timeout,
-                    "write": self._timeout,
-                    "pool": self._timeout,
-                }
-            },
-        )
-        response = await self._pool.handle_async_request(request)
-        try:
-            yield _HttpcoreResponse(response)
-        finally:
-            await response.aclose()
-
-    @asynccontextmanager
-    async def get(self, url: str) -> AsyncIterator[_HttpcoreResponse]:
-        """Makes a GET request and returns the response."""
-        async with self.request("GET", url) as response:
-            yield response
-
-    async def aclose(self) -> None:
-        """Closes the session and its connections."""
-        await self._pool.aclose()
-
-    async def __aenter__(self) -> Session:
-        return self
-
-    async def __aexit__(self, exc_type, exc, tb) -> None:
-        await self.aclose()
-
-
-def _multipart_body(form: Iterable[dict[str, Any]]) -> tuple[bytes, str]:
-    """Builds a multipart body and returns it with its content type."""
-    boundary = uuid.uuid4().hex
-    body = bytearray()
-    for params in form:
-        name = params.get("name")
-        value = params.get("value")
-        if hasattr(value, "read"):
-            value = value.read()
-        if isinstance(value, str):
-            value = value.encode("utf-8")
-        filename = params.get("filename")
-        content_type = params.get("content_type") or params.get("content-type")
-        body += f"--{boundary}\r\n".encode()
-        disposition = f'form-data; name="{name}"'
-        if filename is not None:
-            disposition += f'; filename="{filename}"'
-        body += f"Content-Disposition: {disposition}\r\n".encode()
-        if content_type is not None:
-            body += f"Content-Type: {content_type}\r\n".encode()
-        body += b"\r\n"
-        body += value
-        body += b"\r\n"
-    body += f"--{boundary}--\r\n".encode()
-    return bytes(body), f"multipart/form-data; boundary={boundary}"
-
-
 class HTTPClient:
     """Represents an HTTP client sending HTTP requests to the Discord API."""
 
@@ -531,6 +373,7 @@ class HTTPClient:
         proxy_auth: Any | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
         unsync_clock: bool = True,
+        timeout: float = 30.0,
     ) -> None:
         self.loop: asyncio.AbstractEventLoop = (
             _get_event_loop() if loop is None else loop
@@ -547,18 +390,16 @@ class HTTPClient:
         self.proxy: str | None = proxy
         self.proxy_auth: Any | None = proxy_auth
         self.use_clock: bool = not unsync_clock
+        self._timeout = timeout
         self._ban_guard = BanGuard()
 
-        user_agent = "DiscordBot (https://github.com/breedservices/Rum, {0}) Python/{1[0]}.{1[1]} httpcore/{2}"
+        user_agent = "DiscordBot (https://github.com/breedservices/Rum, {0}) Python/{1[0]}.{1[1]} h11/{2}"
         self.user_agent: str = user_agent.format(
-            __version__, sys.version_info, _httpcore_version()
+            __version__, sys.version_info, _h11_version()
         )
 
     def _new_session(self) -> Session:
-        proxy = self.proxy
-        if proxy and "://" not in proxy:
-            proxy = f"http://{proxy}"
-        return Session(proxy=proxy)
+        return Session(timeout=self._timeout)
 
     @property
     def ban_guard(self) -> BanGuard:
@@ -586,15 +427,8 @@ class HTTPClient:
         # `compress` is accepted for API compatibility, the compression of the
         # gateway is done by the gateway itself.
         _ = compress
-        proxy = self.proxy
-        if proxy and "://" not in proxy:
-            proxy = f"http://{proxy}"
-        return await websocket_connect(
-            url,
-            additional_headers={"User-Agent": self.user_agent},
-            proxy=proxy,
-            compression=None,
-            max_size=None,
+        return await WebSocket.connect(
+            url, headers={"User-Agent": self.user_agent}, timeout=self._timeout
         )
 
     async def request(
@@ -679,7 +513,7 @@ class HTTPClient:
 
                 req_kwargs = dict(kwargs)
                 if form:
-                    body, content_type = _multipart_body(form)
+                    body, content_type = multipart_body(form)
                     req_kwargs["body"] = body
                     req_kwargs.setdefault("headers", {})["Content-Type"] = content_type
                     req_kwargs.pop("json", None)
