@@ -78,6 +78,22 @@ if TYPE_CHECKING:
 #: The status a member has before Discord says otherwise.
 _OFFLINE_STATUS: dict[str | None, str] = {None: "offline"}
 
+#: The status dictionaries of the members, shared between the members that have
+#: the same statuses. A dictionary costs 224 bytes and most members of a guild
+#: have the same statuses.
+_STATUSES: dict[tuple[tuple[str | None, str], ...], dict[str | None, str]] = {}
+
+
+def _shared_statuses(statuses: dict[str | None, str]) -> dict[str | None, str]:
+    """Returns the status dictionary, shared with the members that have the same statuses."""
+    key = tuple(
+        sorted(statuses.items(), key=lambda item: (item[0] is not None, item[0] or ""))
+    )
+    shared = _STATUSES.get(key)
+    if shared is None:
+        shared = _STATUSES[key] = statuses
+    return shared
+
 
 class VoiceState:
     """Represents a Discord user's voice state.
@@ -432,9 +448,7 @@ class Member(rum.abc.Messageable, _UserTag):
         self._roles = utils.SnowflakeList(member._roles, is_sorted=True)  # type: ignore # the API is the same
         self.joined_at = member.joined_at
         self.premium_since = member.premium_since
-        self._statuses = (
-            member._statuses.copy() if member._statuses is not None else None
-        )
+        self._statuses = member._statuses
         self.guild = member.guild
         self.nick = member.nick
         self.pending = member.pending
@@ -482,11 +496,12 @@ class Member(rum.abc.Messageable, _UserTag):
         self, data: PartialPresenceUpdate, user: UserPayload
     ) -> tuple[User, User] | None:
         self.activities = tuple(map(create_activity, data["activities"]))
-        self._client_status = {
+        statuses = {
             sys.intern(key): sys.intern(value)
             for key, value in data.get("client_status", {}).items()  # type: ignore
         }
-        self._client_status[None] = sys.intern(data["status"])
+        statuses[None] = sys.intern(data["status"])
+        self._client_status = _shared_statuses(statuses)
 
         if len(user) > 1:
             return self._update_inner_user(user)
@@ -567,8 +582,9 @@ class Member(rum.abc.Messageable, _UserTag):
     @status.setter
     def status(self, value: Status) -> None:
         # internal use only
-        if self._statuses is None:
-            self._statuses = {}
+        # the statuses may be shared with other members, so they are copied
+        # before they are changed.
+        self._statuses = dict(self._statuses) if self._statuses is not None else {}
         self._statuses[None] = str(value)
 
     def _device_status(self, device: str) -> Status:

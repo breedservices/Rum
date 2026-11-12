@@ -365,3 +365,52 @@ def test_cache_at_scale_across_guilds_and_updates():
 
     # the cache does not grow when the members are updated
     assert updated < filled * 1.1, f"{updated} against {filled}"
+
+
+PRESENCE = {
+    "activities": [{"name": "Playing a game", "type": 0, "state": "In a lobby"}],
+    "status": "online",
+    "client_status": {"desktop": "online"},
+}
+
+
+def test_members_with_the_same_presence_share_the_statuses():
+    state = _make_state()
+    guild = state._get_create_guild({"id": "1", "name": "guild"})
+    payload = {
+        "user": {
+            "id": "2",
+            "username": "someone",
+            "discriminator": "0",
+            "avatar": None,
+        },
+        "roles": [],
+    }
+    first = Member(guild=guild, data=payload, state=state)
+    second = Member(guild=guild, data=payload, state=state)
+    first._presence_update(PRESENCE, {"id": "2"})
+    second._presence_update(PRESENCE, {"id": "2"})
+    assert first._client_status is second._client_status
+    assert first.status is rum.Status.online
+    assert second.desktop_status is rum.Status.online
+
+
+def test_changing_a_status_does_not_change_the_other_members():
+    state = _make_state()
+    guild = state._get_create_guild({"id": "1", "name": "guild"})
+    payload = {
+        "user": {
+            "id": "2",
+            "username": "someone",
+            "discriminator": "0",
+            "avatar": None,
+        },
+        "roles": [],
+    }
+    first = Member(guild=guild, data=payload, state=state)
+    second = Member(guild=guild, data=payload, state=state)
+    first._presence_update(PRESENCE, {"id": "2"})
+    second._presence_update(PRESENCE, {"id": "2"})
+    first.status = rum.Status.idle
+    assert first.status is rum.Status.idle
+    assert second.status is rum.Status.online

@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 from __future__ import annotations
 
 import datetime
+import sys
 from typing import TYPE_CHECKING, Any, overload
 
 from .asset import Asset
@@ -338,6 +339,11 @@ class Activity(BaseActivity):
         return self.assets.get("small_text", None)
 
 
+def _interned(value: Any) -> Any:
+    """Interns a string, so that the same text is only kept once."""
+    return sys.intern(value) if type(value) is str else value
+
+
 class Game(BaseActivity):
     """A slimmed down version of :class:`Activity` that represents a Discord game.
 
@@ -376,7 +382,7 @@ class Game(BaseActivity):
 
     def __init__(self, name: str, **extra):
         super().__init__(**extra)
-        self.name: str = name
+        self.name: str = _interned(name)
 
         try:
             timestamps: ActivityTimestamps = extra["timestamps"]
