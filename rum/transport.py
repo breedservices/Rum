@@ -334,6 +334,7 @@ class Session:
             headers.setdefault("Content-Type", content_type)
         elif json is not None:
             body = utils._to_json(json).encode("utf-8")
+            headers.setdefault("Content-Type", "application/json")
         if body is not None:
             headers.setdefault("Content-Length", str(len(body)))
 
