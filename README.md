@@ -70,6 +70,8 @@ See the examples for working implementations:
   instrumented in-memory cache that encodes cache events with `msgspec`
 - [`examples/custom_cache_json_file.py`](./examples/custom_cache_json_file.py) — a
   pure disk cache that stores every entry in its own JSON file
+- [`examples/ram_usage.py`](./examples/ram_usage.py) — a bot that keeps its caches
+  in a SQLite database and reports how much memory it is using
 
 All examples read the bot token from the `BOT_TOKEN` environment variable, or
 from the `.env` file in the repository root:

@@ -199,5 +199,11 @@ remote-release.yml
 *.ogg
 *.ps1
 
+# Local cache files created by the examples
+rum-cache/
+rum-cache.sqlite3
+rum-cache.sqlite3-shm
+rum-cache.sqlite3-wal
+
 # Vendored wreq-python (separate upstream repo, not part of this project)
 /wreq-python/
