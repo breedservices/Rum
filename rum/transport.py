@@ -38,9 +38,9 @@ import base64
 import os
 import ssl
 import uuid
-from http import HTTPStatus
 from collections.abc import AsyncIterator, Iterable, Mapping
 from contextlib import asynccontextmanager
+from http import HTTPStatus
 from types import TracebackType
 from typing import Any
 from urllib.parse import urlencode, urlsplit
@@ -144,6 +144,7 @@ class _Connection:
     __slots__ = (
         "_h11",
         "_host",
+        "_lock",
         "_port",
         "_reader",
         "_ssl_context",
@@ -166,6 +167,7 @@ class _Connection:
         self._reader: asyncio.StreamReader | None = None
         self._writer: asyncio.StreamWriter | None = None
         self._h11: h11.Connection | None = None
+        self._lock = asyncio.Lock()
 
     async def open(self) -> None:
         """Opens the connection."""
@@ -353,8 +355,9 @@ class Session:
             await connection.open()
             self._connections[(host, port)] = connection
 
-        await connection.send(method, target, request_headers, body)
-        return await connection.receive()
+        async with connection._lock:
+            await connection.send(method, target, request_headers, body)
+            return await connection.receive()
 
     @asynccontextmanager
     async def get(self, url: str) -> AsyncIterator[Response]:
