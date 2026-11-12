@@ -25,11 +25,17 @@ class Track:
     artwork_url: str | None = None
     isrc: str | None = None
     requester: Any = None
+    plugin_info: dict[str, Any] | None = None
+    user_data: dict[str, Any] | None = None
     extras: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_data(cls, data: dict[str, Any], *, requester: Any = None) -> Track:
         info = data.get("info") or {}
+        extras = {}
+        for k, v in data.items():
+            if k not in ("encoded", "track", "info", "pluginInfo", "userData"):
+                extras[k] = v
         return cls(
             encoded=data.get("encoded") or data.get("track") or "",
             identifier=info.get("identifier") or "",
@@ -44,9 +50,9 @@ class Track:
             artwork_url=info.get("artworkUrl"),
             isrc=info.get("isrc"),
             requester=requester,
-            extras={
-                k: v for k, v in data.items() if k not in {"encoded", "track", "info"}
-            },
+            plugin_info=data.get("pluginInfo") or None,
+            user_data=data.get("userData") or None,
+            extras=extras,
         )
 
     @property

@@ -8,7 +8,7 @@ from rum.voice._types import VoiceProtocol
 
 from .enums import SearchType, TrackEndReason
 from .exceptions import PlayerException
-from .filters import Filters
+from .filters import AudioFading, Filters
 from .objects import LoadResult, Track
 from .queue import Queue
 
@@ -35,6 +35,7 @@ class Player(VoiceProtocol):
         "_volume",
         "channel",
         "client",
+        "fading",
         "filters",
         "guild",
         "guild_id",
@@ -50,12 +51,13 @@ class Player(VoiceProtocol):
         self.guild = getattr(channel, "guild", None)
         self.guild_id: int | None = getattr(self.guild, "id", None)
 
-        pool = getattr(client, "lavalink", None)
+        pool = getattr(client, "music", None) or getattr(client, "lavalink", None)
         self.pool: NodePool | None = pool
         self.node: Node | None = None
 
         self.queue = Queue()
         self.filters = Filters()
+        self.fading: AudioFading | None = None
 
         self._current: Track | None = None
         self._paused = False
@@ -89,9 +91,7 @@ class Player(VoiceProtocol):
             try:
                 await node.destroy_player(guild_id)
             except Exception:  # noqa: BLE001
-                _log.exception(
-                    "Failed to destroy lavalink player for guild %s", guild_id
-                )
+                _log.exception("Failed to destroy music player for guild %s", guild_id)
             node._players.pop(guild_id, None)
 
     async def on_voice_server_update(self, data) -> None:
@@ -116,11 +116,11 @@ class Player(VoiceProtocol):
         self_mute: bool = False,
     ) -> None:
         if self.pool is None:
-            self.pool = getattr(self.client, "lavalink", None)
-        if self.pool is None:
-            raise PlayerException(
-                "No lavalink NodePool attached to client (client.lavalink)"
+            self.pool = getattr(self.client, "music", None) or getattr(
+                self.client, "lavalink", None
             )
+        if self.pool is None:
+            raise PlayerException("No music NodePool attached to client (client.music)")
         if self.guild_id is None:
             raise PlayerException("Cannot determine guild id for player")
 
@@ -139,7 +139,7 @@ class Player(VoiceProtocol):
             if guild_id and node and node.available:
                 await node.destroy_player(guild_id)
         except Exception:  # noqa: BLE001
-            _log.exception("Failed to destroy lavalink player for guild %s", guild_id)
+            _log.exception("Failed to destroy music player for guild %s", guild_id)
         try:
             if self.guild:
                 await self.guild.change_voice_state(channel=None)
@@ -203,12 +203,23 @@ class Player(VoiceProtocol):
         no_replace: bool = False,
         volume: int | None = None,
         pause: bool = False,
+        user_data: dict[str, Any] | None = None,
+        audio_track_id: str | None = None,
+        next_track: Track | None = None,
+        fading: AudioFading | dict[str, Any] | None = None,
     ) -> Track:
         node = self.node
         guild_id = self.guild_id
         if not node or not guild_id:
             raise PlayerException("Player is not connected")
-        payload: dict[str, Any] = {"track": {"encoded": track.encoded}}
+        t: dict[str, Any] = {"encoded": track.encoded}
+        if user_data:
+            t["userData"] = user_data
+        if audio_track_id:
+            t["audioTrackId"] = audio_track_id
+        payload: dict[str, Any] = {"track": t}
+        if next_track is not None:
+            payload["nextTrack"] = {"encoded": next_track.encoded}
         if start:
             payload["position"] = start
         if end is not None:
@@ -222,6 +233,9 @@ class Player(VoiceProtocol):
         filters = self.filters.to_dict()
         if filters:
             payload["filters"] = filters
+        fade = fading or self.fading
+        if fade is not None:
+            payload["fading"] = fade.to_dict() if hasattr(fade, "to_dict") else fade
         await node.update_player(guild_id, payload, no_replace=no_replace)
         self._current = track
         return track
@@ -284,7 +298,7 @@ class Player(VoiceProtocol):
     ) -> LoadResult:
         pool = self.pool
         if pool is None:
-            raise PlayerException("No lavalink NodePool attached")
+            raise PlayerException("No music NodePool attached")
         identifier = query
         if search_type and not query.startswith(("http://", "https://")):
             st = (

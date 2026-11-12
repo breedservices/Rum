@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     import rum
     from rum.transport import Session
 
-    from .events import LavalinkEvent, NodeEvent
+    from .events import MusicEvent, NodeEvent
 
 _log = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ class NodePool:
         self.bot = bot
         self._nodes: dict[str, Node] = {}
         self._pools[id(bot)] = self
+        bot.music = self
         bot.lavalink = self
 
     @property
@@ -40,7 +41,7 @@ class NodePool:
     def get_pool(cls, bot: rum.Client) -> NodePool | None:
         pool = cls._pools.get(id(bot))
         if pool is None:
-            pool = getattr(bot, "lavalink", None)
+            pool = getattr(bot, "music", None) or getattr(bot, "lavalink", None)
         return pool
 
     @classmethod
@@ -120,7 +121,7 @@ class NodePool:
                 best_penalty = p
                 best = n
         if best is None:
-            raise NoNodesAvailable("No available lavalink nodes")
+            raise NoNodesAvailable("No available music nodes")
         return best
 
     async def fetch_tracks(
@@ -130,14 +131,14 @@ class NodePool:
             node = self.get_node()
         return await node.get_tracks(query, requester=requester)
 
-    def _dispatch(self, event: LavalinkEvent | NodeEvent) -> None:
+    def _dispatch(self, event: MusicEvent | NodeEvent) -> None:
         name = type(event).__name__
         snake = _CAMEL_RE.sub("_", name).lower()
         snake = snake.removesuffix("_event")
         try:
-            self.bot.dispatch(f"lavalink_{snake}", event)
+            self.bot.dispatch(f"music_{snake}", event)
         except Exception:  # noqa: BLE001
-            _log.exception("Error dispatching lavalink_%s", snake)
+            _log.exception("Error dispatching music_%s", snake)
 
     async def disconnect(self) -> None:
         for node in list(self._nodes.values()):

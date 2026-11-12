@@ -68,6 +68,7 @@ from typing import (
     overload,
 )
 
+import msgspec
 from typing_extensions import deprecated as ext_deprecated
 
 if TYPE_CHECKING:
@@ -88,13 +89,6 @@ if TYPE_CHECKING:
     )
 
 from .errors import HTTPException, InvalidArgument, InvalidData
-
-try:
-    import msgspec
-except ModuleNotFoundError:
-    HAS_MSGSPEC = False
-else:
-    HAS_MSGSPEC = True
 
 __all__ = (
     "MISSING",
@@ -248,7 +242,7 @@ class CachedSlotProperty(Generic[T, T_co]):
     def __init__(self, name: str, function: Callable[[T], T_co]) -> None:
         self.name = name
         self.function = function
-        self.__doc__ = getattr(function, "__doc__")
+        self.__doc__ = function.__doc__
 
     @overload
     def __get__(
@@ -525,7 +519,7 @@ def snowflake_time(id: int) -> datetime.datetime:
         An aware datetime in UTC representing the creation time of the snowflake.
     """
     timestamp = ((id >> 22) + DISCORD_EPOCH) / 1000
-    return datetime.datetime.fromtimestamp(timestamp, tz=datetime.timezone.utc)
+    return datetime.datetime.fromtimestamp(timestamp, tz=datetime.UTC)
 
 
 def time_snowflake(dt: datetime.datetime, high: bool = False) -> int:
@@ -899,19 +893,11 @@ def _bytes_to_base64_data(data: bytes) -> str:
     return fmt.format(mime=mime, data=b64)
 
 
-if HAS_MSGSPEC:
+def _to_json(obj: Any) -> str:
+    return msgspec.json.encode(obj).decode("utf-8")
 
-    def _to_json(obj: Any) -> str:  # type: ignore
-        return msgspec.json.encode(obj).decode("utf-8")
 
-    _from_json = msgspec.json.decode  # type: ignore
-
-else:
-
-    def _to_json(obj: Any) -> str:
-        return json.dumps(obj, separators=(",", ":"), ensure_ascii=True)
-
-    _from_json = json.loads
+_from_json = msgspec.json.decode
 
 
 def _decode_header_value(value: Any) -> Any:
@@ -946,7 +932,7 @@ class _Headers(dict):
         return super().get(str(key).lower(), default)
 
 
-def _decode_headers(headers: Any) -> "_Headers":
+def _decode_headers(headers: Any) -> _Headers:
     """Return the given headers as a case-insensitive mapping of strings.
 
     The returned object supports ``headers.get("Content-Type")`` style access
@@ -996,7 +982,7 @@ def _parse_ratelimit_header(request: Any, *, use_clock: bool = False) -> float:
     reset = headers.get("X-Ratelimit-Reset")
     if reset is not None:
         try:
-            utc = datetime.timezone.utc
+            utc = datetime.UTC
             now = datetime.datetime.now(utc)
             reset_at = datetime.datetime.fromtimestamp(float(reset), utc)
             return max((reset_at - now).total_seconds(), 0.0)
@@ -1037,7 +1023,7 @@ async def sane_wait_for(futures, *, timeout):
     )
 
     if len(pending) != 0:
-        raise asyncio.TimeoutError()
+        raise TimeoutError()
 
     return done
 
@@ -1053,7 +1039,7 @@ def get_slots(cls: type[Any]) -> Iterator[str]:
 def compute_timedelta(dt: datetime.datetime):
     if dt.tzinfo is None:
         dt = dt.astimezone()
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     return max((dt - now).total_seconds(), 0)
 
 
@@ -1091,7 +1077,7 @@ def utcnow() -> datetime.datetime:
     :class:`datetime.datetime`
         The current aware datetime in UTC.
     """
-    return datetime.datetime.now(datetime.timezone.utc)
+    return datetime.datetime.now(datetime.UTC)
 
 
 def valid_icon_size(size: int) -> bool:
@@ -1200,7 +1186,7 @@ def resolve_template(code: Template | str) -> str:
 
 
 _MARKDOWN_ESCAPE_SUBREGEX = "|".join(
-    r"\{0}(?=([\s\S]*((?<!\{0})\{0})))".format(c) for c in ("*", "`", "_", "~", "|")
+    rf"\{c}(?=([\s\S]*((?<!\{c})\{c})))" for c in ("*", "`", "_", "~", "|")
 )
 
 # regular expression for finding and escaping links in markdown
@@ -1220,7 +1206,7 @@ _MARKDOWN_ESCAPE_COMMON = rf"^>(?:>>)?\s|{_MARKDOWN_ESCAPE_LINKS}"
 
 _MARKDOWN_ESCAPE_REGEX = re.compile(
     rf"(?P<markdown>{_MARKDOWN_ESCAPE_SUBREGEX}|{_MARKDOWN_ESCAPE_COMMON})",
-    re.MULTILINE | re.X,
+    re.MULTILINE | re.VERBOSE,
 )
 
 _URL_REGEX = r"(?P<url><[^: >]+:\/[^ >]+>|(?:https?|steam):\/\/[^\s<]+[^<.,:;\"\'\]\s])"
@@ -1301,7 +1287,9 @@ def escape_markdown(
         regex = _MARKDOWN_STOCK_REGEX
         if ignore_links:
             regex = f"(?:{_URL_REGEX}|{regex})"
-        return re.sub(regex, replacement, text, count=0, flags=re.MULTILINE | re.X)
+        return re.sub(
+            regex, replacement, text, count=0, flags=re.MULTILINE | re.VERBOSE
+        )
     else:
         text = re.sub(r"\\", r"\\\\", text)
         return _MARKDOWN_ESCAPE_REGEX.sub(r"\\\1", text)

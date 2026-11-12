@@ -39,8 +39,8 @@ rum is not published on PyPI. Install it directly from the repository URL:
 pip install git+https://github.com/breedservices/Rum.git
 
 # or with extras
-pip install "rum[speed] @ git+https://github.com/breedservices/Rum.git"
 pip install "rum[voice] @ git+https://github.com/breedservices/Rum.git"
+pip install "rum[music] @ git+https://github.com/breedservices/Rum.git"
 ```
 
 Python 3.11+ is required.
@@ -137,13 +137,11 @@ uv run pytest
 uv build
 ```
 
-Extras are selected with `--extra`, e.g. `uv sync --extra speed --extra voice`.
+Extras are selected with `--extra`, e.g. `uv sync --extra voice`.
 
-If you prefer pip, the extras must be quoted — otherwise the shell expands
-`[speed]` as a glob pattern and fails with `zsh: no matches found: [speed]`:
+If you prefer pip, quote extras in `zsh` to avoid glob expansion, for example:
 
 ```sh
-uv pip install -e ".[speed]"
 uv pip install -e ".[voice]"
 ```
 

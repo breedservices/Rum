@@ -3,6 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 __all__ = (
+    "FadeCurve",
     "LoadType",
     "SearchType",
     "ServerType",
@@ -25,6 +26,16 @@ class SearchType(str, Enum):
     SPOTIFY = "spsearch"
     APPLE_MUSIC = "amsearch"
     DEEZER = "dzsearch"
+    TIDAL = "tdsearch"
+    JIOSAAVN = "jssearch"
+    YANDEX_MUSIC = "ymsearch"
+    QOBUZ = "qbsearch"
+    AUDIUS = "ausearch"
+    VK_MUSIC = "vksearch"
+    BILIBILI = "bilibili"
+    GOOGLE_DRIVE = "gdsearch"
+    GOOGLE_TTS = "gtts"
+    FLOWERY_TTS = "ftts"
 
 
 class ServerType(str, Enum):
@@ -46,3 +57,10 @@ class TrackEndReason(str, Enum):
                 if member.value == value:
                     return member
         return None
+
+
+class FadeCurve(str, Enum):
+    LINEAR = "linear"
+    EXPONENTIAL = "exponential"
+    LOGARITHMIC = "logarithmic"
+    S_CURVE = "s-curve"

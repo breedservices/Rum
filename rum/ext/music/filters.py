@@ -3,15 +3,24 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from .enums import FadeCurve
+
 __all__ = (
+    "AudioFading",
     "ChannelMix",
+    "Chorus",
+    "Compressor",
     "Distortion",
+    "Echo",
     "Equalizer",
     "Filter",
     "Filters",
+    "HighPass",
     "Karaoke",
     "LowPass",
+    "Phaser",
     "Rotation",
+    "Spatial",
     "Timescale",
     "Tremolo",
     "Vibrato",
@@ -182,6 +191,156 @@ class LowPass(Filter):
             if self.smoothing is not None
             else {}
         )
+
+
+@dataclass(slots=True)
+class HighPass(Filter):
+    smoothing: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return (
+            {"highpass": {"smoothing": self.smoothing}}
+            if self.smoothing is not None
+            else {}
+        )
+
+
+@dataclass(slots=True)
+class Echo(Filter):
+    delay: float | None = None
+    feedback: float | None = None
+    mix: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = {
+            k: v
+            for k, v in {
+                "delay": self.delay,
+                "feedback": self.feedback,
+                "mix": self.mix,
+            }.items()
+            if v is not None
+        }
+        return {"echo": payload} if payload else {}
+
+
+@dataclass(slots=True)
+class Chorus(Filter):
+    rate: float | None = None
+    depth: float | None = None
+    delay: float | None = None
+    mix: float | None = None
+    feedback: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = {
+            k: v
+            for k, v in {
+                "rate": self.rate,
+                "depth": self.depth,
+                "delay": self.delay,
+                "mix": self.mix,
+                "feedback": self.feedback,
+            }.items()
+            if v is not None
+        }
+        return {"chorus": payload} if payload else {}
+
+
+@dataclass(slots=True)
+class Compressor(Filter):
+    threshold: float | None = None
+    ratio: float | None = None
+    attack: float | None = None
+    release: float | None = None
+    gain: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = {
+            k: v
+            for k, v in {
+                "threshold": self.threshold,
+                "ratio": self.ratio,
+                "attack": self.attack,
+                "release": self.release,
+                "gain": self.gain,
+            }.items()
+            if v is not None
+        }
+        return {"compressor": payload} if payload else {}
+
+
+@dataclass(slots=True)
+class Phaser(Filter):
+    stages: int | None = None
+    rate: float | None = None
+    depth: float | None = None
+    feedback: float | None = None
+    mix: float | None = None
+    min_frequency: float | None = None
+    max_frequency: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = {
+            k: v
+            for k, v in {
+                "stages": self.stages,
+                "rate": self.rate,
+                "depth": self.depth,
+                "feedback": self.feedback,
+                "mix": self.mix,
+                "minFrequency": self.min_frequency,
+                "maxFrequency": self.max_frequency,
+            }.items()
+            if v is not None
+        }
+        return {"phaser": payload} if payload else {}
+
+
+@dataclass(slots=True)
+class Spatial(Filter):
+    depth: float | None = None
+    rate: float | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = {
+            k: v
+            for k, v in {"depth": self.depth, "rate": self.rate}.items()
+            if v is not None
+        }
+        return {"spatial": payload} if payload else {}
+
+
+@dataclass(slots=True)
+class AudioFading:
+    enabled: bool | None = None
+    track_start: dict[str, Any] | None = None
+    track_end: dict[str, Any] | None = None
+    track_stop: dict[str, Any] | None = None
+    seek: dict[str, Any] | None = None
+    ducking: dict[str, Any] | None = None
+
+    @staticmethod
+    def step(
+        duration: int, curve: FadeCurve | str = FadeCurve.LINEAR
+    ) -> dict[str, Any]:
+        c = curve.value if isinstance(curve, FadeCurve) else str(curve)
+        return {"duration": int(duration), "curve": c}
+
+    def to_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {}
+        if self.enabled is not None:
+            payload["enabled"] = self.enabled
+        for key, value in (
+            ("trackStart", self.track_start),
+            ("trackEnd", self.track_end),
+            ("trackStop", self.track_stop),
+            ("seek", self.seek),
+            ("ducking", self.ducking),
+        ):
+            if value:
+                payload[key] = value
+        return payload
 
 
 class Filters:

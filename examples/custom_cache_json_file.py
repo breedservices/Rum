@@ -1,13 +1,9 @@
 """A pure disk backed cache for rum, using msgspec.
 
-This example requires the 'msgspec' library::
-
-    uv pip install msgspec
-
 It shows how to back rum's caches with files on disk. Nothing is kept in
 RAM: every entry is stored in its own JSON file and read back when it is
-accessed. The files are encoded and decoded with msgspec, which is a lot
-faster than the standard library's ``json`` module.
+accessed. The files are encoded and decoded with msgspec (a required rum
+dependency), which is faster than the standard library ``json`` module.
 
 Because every lookup reads a file, this is much slower than the default
 in-memory caches. It is meant as a demonstration of what the cache

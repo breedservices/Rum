@@ -2,6 +2,7 @@ from __future__ import annotations
 
 __all__ = (
     "LavalinkException",
+    "MusicException",
     "NoNodesAvailable",
     "NodeConnectionFailure",
     "NodeException",
@@ -12,11 +13,15 @@ __all__ = (
 )
 
 
-class LavalinkException(Exception):
-    """Base exception for rum.ext.lavalink."""
+class MusicException(Exception):
+    """Base exception for rum.ext.music."""
 
 
-class NodeException(LavalinkException):
+# Backwards-compatible alias.
+LavalinkException = MusicException
+
+
+class NodeException(MusicException):
     """Base exception for node-related errors."""
 
 
@@ -32,8 +37,10 @@ class NoNodesAvailable(NodeException):
     """Raised when no suitable nodes are available."""
 
 
-class TrackLoadError(LavalinkException):
+class TrackLoadError(MusicException):
     """Raised when loading tracks fails."""
+
+    __slots__ = ("cause", "severity")
 
     def __init__(
         self, message: str, severity: str | None = None, cause: str | None = None
@@ -43,7 +50,7 @@ class TrackLoadError(LavalinkException):
         self.cause = cause
 
 
-class PlayerException(LavalinkException):
+class PlayerException(MusicException):
     """Raised for player-related errors."""
 
 

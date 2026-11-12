@@ -31,15 +31,8 @@ If you are using Windows, then the following should be used instead:
 py -3 -m pip install -U "git+https://github.com/breedservices/Rum.git"
 ```
 
-To install additional packages for speedup, you should use `rum[speed]` instead of `rum`, e.g.
-
-``` sh
-# Linux/macOS
-python3 -m pip install -U "rum[speed] @ git+https://github.com/breedservices/Rum.git"
-
-# Windows
-py -3 -m pip install -U "rum[speed] @ git+https://github.com/breedservices/Rum.git"
-```
+`msgspec` is installed as a required dependency for fast JSON encoding and decoding.
+For optional extras, install `rum[voice]` (voice support) or `rum[music]`.
 
 To get voice support, you should use `rum[voice]` instead of `rum`, e.g.
 

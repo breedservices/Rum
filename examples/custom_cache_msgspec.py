@@ -23,16 +23,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-This example requires the 'msgspec' library.
-You can install it with: uv pip install msgspec
 It demonstrates how to plug a custom cache provider into rum.
 rum normally stores cached objects in RAM (dicts/deques). With a custom
 cache provider you can replace those backends (e.g. bounded caches, external
 stores, instrumented wrappers).
 This example shows a simple instrumented mapping cache that uses msgspec to
 encode lightweight cache-event records (for logging/telemetry). The Discord
-objects themselves remain in memory (they are not serialized), but msgspec is
-used in the cache.
+objects themselves remain in memory (they are not serialized).
 """
 
 # Set the BOT_TOKEN environment variable before running this example:

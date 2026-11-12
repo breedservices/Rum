@@ -1271,15 +1271,13 @@ source = { editable = "." }
 dependencies = [
     { name = "backports-zstd", marker = "python_full_version < '3.14'" },
     { name = "h11" },
+    { name = "msgspec" },
     { name = "typing-extensions" },
     { name = "wsproto" },
     { name = "yarl" },
 ]
 
 [package.optional-dependencies]
-speed = [
-    { name = "msgspec" },
-]
 voice = [
     { name = "davey" },
     { name = "pynacl" },
@@ -1306,13 +1304,13 @@ requires-dist = [
     { name = "backports-zstd", marker = "python_full_version < '3.14'" },
     { name = "davey", marker = "extra == 'voice'", specifier = ">=0.1.4,<1" },
     { name = "h11", specifier = ">=0.16.0,<1" },
-    { name = "msgspec", marker = "extra == 'speed'", specifier = "~=0.22.0" },
+    { name = "msgspec", specifier = "~=0.22.0" },
     { name = "pynacl", marker = "extra == 'voice'", specifier = ">=1.6.2,<1.7" },
     { name = "typing-extensions", specifier = ">=4.14.0,<5" },
     { name = "wsproto", specifier = ">=1.2.0,<2" },
     { name = "yarl", specifier = ">=1.6.3,<2.0" },
 ]
-provides-extras = ["speed", "voice", "lavalink"]
+provides-extras = ["voice", "music"]
 
 [package.metadata.requires-dev]
 dev = [

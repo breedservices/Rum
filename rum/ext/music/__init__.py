@@ -1,14 +1,11 @@
 """
-rum.ext.lavalink
-~~~~~~~~~~~~~~~~
+rum.ext.music
+~~~~~~~~~~~~~
 
-A Lavalink v4 and NodeLink client for rum.
+A Lavalink v4 and NodeLink v3 music client for rum.
 
-Install with the ``lavalink`` extra (no aiohttp required; uses rum's transport):
-
-    pip install "rum[lavalink] @ git+https://github.com/breedservices/Rum.git"
-
-Use ``server_type="lavalink"`` or ``server_type="nodelink"`` when creating a node.
+Uses rum's transport (no aiohttp, no voice extra). Choose the server protocol at
+init with ``server_type="lavalink"`` or ``server_type="nodelink"``.
 """
 
 from .enums import *
@@ -22,32 +19,46 @@ from .pool import *
 from .queue import *
 
 __all__ = (
+    "AudioFading",
     "ChannelMix",
+    "Chorus",
+    "Compressor",
     "Distortion",
+    "Echo",
     "Equalizer",
+    "FadeCurve",
     "Filter",
     "Filters",
+    "HighPass",
     "Karaoke",
-    "LavalinkEvent",
-    "LavalinkException",
     "LoadResult",
     "LoadType",
     "LowPass",
+    "MusicEvent",
+    "MusicException",
     "NoNodesAvailable",
     "Node",
     "NodeConnectedEvent",
     "NodeDisconnectedEvent",
+    "NodeEvent",
     "NodeException",
     "NodeNotAvailable",
     "NodePool",
+    "Phaser",
     "Player",
+    "PlayerConnectedEvent",
+    "PlayerCreatedEvent",
+    "PlayerDestroyedEvent",
     "PlayerException",
+    "PlayerReconnectingEvent",
+    "PlayerUpdateEvent",
     "Playlist",
     "Queue",
     "QueueEmpty",
     "Rotation",
     "SearchType",
     "ServerType",
+    "Spatial",
     "Timescale",
     "Track",
     "TrackEndEvent",
