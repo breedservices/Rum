@@ -498,9 +498,9 @@ def test_the_permission_overwrites_of_a_guild_are_shared():
     assert all(channel._overwrites[0] is first for channel in channels)
 
 
-def test_a_policy_bounds_the_cache_of_its_kind():
+def test_a_rule_bounds_the_cache_of_its_kind():
     provider = rum.DefaultCacheProvider(
-        policies={rum.CacheKind.MEMBER: rum.CachePolicy(max_entries=2, ttl=60)}
+        rules={rum.CacheKind.MEMBER: rum.CacheRule(max_entries=2, ttl=60)}
     )
     cache = provider.create_guild_member_cache(None)
     cache[1] = "a"
@@ -512,7 +512,7 @@ def test_a_policy_bounds_the_cache_of_its_kind():
 
 def test_a_disabled_policy_caches_nothing():
     provider = rum.DefaultCacheProvider(
-        policies={rum.CacheKind.MEMBER: rum.CachePolicy(enabled=False)}
+        rules={rum.CacheKind.MEMBER: rum.CacheRule(enabled=False)}
     )
     cache = provider.create_guild_member_cache(None)
     cache[1] = "a"
@@ -521,7 +521,7 @@ def test_a_disabled_policy_caches_nothing():
 
 def test_an_entry_expires_after_its_time_to_live():
     provider = rum.DefaultCacheProvider(
-        policies={rum.CacheKind.MEMBER: rum.CachePolicy(max_entries=10, ttl=0.01)}
+        rules={rum.CacheKind.MEMBER: rum.CacheRule(max_entries=10, ttl=0.01)}
     )
     cache = provider.create_guild_member_cache(None)
     cache[1] = "a"
@@ -529,7 +529,7 @@ def test_an_entry_expires_after_its_time_to_live():
     assert 1 not in cache
 
 
-def test_a_policy_keeps_only_the_fields_it_names():
+def test_a_rule_keeps_only_the_fields_it_names():
     class Thing:
         __slots__ = ("id", "name", "topic")
 

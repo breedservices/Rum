@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 __all__ = (
     "MessageCache",
     "CacheKind",
-    "CachePolicy",
+    "CacheRule",
     "CacheProvider",
     "DefaultCacheProvider",
     "LRUCache",
@@ -75,7 +75,7 @@ class NullCache(MutableMapping):
 class CacheKind(Enum):
     """The kinds of things the cache holds.
 
-    Every kind has its own policy, so a bot can cache the members of one guild
+    Every kind has its own rule, so a bot can cache the members of one guild
     and no presences at all.
     """
 
@@ -102,7 +102,7 @@ KEPT_FIELDS = frozenset(
 
 
 @dataclass(frozen=True)
-class CachePolicy:
+class CacheRule:
     """How one kind of thing is cached.
 
     Parameters
@@ -127,7 +127,7 @@ class CachePolicy:
 
 
 def trim_fields(value: Any, fields: frozenset[str]) -> None:
-    """Drops every field of a cached object that the policy does not keep.
+    """Drops every field of a cached object that the rule does not keep.
 
     The fields that say what an object is and where it belongs are always
     kept, and the private fields of the model are left alone.
@@ -147,8 +147,8 @@ class LRUCache(MutableMapping):
 
     The library uses it for the caches that would otherwise grow for as long
     as the bot runs, like the user cache of a bot in many guilds. It also
-    applies the policy of its kind: the entries expire after the time to live
-    and only the fields of the policy are kept.
+    applies the rule of its kind: the entries expire after the time to live
+    and only the fields of the rule are kept.
 
     Parameters
     ----------
@@ -279,34 +279,34 @@ class DefaultCacheProvider:
         max_messages: int | None = 1000,
         max_users: int | None = None,
         max_members: int | None = None,
-        policies: Mapping[CacheKind, CachePolicy] | None = None,
+        rules: Mapping[CacheKind, CacheRule] | None = None,
     ) -> None:
         self.max_messages = max_messages
         self.max_users = max_users
         self.max_members = max_members
-        self.policies: dict[CacheKind, CachePolicy] = dict(policies or {})
+        self.rules: dict[CacheKind, CacheRule] = dict(rules or {})
         self.state: ConnectionState | None = None
         self.keeps_object_references: bool = True
 
-    def policy_for(self, kind: CacheKind) -> CachePolicy:
-        """Returns the policy of a kind."""
-        return self.policies.get(kind, CachePolicy())
+    def rule_for(self, kind: CacheKind) -> CacheRule:
+        """Returns the rule of a kind."""
+        return self.rules.get(kind, CacheRule())
 
     def _cache(
         self, kind: CacheKind, max_entries: int | None
     ) -> MutableMapping[Any, Any]:
-        """Builds the container of a kind, with its policy applied."""
-        policy = self.policy_for(kind)
-        if not policy.enabled:
+        """Builds the container of a kind, with its rule applied."""
+        rule = self.rule_for(kind)
+        if not rule.enabled:
             return NullCache()
-        if policy.max_entries is not None:
-            max_entries = policy.max_entries
+        if rule.max_entries is not None:
+            max_entries = rule.max_entries
         if max_entries is None:
             return {}
         return LRUCache(
             max_entries,
-            ttl=policy.ttl,
-            fields=policy.fields,
+            ttl=rule.ttl,
+            fields=rule.fields,
         )
 
     # Global/state caches
