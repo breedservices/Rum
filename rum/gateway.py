@@ -29,6 +29,7 @@ from __future__ import annotations
 import asyncio
 import concurrent.futures
 import datetime
+import json
 import logging
 import sys
 import threading
@@ -52,19 +53,58 @@ if TYPE_CHECKING:
 
 _log = logging.getLogger(__name__)
 
-try:  # Python 3.14 and later
-    from compression import zstd
+_JSON_DECODER = json.JSONDecoder()
 
-    def _decompress(data: bytes) -> bytes:
-        """Decompresses a zstd frame of the gateway."""
-        return zstd.decompress(data)
 
-except ImportError:  # pragma: no cover
-    import zstandard
+class _ZstdStream:
+    """Decompresses the zstd stream of the gateway.
 
-    def _decompress(data: bytes) -> bytes:
-        """Decompresses a zstd frame of the gateway."""
-        return zstandard.ZstdDecompressor().decompress(data)
+    The transport compression of the gateway is a stream that stays alive for
+    the lifetime of the connection: every websocket message carries a part of
+    it, so the decompressor has to keep its state between the messages.
+    """
+
+    __slots__ = ("_buffer", "_decompressor")
+
+    def __init__(self) -> None:
+        self._buffer = bytearray()
+        self._decompressor = self._new()
+
+    @staticmethod
+    def _new() -> Any:
+        try:  # Python 3.14 and later
+            from compression import zstd
+
+            return zstd.ZstdDecompressor()
+        except ImportError:  # pragma: no cover
+            import zstandard
+
+            return zstandard.ZstdDecompressor().decompressobj()
+
+    def decompress(self, data: bytes) -> bytes:
+        """Decompresses a part of the stream."""
+        try:
+            return self._decompressor.decompress(data)
+        except Exception:
+            # the stream ended and Discord started a new one
+            self._decompressor = self._new()
+            return self._decompressor.decompress(data)
+
+    def message(self, data: bytes) -> str | None:
+        """Returns the gateway message of a part of the stream, if it is complete."""
+        self._buffer.extend(self.decompress(data))
+        try:
+            text = self._buffer.decode("utf-8")
+        except UnicodeDecodeError:
+            # the character is split between two messages
+            return None
+        try:
+            _, index = _JSON_DECODER.raw_decode(text)
+        except ValueError:
+            # the message is not complete yet
+            return None
+        del self._buffer[: len(text[:index].encode("utf-8"))]
+        return text[:index]
 
 
 __all__ = (
@@ -348,7 +388,7 @@ class DiscordWebSocket:
         self.sequence: int | None = None
         self.resume_gateway_url: str | None = None
 
-        self._buffer: bytearray = bytearray()
+        self._zstd: _ZstdStream = _ZstdStream()
         self._close_code: int | None = None
         self._rate_limiter: GatewayRatelimiter = GatewayRatelimiter()
 
@@ -491,15 +531,12 @@ class DiscordWebSocket:
         if isinstance(msg, memoryview):
             msg = bytes(msg)
         if isinstance(msg, (bytes, bytearray)):
-            bmsg = bytes(msg)
-            self._buffer.extend(bmsg)
-
-            # zstd-stream transport compression: wait for the frame suffix.
-            if len(self._buffer) < 4 or self._buffer[-4:] != b"\x00\x00\xff\xff":
+            # zstd-stream transport compression: every message carries a part of
+            # the stream, so the messages are read out of it.
+            message = self._zstd.message(bytes(msg))
+            if message is None:
                 return
-            frame = bytes(self._buffer[:-4])
-            self._buffer = bytearray()
-            msg = _decompress(frame).decode("utf-8")
+            msg = message
 
         self.log_receive(msg)
         msg = utils._from_json(msg)

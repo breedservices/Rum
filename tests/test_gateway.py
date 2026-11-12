@@ -32,7 +32,7 @@ import json
 import pytest
 from websockets.asyncio.server import serve
 
-from rum.gateway import DiscordWebSocket, _WebSocketAdapter
+from rum.gateway import DiscordWebSocket, _WebSocketAdapter, _ZstdStream
 from rum.http import HTTPClient
 
 try:  # Python 3.14 and later
@@ -46,10 +46,6 @@ except ImportError:  # pragma: no cover
 
     def compress(data: bytes) -> bytes:
         return zstandard.ZstdCompressor().compress(data)
-
-
-#: The tail Discord puts after a compressed gateway message.
-TAIL = b"\x00\x00\xff\xff"
 
 
 @pytest.mark.asyncio
@@ -78,6 +74,17 @@ async def test_the_gateway_sends_and_receives():
 
 
 @pytest.mark.asyncio
+async def test_the_gateway_reads_a_message_over_several_messages():
+    """A gateway message can be split over several websocket messages."""
+    stream = _ZstdStream()
+    event = {"op": 0, "t": "RESUMED", "s": 3, "d": {}}
+    compressed = compress(json.dumps(event).encode())
+
+    assert stream.message(compressed[:5]) is None
+    assert stream.message(compressed[5:]) == json.dumps(event)
+
+
+@pytest.mark.asyncio
 async def test_the_gateway_decompresses_a_zstd_message():
     """A compressed gateway message is decompressed."""
 
@@ -96,7 +103,7 @@ async def test_the_gateway_decompresses_a_zstd_message():
         gateway._dispatch = lambda event, *args: received.append((event, args))
 
         event = {"op": 0, "t": "RESUMED", "s": 3, "d": {}}
-        await gateway.received_message(compress(json.dumps(event).encode()) + TAIL)
+        await gateway.received_message(compress(json.dumps(event).encode()))
 
         assert received[0][0] == "socket_event_type"
         assert received[0][1] == ("RESUMED",)
