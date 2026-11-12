@@ -19,22 +19,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 
-"""Tests for the wreq header handling.
+Tests for the HTTP client.
 
 ``wreq`` returns header names and values as read-only ``memoryview`` objects
 rather than strings, so the library has to decode them before comparing them
-against strings.
+against strings. The ban guard is tested here too, since it is part of the
+same client.
 """
 
 import pytest
 
 from rum import utils
-from rum.http import _ResponseProxy, parse_response
+from rum.errors import LoginFailure
+from rum.http import BanGuard, HTTPClient, Route, _ResponseProxy, parse_response
 
 
 class FakeHeaderMap:
@@ -123,3 +124,50 @@ def test_parse_ratelimit_header():
     )
     proxy = _ResponseProxy(response)
     assert utils._parse_ratelimit_header(proxy) == pytest.approx(1.5)
+
+
+def test_ban_guard_counts_the_responses_discord_counts():
+    guard = BanGuard(limit=10, window=60)
+    guard.record(200)
+    assert guard.count == 0
+    guard.record(401)
+    guard.record(403)
+    guard.record(429)
+    assert guard.count == 3
+
+
+def test_ban_guard_marks_a_rejected_token():
+    guard = BanGuard()
+    assert not guard.revoked
+    guard.record(401)
+    assert guard.revoked
+
+
+def test_ban_guard_holds_requests_back_at_the_limit():
+    guard = BanGuard(limit=2, window=60)
+    guard.record(403)
+    assert guard.delay() == 0
+    guard.record(429)
+    assert guard.delay() > 0
+
+
+def test_ban_guard_forgets_responses_outside_the_window():
+    guard = BanGuard(limit=1, window=0)
+    guard.record(403)
+    assert guard.count == 0
+
+
+def test_ban_guard_reset_clears_the_counted_responses():
+    guard = BanGuard()
+    guard.record(401)
+    guard.reset()
+    assert not guard.revoked
+    assert guard.count == 0
+
+
+@pytest.mark.asyncio
+async def test_http_client_stops_after_a_rejected_token():
+    client = HTTPClient()
+    client.ban_guard.record(401)
+    with pytest.raises(LoginFailure):
+        await client.request(Route("GET", "/users/@me"))

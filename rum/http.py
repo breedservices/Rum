@@ -30,7 +30,9 @@ import asyncio
 import importlib.metadata
 import logging
 import sys
+import time
 import weakref
+from collections import deque
 from collections.abc import AsyncGenerator, Coroutine, Iterable, Sequence
 from types import TracebackType
 from typing import (
@@ -270,6 +272,86 @@ class _ResponseProxy:
         self.reason = str(reason or "")
 
 
+class BanGuard:
+    """Counts the responses Discord counts towards an IP ban.
+
+    Discord bans an IP that sends 10,000 invalid requests within ten minutes.
+    The guard counts the responses Discord counts, holds the client back
+    before the limit is reached, and stops the client outright once the token
+    was rejected.
+
+    Parameters
+    ----------
+    limit: :class:`int`
+        How many counted responses are allowed in the window.
+    window: :class:`float`
+        The length of the window in seconds.
+    """
+
+    __slots__ = ("_counted", "_limit", "_revoked", "_window")
+
+    #: The response statuses Discord counts towards a ban.
+    COUNTED_STATUSES = frozenset({401, 403, 429})
+
+    def __init__(self, *, limit: int = 10_000, window: float = 600.0) -> None:
+        self._limit = limit
+        self._window = window
+        self._counted: deque[float] = deque()
+        self._revoked = False
+
+    @property
+    def limit(self) -> int:
+        """How many counted responses are allowed in the window."""
+        return self._limit
+
+    @property
+    def count(self) -> int:
+        """How many counted responses were seen in the window."""
+        self._prune()
+        return len(self._counted)
+
+    @property
+    def revoked(self) -> bool:
+        """Whether Discord rejected the token."""
+        return self._revoked
+
+    def record(self, status: int) -> None:
+        """Records the status of a response."""
+        if status == 401:
+            self._revoked = True
+        if status in self.COUNTED_STATUSES:
+            self._counted.append(time.monotonic())
+            self._prune()
+
+    def reset(self) -> None:
+        """Forgets the counted responses and the rejected token."""
+        self._counted.clear()
+        self._revoked = False
+
+    def delay(self) -> float:
+        """Returns how long the next request has to wait."""
+        self._prune()
+        if len(self._counted) < self._limit:
+            return 0.0
+        # The oldest counted response leaves the window in this long.
+        return max(0.0, self._counted[0] + self._window - time.monotonic())
+
+    async def wait(self) -> None:
+        """Waits out the delay, if there is one."""
+        delay = self.delay()
+        if delay > 0:
+            _log.warning(
+                "Holding requests back for %.2f seconds to stay below the ban limit.",
+                delay,
+            )
+            await asyncio.sleep(delay)
+
+    def _prune(self) -> None:
+        cutoff = time.monotonic() - self._window
+        while self._counted and self._counted[0] < cutoff:
+            self._counted.popleft()
+
+
 class HTTPClient:
     """Represents an HTTP client sending HTTP requests to the Discord API."""
 
@@ -297,6 +379,7 @@ class HTTPClient:
         self.proxy: str | None = proxy
         self.proxy_auth: Any | None = proxy_auth
         self.use_clock: bool = not unsync_clock
+        self._ban_guard = BanGuard()
 
         user_agent = (
             "DiscordBot (https://github.com/breedservices/Rum, {0}) Python/{1[0]}.{1[1]} wreq/{2}"
@@ -309,6 +392,11 @@ class HTTPClient:
         kwargs: dict[str, Any] = {"user_agent": self.user_agent}
         # wreq manages connection pooling internally; connector/proxy_auth kept for API compat
         return wreq.Client(**kwargs)
+
+    @property
+    def ban_guard(self) -> BanGuard:
+        """The guard that keeps the client below Discord's ban limit."""
+        return self._ban_guard
 
     async def _close_session(self) -> None:
         if self.__session and self.__session is not MISSING:
@@ -365,6 +453,9 @@ class HTTPClient:
         form: Iterable[dict[str, Any]] | None = None,
         **kwargs: Any,
     ) -> Any:
+        if self._ban_guard.revoked:
+            raise LoginFailure("The token was rejected by Discord.")
+
         bucket = route.bucket
         method = route.method
         url = route.url
@@ -457,10 +548,12 @@ class HTTPClient:
                     )
 
                 try:
+                    await self._ban_guard.wait()
                     async with self.__session.request(
                         getattr(wreq.Method, method), url, **req_kwargs
                     ) as response:
                         status = _status_int(response.status)
+                        self._ban_guard.record(status)
                         _log.debug(
                             "%s %s with %s has returned %s",
                             method,
@@ -685,6 +778,7 @@ class HTTPClient:
         self.__session = self._new_session()
         old_token = self.token
         self.token = token
+        self._ban_guard.reset()
 
         try:
             data = await self.request(Route("GET", "/users/@me"))
