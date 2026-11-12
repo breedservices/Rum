@@ -5,12 +5,16 @@ Configure with NODELINK_URI/NODELINK_PASSWORD (or node_uri/node_password), or
 with NODELINK_HOST/NODELINK_PORT/NODELINK_SECURE/NODELINK_PASSWORD.
 """
 
+import logging
 import os
 from urllib.parse import urlparse
 
 import rum
 from rum.ext import commands
 from rum.ext.music import NodePool, Player, SearchType, ServerType, TrackEndEvent
+
+logging.basicConfig(level=logging.DEBUG)
+rum.utils.setup_logging(level=logging.DEBUG)
 
 
 def _load_nodelink_config() -> tuple[str, int, str, bool]:
