@@ -20,6 +20,8 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Fixed
 
+- Fixed webhook sends with Components V2/views (no files) producing an empty request body and Discord 400 `50109 Invalid JSON` by normalizing empty multipart payloads to JSON bodies.
+
 ### Deprecated
 
 ### Removed

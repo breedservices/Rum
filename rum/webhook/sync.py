@@ -337,7 +337,7 @@ class WebhookAdapter:
         if thread_name:
             if payload is not None:
                 payload["thread_name"] = thread_name
-            elif multipart is not None:
+            elif multipart:
                 for part in multipart:
                     if part.get("name") == "payload_json":
                         pj = part.get("value")

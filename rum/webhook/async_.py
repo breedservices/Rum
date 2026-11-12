@@ -135,7 +135,7 @@ class AsyncWebhookAdapter:
 
         to_send_data = None
         to_send_json = None
-        to_send_multipart = multipart
+        to_send_multipart = multipart or None
         if payload is not None:
             headers["Content-Type"] = "application/json"
             to_send_json = payload
@@ -363,7 +363,7 @@ class AsyncWebhookAdapter:
         if thread_name:
             if payload is not None:
                 payload["thread_name"] = thread_name
-            elif multipart is not None:
+            elif multipart:
                 for part in multipart:
                     if part.get("name") == "payload_json":
                         pj = part.get("value")
@@ -779,6 +779,9 @@ def handle_message_parameters(
         multipart.append({"name": "payload_json", "value": utils._to_json(payload)})
         payload = None
         multipart += multipart_files
+
+    if not multipart:
+        multipart = None
 
     return ExecuteWebhookParameters(payload=payload, multipart=multipart, files=files)
 
