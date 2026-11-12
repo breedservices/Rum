@@ -466,12 +466,9 @@ class Node:
         sid = self._session_id
         if not sid:
             return
+        payload = {"resuming": True, "timeout": self.resume_timeout}
         try:
-            await self.request(
-                "PATCH",
-                f"/v4/sessions/{sid}",
-                json={"resuming": True, "timeout": self.resume_timeout},
-            )
+            await self.request("PATCH", f"/v4/sessions/{sid}", json=payload)
         except Exception:  # noqa: BLE001
             _log.debug(
                 "Failed to configure session for node %s",
