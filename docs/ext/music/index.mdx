@@ -1,0 +1,76 @@
+# rum.ext.music
+
+`rum.ext.music` is a Lavalink v4 and NodeLink v3 client for rum. It uses rum's
+built-in HTTP/WebSocket transport (no `aiohttp`) and does not require the
+`[voice]` extra.
+
+Choose the server protocol at node creation with `server_type="lavalink"` or
+`server_type="nodelink"`.
+
+## Setup
+
+Create a node pool for your bot (usually in `on_ready`):
+
+```python
+import rum
+from rum.ext import commands
+from rum.ext.music import NodePool, ServerType
+
+bot = commands.Bot(command_prefix="!")
+
+@bot.event
+async def on_ready():
+    await NodePool.create_node(
+        bot=bot,
+        host="localhost",
+        port=2333,
+        password="youshallnotpass",
+        server_type=ServerType.LAVALINK,  # or ServerType.NODELINK
+    )
+```
+
+## Connecting and playing
+
+Use `rum.ext.music.Player` as the voice protocol when connecting:
+
+```python
+from rum.ext.music import Player, SearchType, TrackEndEvent
+
+@bot.listen("on_music_track_end")
+async def on_track_end(event: TrackEndEvent):
+    if event.reason == "finished":
+        await event.player.play_next()
+
+@bot.command()
+async def play(ctx, *, query: str):
+    player = ctx.voice_client or await ctx.author.voice.channel.connect(cls=Player)
+    result = await player.fetch_tracks(query, search_type=SearchType.YOUTUBE)
+    if not result.tracks:
+        return await ctx.send("No tracks found.")
+    track = result.tracks[0]
+    if player.is_playing:
+        player.queue.add(track)
+        await ctx.send(f"Queued: {track.title}")
+    else:
+        await player.play(track)
+        await ctx.send(f"Now playing: {track.title}")
+```
+
+## Custom queue providers
+
+The default queue is in-memory (`Queue`). You can supply a custom queue provider
+(for example disk or database-backed) via `Player(..., queue=...)`. The player
+expects at least `loop_mode` and `get()` raising `QueueEmpty`.
+
+```python
+player = await channel.connect(cls=lambda c, ch: Player(c, ch, queue=MyQueue()))
+```
+
+## Examples
+
+- [examples/music_lavalink.py](https://github.com/breedservices/Rum/blob/master/examples/music_lavalink.py) — Lavalink v4
+- [examples/music_nodelink.py](https://github.com/breedservices/Rum/blob/master/examples/music_nodelink.py) — NodeLink v3
+
+## API reference
+
+- [rum.ext.music API](../../api/rum/ext/music/index.mdx)
