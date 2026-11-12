@@ -1,19 +1,40 @@
 """Basic music bot example using rum.ext.music with a NodeLink v3 server.
 
 Set BOT_TOKEN and ensure a NodeLink v3 node is running and reachable.
-Adjust NODELINK_* values for your server. This example selects the NodeLink
-protocol at init and shows a NodeLink-friendly play flow.
+Configure with NODELINK_URI/NODELINK_PASSWORD (or node_uri/node_password), or
+with NODELINK_HOST/NODELINK_PORT/NODELINK_SECURE/NODELINK_PASSWORD.
 """
 
 import os
+from urllib.parse import urlparse
 
 import rum
 from rum.ext import commands
 from rum.ext.music import NodePool, Player, SearchType, ServerType, TrackEndEvent
 
-NODELINK_HOST = os.getenv("NODELINK_HOST", "localhost")
-NODELINK_PORT = int(os.getenv("NODELINK_PORT", "2333"))
-NODELINK_PASSWORD = os.getenv("NODELINK_PASSWORD", "youshallnotpass")
+
+def _load_nodelink_config() -> tuple[str, int, str, bool]:
+    uri = os.getenv("NODELINK_URI") or os.getenv("node_uri")
+    password = (
+        os.getenv("NODELINK_PASSWORD")
+        or os.getenv("node_password")
+        or "youshallnotpass"
+    )
+    if uri:
+        parsed = urlparse(uri)
+        secure = parsed.scheme in ("https", "wss")
+        host = parsed.hostname or "localhost"
+        port = parsed.port or (443 if secure else 2333)
+        return host, port, password, secure
+    host = os.getenv("NODELINK_HOST", "localhost")
+    port = int(os.getenv("NODELINK_PORT", "2333"))
+    secure = os.getenv("NODELINK_SECURE", "").lower() in ("1", "true", "yes")
+    return host, port, password, secure
+
+
+NODELINK_HOST, NODELINK_PORT, NODELINK_PASSWORD, NODELINK_SECURE = (
+    _load_nodelink_config()
+)
 
 intents = rum.Intents.default()
 intents.message_content = True
@@ -29,6 +50,7 @@ async def on_ready():
         host=NODELINK_HOST,
         port=NODELINK_PORT,
         password=NODELINK_PASSWORD,
+        secure=NODELINK_SECURE,
         server_type=ServerType.NODELINK,
     )
     print("Connected to NodeLink node")
