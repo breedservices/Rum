@@ -198,12 +198,14 @@ class Player(VoiceProtocol):
             return
         voice: dict[str, Any] = {
             "token": token,
-            "endpoint": endpoint,
+            "endpoint": endpoint.split(":")[0]
+            if isinstance(endpoint, str)
+            else endpoint,
             "sessionId": session_id,
         }
         channel_id = getattr(self.channel, "id", None)
         if channel_id is not None:
-            voice["channelId"] = int(channel_id)
+            voice["channelId"] = str(channel_id)
         try:
             await node.update_player(guild_id, {"voice": voice})
         except Exception:  # noqa: BLE001
