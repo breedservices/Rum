@@ -196,10 +196,19 @@ class Player(VoiceProtocol):
         guild_id = self.guild_id
         if not node or not guild_id:
             return
-        await node.update_player(
-            guild_id,
-            {"voice": {"token": token, "endpoint": endpoint, "sessionId": session_id}},
-        )
+        try:
+            await node.update_player(
+                guild_id,
+                {
+                    "voice": {
+                        "token": token,
+                        "endpoint": endpoint,
+                        "sessionId": session_id,
+                    }
+                },
+            )
+        except Exception:  # noqa: BLE001
+            _log.exception("Failed to send voice update to node for guild %s", guild_id)
 
     @property
     def current(self) -> Track | None:

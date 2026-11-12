@@ -494,7 +494,11 @@ class Node:
             if path.startswith(("http://", "https://"))
             else self._base_url() + path
         )
-        _log.debug("Music node request: %s %s", method, url)
+        body_log = kwargs.get("json")
+        if body_log is not None:
+            _log.debug("Music node request: %s %s %r", method, url, body_log)
+        else:
+            _log.debug("Music node request: %s %s", method, url)
         async with session.request(method, url, headers=headers, **kwargs) as resp:
             if resp.status == 204:
                 _log.debug("Music node response: %s %s -> 204", method, url)
