@@ -12,6 +12,18 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Deprecated
+
+### Removed
+
+## [0.2.0] - 2026-11-12
+
+### Added
+
 - Added per-kind cache rules (`CacheKind`, `CacheRule`, `RuledCache`,
   `DefaultCacheProvider.cache_for` / `rule_for`) so caches can be enabled, capped,
   given a TTL, or trimmed to selected fields per kind.
@@ -44,10 +56,6 @@ These changes are available on the `master` branch, but have not yet been releas
   `pagetest_target` prefix command to `pagetest_target_prefix`, and made the
   background/async examples read the bot token from `BOT_TOKEN`.
 
-### Fixed
-
-### Deprecated
-
 ### Removed
 
 - Removed the Sphinx build and its infrastructure (`docs/conf.py`,
@@ -59,3 +67,6 @@ These changes are available on the `master` branch, but have not yet been releas
 - Removed the `docs` optional-dependency/requirements set and the setuptools
   packaging files (`setup.py`, `MANIFEST.in`, `requirements/*.txt`) replaced by the
   Hatchling configuration.
+
+[unreleased]: https://github.com/breedservices/Rum/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/breedservices/Rum/releases/tag/v0.2.0
