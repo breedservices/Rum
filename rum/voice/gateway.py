@@ -438,7 +438,7 @@ class VoiceWebSocket(DiscordWebSocket):
 
     async def poll_event(self) -> None:
         try:
-            msg = await self.ws.recv(timeout=30)
+            msg = await asyncio.wait_for(self.ws.recv(), 30)
         except asyncio.TimeoutError as exc:
             raise exc
         except WebSocketClosed as exc:
