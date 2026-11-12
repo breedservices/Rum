@@ -1,0 +1,516 @@
+# `rum.cog`
+
+## Classes
+
+### `Cog`
+
+```python
+class Cog(*args: Any, **kwargs: Any) -> CogT
+```
+
+The base class that all cogs must inherit from.
+
+A cog is a collection of commands, listeners, and optional state to help group commands together. More information on them can be found on the `ext_commands_cogs` page.
+
+When inheriting from this class, the options shown in `CogMeta` are equally valid here.
+
+#### `get_commands()`
+
+```python
+get_commands() -> list[ApplicationCommand]
+```
+
+#### Returns
+
+List\[`.ApplicationCommand`\]  
+A `list` of `.ApplicationCommand`s that are defined inside this cog.
+
+> [!NOTE]
+> This does not include subcommands.
+
+#### `walk_commands()`
+
+```python
+walk_commands() -> Generator[ApplicationCommand]
+```
+
+An iterator that recursively walks through this cog's commands and subcommands.
+
+#### Yields
+
+`.Command` | `.Group`  
+A command or group from the cog.
+
+#### `get_listeners()`
+
+```python
+get_listeners() -> list[tuple[str, Callable[..., Any]]]
+```
+
+Returns a `list` of (name, function) listener pairs that are defined in this cog.
+
+#### Returns
+
+List\[Tuple\[`str`, `coroutine <coroutine>`\]\]  
+The listeners defined in this cog.
+
+#### `listener()`
+
+```python
+listener(name: str = ..., once: bool = False) -> Callable[[FuncT], FuncT]
+```
+
+A decorator that marks a function as a listener.
+
+This is the cog equivalent of `.Bot.listen`.
+
+#### Parameters
+
+name: `str`  
+The name of the event being listened to. If not provided, it defaults to the function's name.
+
+once: `bool`  
+If this listener should only be called once after each cog load. Defaults to false.
+
+#### Raises
+
+TypeError  
+The function is not a coroutine function or a string was not passed as the name.
+
+#### `has_error_handler()`
+
+```python
+has_error_handler() -> bool
+```
+
+Checks whether the cog has an error handler.
+
+*Added in 1.7.*
+
+#### `cog_unload()`
+
+```python
+cog_unload() -> None
+```
+
+A special method that is called when the cog gets removed.
+
+This function **cannot** be a coroutine. It must be a regular function.
+
+Subclasses must replace this if they want special unloading behaviour.
+
+#### `bot_check_once()`
+
+```python
+bot_check_once(ctx: ApplicationContext) -> bool
+```
+
+A special method that registers as a `.Bot.check_once` check.
+
+This function **can** be a coroutine and must take a sole parameter, `ctx`, to represent the `.Context` or `.ApplicationContext`.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context.
+
+#### `bot_check()`
+
+```python
+bot_check(ctx: ApplicationContext) -> bool
+```
+
+A special method that registers as a `.Bot.check` check.
+
+This function **can** be a coroutine and must take a sole parameter, `ctx`, to represent the `.Context` or `.ApplicationContext`.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context.
+
+#### `cog_check()`
+
+```python
+cog_check(ctx: ApplicationContext) -> bool
+```
+
+A special method that registers as a `discord.ext.commands.check` for every command and subcommand in this cog.
+
+This function **can** be a coroutine and must take a sole parameter, `ctx`, to represent the `.Context` or `.ApplicationContext`.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context.
+
+#### `cog_command_error()`
+
+```python
+cog_command_error(ctx: ApplicationContext, error: Exception) -> None
+```
+
+A special method that is called whenever an error is dispatched inside this cog.
+
+This is similar to `.on_command_error` except only applying to the commands inside this cog.
+
+This **must** be a coroutine.
+
+#### Parameters
+
+ctx: `.ApplicationContext`  
+The invocation context where the error happened.
+
+error: `ApplicationCommandError`  
+The error that happened.
+
+#### `cog_before_invoke()`
+
+```python
+cog_before_invoke(ctx: ApplicationContext) -> None
+```
+
+A special method that acts as a cog local pre-invoke hook.
+
+This is similar to `.ApplicationCommand.before_invoke`.
+
+This **must** be a coroutine.
+
+#### Parameters
+
+ctx: `.ApplicationContext`  
+The invocation context.
+
+#### `cog_after_invoke()`
+
+```python
+cog_after_invoke(ctx: ApplicationContext) -> None
+```
+
+A special method that acts as a cog local post-invoke hook.
+
+This is similar to `.ApplicationCommand.after_invoke`.
+
+This **must** be a coroutine.
+
+#### Parameters
+
+ctx: `.ApplicationContext`  
+The invocation context.
+
+### `CogMeta`
+
+```python
+class CogMeta(*args: Any, **kwargs: Any) -> CogMeta
+```
+
+A metaclass for defining a cog.
+
+Note that you should probably not use this directly. It is exposed purely for documentation purposes along with making custom metaclasses to intermix with other metaclasses such as the `abc.ABCMeta` metaclass.
+
+For example, to create an abstract cog mixin class, the following would be done.
+
+``` python3
+import abc
+
+class CogABCMeta(discord.CogMeta, abc.ABCMeta):
+    pass
+
+class SomeMixin(metaclass=abc.ABCMeta):
+    pass
+
+class SomeCogMixin(SomeMixin, discord.Cog, metaclass=CogABCMeta):
+    pass
+```
+
+> [!NOTE]
+> When passing an attribute of a metaclass that is documented below, note that you must pass it as a keyword-only argument to the class creation like the following example:
+>
+> ``` python3
+> class MyCog(discord.Cog, name='My Cog'):
+>     pass
+> ```
+
+#### Attributes
+
+name: `str`  
+The cog name. By default, it is the name of the class with no modification.
+
+description: `str`  
+The cog description. By default, it is the cleaned docstring of the class.
+
+*Added in 1.6.*
+
+command_attrs: `dict`  
+A list of attributes to apply to every command inside this cog. The dictionary is passed into the `Command` options at `__init__`. If you specify attributes inside the command attribute in the class, it will override the one specified inside this attribute. For example:
+
+``` python3
+class MyCog(discord.Cog, command_attrs=dict(hidden=True)):
+    @discord.slash_command()
+    async def foo(self, ctx):
+        pass # hidden -> True
+
+    @discord.slash_command(hidden=False)
+    async def bar(self, ctx):
+        pass # hidden -> False
+```
+
+guild_ids: List\[`int`\] | `None`  
+A shortcut to `.command_attrs`, what `guild_ids` should all application commands have in the cog. You can override this by setting `guild_ids` per command.
+
+*Added in 2.0.*
+
+#### `qualified_name()`
+
+```python
+qualified_name() -> str
+```
+
+### `CogMixin`
+
+```python
+class CogMixin(*args, **kwargs)
+```
+
+#### `add_cog()`
+
+```python
+add_cog(cog: Cog, *, override: bool = False) -> None
+```
+
+Adds a "cog" to the bot.
+
+A cog is a class that has its own event listeners and commands.
+
+*Changed in 2.0
+
+`.ClientException` is raised when a cog with the same name is already loaded.*
+
+#### Parameters
+
+cog: `.Cog`  
+The cog to register to the bot.
+
+override: `bool`  
+If a previously loaded cog with the same name should be ejected instead of raising an error.
+
+*Added in 2.0.*
+
+#### Raises
+
+TypeError  
+The cog does not inherit from `.Cog`.
+
+ApplicationCommandError  
+An error happened during loading.
+
+ClientException  
+A cog with the same name is already loaded.
+
+#### `get_cog()`
+
+```python
+get_cog(name: str) -> Cog | None
+```
+
+Gets the cog instance requested.
+
+If the cog is not found, `None` is returned instead.
+
+#### Parameters
+
+name: `str`  
+The name of the cog you are requesting. This is equivalent to the name passed via keyword argument in class creation or the class name if unspecified.
+
+#### Returns
+
+`Cog` | `None`  
+The cog that was requested. If not found, returns `None`.
+
+#### `remove_cog()`
+
+```python
+remove_cog(name: str) -> Cog | None
+```
+
+Removes a cog from the bot and returns it.
+
+All registered commands and event listeners that the cog has registered will be removed as well.
+
+If no cog is found then this method has no effect.
+
+#### Parameters
+
+name: `str`  
+The name of the cog to remove.
+
+#### Returns
+
+`Cog` | `None`  
+The cog that was removed. `None` if not found.
+
+#### `load_extension()`
+
+```python
+load_extension(name, *, package=None, recursive=False, store=False) -> dict[str, Exception | bool] | list[str] | None
+```
+
+Loads an extension.
+
+An extension is a python module that contains commands, cogs, or listeners.
+
+An extension must have a global function, `setup` defined as the entry point on what to do when the extension is loaded. This entry point must have a single argument, the `bot`.
+
+The extension passed can either be the direct name of a file within the current working directory or a folder that contains multiple extensions.
+
+#### Parameters
+
+name: `str`  
+The extension or folder name to load. It must be dot separated like regular Python imports if accessing a submodule. e.g. `foo.test` if you want to import `foo/test.py`.
+
+package: `str` | `None`  
+The package name to resolve relative imports with. This is required when loading an extension using a relative path, e.g `.foo.test`. Defaults to `None`.
+
+*Added in 1.7.*
+
+recursive: `bool` | `None`  
+If subdirectories under the given head directory should be recursively loaded. Defaults to `False`.
+
+*Added in 2.0.*
+
+store: `bool` | `None`  
+If exceptions should be stored or raised. If set to `True`, all exceptions encountered will be stored in a returned dictionary as a load status. If set to `False`, if any exceptions are encountered they will be raised and the bot will be closed. If no exceptions are encountered, a list of loaded extension names will be returned. Defaults to `False`.
+
+*Added in 2.0.*
+
+#### Returns
+
+Dict\[`str`, `errors.ExtensionError` | `bool`\] | List\[`str`\] | `None`  
+If the store parameter is set to `True`, a dictionary will be returned that contains keys to represent the loaded extension names. The values bound to each key can either be an exception that occurred when loading that extension or a `True` boolean representing a successful load. If the store parameter is set to `False`, either a list containing a list of loaded extensions or nothing due to an encountered exception.
+
+#### Raises
+
+ExtensionNotFound  
+The extension could not be imported. This is also raised if the name of the extension could not be resolved using the provided `package` parameter.
+
+ExtensionAlreadyLoaded  
+The extension is already loaded.
+
+NoEntryPointError  
+The extension does not have a setup function.
+
+ExtensionFailed  
+The extension or its setup function had an execution error.
+
+#### `load_extensions()`
+
+```python
+load_extensions(*names, package=None, recursive=False, store=False) -> dict[str, Exception | bool] | list[str] | None
+```
+
+Loads multiple extensions at once.
+
+This method simplifies the process of loading multiple extensions by handling the looping of `load_extension`.
+
+#### Parameters
+
+names: `str`  
+The extension or folder names to load. It must be dot separated like regular Python imports if accessing a submodule. e.g. `foo.test` if you want to import `foo/test.py`.
+
+package: `str` | `None`  
+The package name to resolve relative imports with. This is required when loading an extension using a relative path, e.g `.foo.test`. Defaults to `None`.
+
+*Added in 1.7.*
+
+recursive: `bool` | `None`  
+If subdirectories under the given head directory should be recursively loaded. Defaults to `False`.
+
+*Added in 2.0.*
+
+store: `bool` | `None`  
+If exceptions should be stored or raised. If set to `True`, all exceptions encountered will be stored in a returned dictionary as a load status. If set to `False`, if any exceptions are encountered they will be raised and the bot will be closed. If no exceptions are encountered, a list of loaded extension names will be returned. Defaults to `False`.
+
+*Added in 2.0.*
+
+#### Returns
+
+Dict\[`str`, `errors.ExtensionError` | `bool`\] | List\[`str`\] | `None`  
+If the store parameter is set to `True`, a dictionary will be returned that contains keys to represent the loaded extension names. The values bound to each key can either be an exception that occurred when loading that extension or a `True` boolean representing a successful load. If the store parameter is set to `False`, either a list containing names of loaded extensions or nothing due to an encountered exception.
+
+#### Raises
+
+ExtensionNotFound  
+A given extension could not be imported. This is also raised if the name of the extension could not be resolved using the provided `package` parameter.
+
+ExtensionAlreadyLoaded  
+A given extension is already loaded.
+
+NoEntryPointError  
+A given extension does not have a setup function.
+
+ExtensionFailed  
+A given extension or its setup function had an execution error.
+
+#### `unload_extension()`
+
+```python
+unload_extension(name: str, *, package: str | None = None) -> None
+```
+
+Unloads an extension.
+
+When the extension is unloaded, all commands, listeners, and cogs are removed from the bot and the module is un-imported.
+
+The extension can provide an optional global function, `teardown`, to do miscellaneous clean-up if necessary. This function takes a single parameter, the `bot`, similar to `setup` from `.Bot.load_extension`.
+
+#### Parameters
+
+name: `str`  
+The extension name to unload. It must be dot separated like regular Python imports if accessing a submodule. e.g. `foo.test` if you want to import `foo/test.py`.
+
+package: `str` | `None`  
+The package name to resolve relative imports with. This is required when unloading an extension using a relative path, e.g `.foo.test`. Defaults to `None`.
+
+*Added in 1.7.*
+
+#### Raises
+
+ExtensionNotFound  
+The name of the extension could not be resolved using the provided `package` parameter.
+
+ExtensionNotLoaded  
+The extension was not loaded.
+
+#### `reload_extension()`
+
+```python
+reload_extension(name: str, *, package: str | None = None) -> None
+```
+
+Atomically reloads an extension.
+
+This replaces the extension with the same extension, only refreshed. This is equivalent to a `unload_extension` followed by a `load_extension` except done in an atomic way. That is, if an operation fails mid-reload then the bot will roll back to the prior working state.
+
+#### Parameters
+
+name: `str`  
+The extension name to reload. It must be dot separated like regular Python imports if accessing a submodule. e.g. `foo.test` if you want to import `foo/test.py`.
+
+package: `str` | `None`  
+The package name to resolve relative imports with. This is required when reloading an extension using a relative path, e.g `.foo.test`. Defaults to `None`.
+
+*Added in 1.7.*
+
+#### Raises
+
+ExtensionNotLoaded  
+The extension was not loaded.
+
+ExtensionNotFound  
+The extension could not be imported. This is also raised if the name of the extension could not be resolved using the provided `package` parameter.
+
+NoEntryPointError  
+The extension does not have a setup function.
+
+ExtensionFailed  
+The extension setup function had an execution error.

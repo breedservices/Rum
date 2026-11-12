@@ -1,0 +1,340 @@
+# `rum.iterators`
+
+## Classes
+
+### `ArchivedThreadIterator`
+
+```python
+class ArchivedThreadIterator(channel_id: int, guild: Guild, limit: int | None, joined: bool, private: bool, before: Snowflake | datetime.datetime | None = None)
+```
+
+#### `next()`
+
+```python
+next() -> Thread
+```
+
+#### `get_archive_timestamp()`
+
+```python
+get_archive_timestamp(data: ThreadPayload) -> str
+```
+
+#### `get_thread_id()`
+
+```python
+get_thread_id(data: ThreadPayload) -> str
+```
+
+#### `fill_queue()`
+
+```python
+fill_queue() -> None
+```
+
+#### `create_thread()`
+
+```python
+create_thread(data: ThreadPayload) -> Thread
+```
+
+### `AuditLogIterator`
+
+```python
+class AuditLogIterator(guild, limit=None, before=None, after=None, user_id=None, action_type=None)
+```
+
+#### `next()`
+
+```python
+next() -> AuditLogEntry
+```
+
+### `BanIterator`
+
+```python
+class BanIterator(guild, limit=None, before=None, after=None)
+```
+
+#### `next()`
+
+```python
+next() -> BanEntry
+```
+
+#### `fill_bans()`
+
+```python
+fill_bans()
+```
+
+#### `create_ban()`
+
+```python
+create_ban(data)
+```
+
+### `EntitlementIterator`
+
+```python
+class EntitlementIterator(state, user_id: int | None = None, sku_ids: list[int] | None = None, before: datetime.datetime | Object | None = None, after: datetime.datetime | Object | None = None, limit: int | None = None, guild_id: int | None = None, exclude_ended: bool | None = None)
+```
+
+#### `next()`
+
+```python
+next() -> Entitlement
+```
+
+#### `create_entitlement()`
+
+```python
+create_entitlement(data) -> Entitlement
+```
+
+#### `fill_entitlements()`
+
+```python
+fill_entitlements()
+```
+
+### `GuildIterator`
+
+```python
+class GuildIterator(bot, limit, before=None, after=None, with_counts=True)
+```
+
+Iterator for receiving the client's guilds.
+
+The guilds endpoint has the same two behaviours as described in `HistoryIterator`: If `before` is specified, the guilds endpoint returns the `limit` newest guilds before `before`, sorted with newest first. For filling over 100 guilds, update the `before` parameter to the oldest guild received. Guilds will be returned in order by time. If <span class="title-ref">after</span> is specified, it returns the `limit` oldest guilds after `after`, sorted with newest first. For filling over 100 guilds, update the `after` parameter to the newest guild received, If guilds are not reversed, they will be out of order (99-0, 199-100, so on)
+
+Not that if both `before` and `after` are specified, `before` is ignored by the guilds endpoint.
+
+#### Parameters
+
+bot: `discord.Client`  
+The client to retrieve the guilds from.
+
+limit: `int`  
+Maximum number of guilds to retrieve.
+
+before: `abc.Snowflake` | `datetime.datetime` | `None`  
+Object before which all guilds must be.
+
+after: `abc.Snowflake` | `datetime.datetime` | `None`  
+Object after which all guilds must be.
+
+with_counts: `bool`  
+Whether to include member count information in guilds. This fills the `.Guild.approximate_member_count` and `.Guild.approximate_presence_count` fields. Defaults to `True`.
+
+#### `next()`
+
+```python
+next() -> Guild
+```
+
+#### `create_guild()`
+
+```python
+create_guild(data)
+```
+
+#### `fill_guilds()`
+
+```python
+fill_guilds()
+```
+
+### `HistoryIterator`
+
+```python
+class HistoryIterator(messageable, limit, before=None, after=None, around=None, oldest_first=None)
+```
+
+Iterator for receiving a channel's message history.
+
+The messages endpoint has two behaviours we care about here: If `before` is specified, the messages endpoint returns the <span class="title-ref">limit</span> newest messages before `before`, sorted with newest first. For filling over 100 messages, update the `before` parameter to the oldest message received. Messages will be returned in order by time. If `after` is specified, it returns the `limit` oldest messages after `after`, sorted with newest first. For filling over 100 messages, update the `after` parameter to the newest message received. If messages are not reversed, they will be out of order (99-0, 199-100, so on)
+
+A note that if both `before` and `after` are specified, `before` is ignored by the messages endpoint.
+
+#### Parameters
+
+messageable: `abc.Messageable`  
+Messageable class to retrieve message history from.
+
+limit: `int`  
+Maximum number of messages to retrieve
+
+before: `abc.Snowflake` | `datetime.datetime` | `None`  
+Message before which all messages must be.
+
+after: `abc.Snowflake` | `datetime.datetime` | `None`  
+Message after which all messages must be.
+
+around: `abc.Snowflake` | `datetime.datetime` | `None`  
+Message around which all messages must be. Limit max 101. Note that if limit is an even number, this will return at most limit+1 messages.
+
+oldest_first: `bool` | `None`  
+If set to `True`, return messages in oldest-\>newest order. Defaults to `True` if <span class="title-ref">after</span> is specified, otherwise `False`.
+
+#### `next()`
+
+```python
+next() -> Message
+```
+
+#### `fill_messages()`
+
+```python
+fill_messages()
+```
+
+### `MemberIterator`
+
+```python
+class MemberIterator(guild, limit=1000, after=None)
+```
+
+#### `next()`
+
+```python
+next() -> Member
+```
+
+#### `fill_members()`
+
+```python
+fill_members()
+```
+
+#### `create_member()`
+
+```python
+create_member(data)
+```
+
+### `MessagePinIterator`
+
+```python
+class MessagePinIterator(channel: MessageableChannel, limit: int | None, before: Snowflake | datetime.datetime | None = None)
+```
+
+#### `next()`
+
+```python
+next() -> MessagePin
+```
+
+#### `get_last_pinned()`
+
+```python
+get_last_pinned(data: MessagePinPayload) -> str
+```
+
+#### `fill_queue()`
+
+```python
+fill_queue() -> None
+```
+
+#### `create_pin()`
+
+```python
+create_pin(data: MessagePinPayload) -> MessagePin
+```
+
+#### `retrieve_inner()`
+
+```python
+retrieve_inner() -> list[Message]
+```
+
+### `ReactionIterator`
+
+```python
+class ReactionIterator(message, emoji, limit=100, after=None, type=None)
+```
+
+#### `next()`
+
+```python
+next() -> User | Member
+```
+
+#### `fill_users()`
+
+```python
+fill_users()
+```
+
+### `ScheduledEventSubscribersIterator`
+
+```python
+class ScheduledEventSubscribersIterator(event: ScheduledEvent, limit: int | None, with_member: bool = False, before: datetime.datetime | int | None = None, after: datetime.datetime | int | None = None)
+```
+
+#### `next()`
+
+```python
+next() -> User | Member
+```
+
+#### `member_from_payload()`
+
+```python
+member_from_payload(data)
+```
+
+#### `user_from_payload()`
+
+```python
+user_from_payload(data)
+```
+
+#### `fill_subs()`
+
+```python
+fill_subs()
+```
+
+### `SubscriptionIterator`
+
+```python
+class SubscriptionIterator(state, sku_id: int, limit: int = None, before: datetime.datetime | None = None, after: datetime.datetime | None = None, user_id: int | None = None)
+```
+
+#### `next()`
+
+```python
+next() -> Guild
+```
+
+#### `create_subscription()`
+
+```python
+create_subscription(data) -> Subscription
+```
+
+#### `fill_subscriptions()`
+
+```python
+fill_subscriptions()
+```
+
+### `VoteIterator`
+
+```python
+class VoteIterator(message, answer, limit=100, after=None)
+```
+
+#### `next()`
+
+```python
+next() -> User | Member
+```
+
+#### `fill_users()`
+
+```python
+fill_users()
+```

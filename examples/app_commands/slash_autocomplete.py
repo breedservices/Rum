@@ -29,8 +29,8 @@ DEALINGS IN THE SOFTWARE.
 # It can also be set in the .env file in the repository root.
 #
 # slash_autocomplete.py
-from functools import partial
 import os
+from functools import partial
 
 import rum
 from rum.commands import option

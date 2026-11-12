@@ -1,0 +1,134 @@
+# `rum.commands.options`
+
+## Classes
+
+### `Option`
+
+```python
+class Option(input_type: InputType = <class 'str'>, /, description: str | None = None, **kwargs) -> None
+```
+
+Represents a selectable option for a slash command.
+
+#### Attributes
+
+input_type: Type\[`str`\] | Type\[`bool`\] | Type\[`int`\] | Type\[`float`\] | Type\[`.abc.GuildChannel`\] | Type\[`Thread`\] | Type\[`Member`\] | Type\[`User`\] | Type\[`Attachment`\] | Type\[`Role`\] | Type\[`.abc.Mentionable`\] | `SlashCommandOptionType` | Type\[`.ext.commands.Converter`\] | Type\[`enums.Enum`\] | Type\[`Enum`\]  
+The type of input that is expected for this option. This can be a `SlashCommandOptionType`, an associated class, a channel type, a `Converter`, a converter class or an `enum.Enum`. If a `enum.Enum` is used and it has up to 25 values, `choices` will be automatically filled. If the `enum.Enum` has more than 25 values, `autocomplete` will be implemented with `discord.utils.basic_autocomplete` instead.
+
+name: `str`  
+The name of this option visible in the UI. Inherits from the variable name if not provided as a parameter.
+
+description: `str` | `None`  
+The description of this option. Must be 100 characters or fewer. If `input_type` is a `enum.Enum` and `description` is not specified, `input_type`'s docstring will be used.
+
+choices: List\[`Any` | `OptionChoice`\] | `None`  
+The list of available choices for this option. Can be a list of values or `OptionChoice` objects (which represent a name:value pair). If provided, the input from the user must match one of the choices in the list.
+
+required: `bool` | `None`  
+Whether this option is required.
+
+default: `Any` | `None`  
+The default value for this option. If provided, `required` will be considered `False`.
+
+min_value: `int` | `None`  
+The minimum value that can be entered. Only applies to Options with an `.input_type` of `int` or `float`.
+
+max_value: `int` | `None`  
+The maximum value that can be entered. Only applies to Options with an `.input_type` of `int` or `float`.
+
+min_length: `int` | `None`  
+The minimum length of the string that can be entered. Must be between 0 and 6000 (inclusive). Only applies to Options with an `input_type` of `str`.
+
+max_length: `int` | `None`  
+The maximum length of the string that can be entered. Must be between 1 and 6000 (inclusive). Only applies to Options with an `input_type` of `str`.
+
+channel_types: list\[`discord.ChannelType`\] | None  
+A list of channel types that can be selected in this option. Only applies to Options with an `input_type` of `discord.SlashCommandOptionType.channel`. If this argument is used, `input_type` will be ignored.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this option. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+description_localizations: Dict\[`str`, `str`\]  
+The description localizations for this option. The values of this should be `"locale": "description"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+#### Examples
+
+Basic usage: :
+
+    @bot.slash_command(guild_ids=[...])
+    async def hello(
+        ctx: discord.ApplicationContext,
+        name: Option(str, "Enter your name"),
+        age: Option(int, "Enter your age", min_value=1, max_value=99, default=18)
+        # passing the default value makes an argument optional
+        # you also can create optional argument using:
+        # age: Option(int, "Enter your age") = 18
+    ):
+        await ctx.respond(f"Hello! Your name is {name} and you are {age} years old.")
+
+*Added in 2.0.*
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict
+```
+
+### `OptionChoice`
+
+```python
+class OptionChoice(name: str, value: str | int | float | None = None, name_localizations: dict[str, str] = ...)
+```
+
+Represents a name:value pairing for a selected `.Option`.
+
+*Added in 2.0.*
+
+#### Attributes
+
+name: `str`  
+The name of the choice. Shown in the UI when selecting an option.
+
+value: `str` | `int` | `float` | `None`  
+The value of the choice. If not provided, will use the value of `name`.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this choice. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, str | int | float]
+```
+
+### `ThreadOption`
+
+```python
+class ThreadOption(thread_type: "Literal['public', 'private', 'news']")
+```
+
+Represents a class that can be passed as the `input_type` for an `Option` class.
+
+*Added in 2.0.*
+
+#### Parameters
+
+thread_type: Literal\["public", "private", "news"\]  
+The thread type to expect for this options input.
+
+## Functions
+
+### `option()`
+
+```python
+option(name, input_type=None, **kwargs)
+```
+
+A decorator that can be used instead of typehinting `.Option`.
+
+*Added in 2.0.*
+
+#### Attributes
+
+parameter_name: `str`  
+The name of the target function parameter this option is mapped to. This allows you to have a separate UI `name` and parameter name.

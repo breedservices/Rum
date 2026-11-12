@@ -1,0 +1,285 @@
+# `rum.appinfo`
+
+## Classes
+
+### `AppInfo`
+
+```python
+class AppInfo(state: ConnectionState, data: AppInfoPayload)
+```
+
+Represents the application info for the bot provided by Discord.
+
+#### Attributes
+
+id: `int`  
+The application ID.
+
+name: `str`  
+The application name.
+
+owner: `User`  
+The application owner.
+
+team: `Team` | `None`  
+The application's team.
+
+*Added in 1.3.*
+
+description: `str`  
+The application description.
+
+bot_public: `bool`  
+Whether the bot can be invited by anyone or if it is locked to the application owner.
+
+bot_require_code_grant: `bool`  
+Whether the bot requires the completion of the full OAuth2 code grant flow to join.
+
+rpc_origins: List\[`str`\] | `None`  
+A list of RPC origin URLs, if RPC is enabled.
+
+verify_key: `str`  
+The hex encoded key for verification in interactions.
+
+*Added in 1.3.*
+
+guild_id: `int` | `None`  
+If this application is a game sold on Discord, this field will be the guild to which it has been linked to.
+
+*Added in 1.3.*
+
+primary_sku_id: `int` | `None`  
+If this application is a game sold on Discord, this field will be the id of the "Game SKU" that is created, if it exists.
+
+*Added in 1.3.*
+
+slug: `str` | `None`  
+If this application is a game sold on Discord, this field will be the URL slug that links to the store page.
+
+*Added in 1.3.*
+
+terms_of_service_url: `str` | `None`  
+The application's terms of service URL, if set.
+
+*Added in 2.0.*
+
+privacy_policy_url: `str` | `None`  
+The application's privacy policy URL, if set.
+
+*Added in 2.0.*
+
+approximate_guild_count: `int` | `None`  
+The approximate count of guilds to which the app has been added, if any.
+
+*Added in 2.7.*
+
+approximate_user_install_count: `int` | `None`  
+The approximate count of users who have installed the application, if any.
+
+*Added in 2.7.*
+
+redirect_uris: List\[`str`\] | `None`  
+The list of redirect URIs for the application, if set.
+
+*Added in 2.7.*
+
+interactions_endpoint_url: `str` | `None`  
+The interactions endpoint URL for the application, if set.
+
+*Added in 2.7.*
+
+role_connections_verification_url: `str` | `None`  
+The role connection verification URL for the application, if set.
+
+*Added in 2.7.*
+
+install_params: `AppInstallParams` | `None`  
+The settings for the application's default in-app authorization link, if set.
+
+*Changed in 2.8 Fixed incorrect type documentation.*
+
+integration_types_config: `IntegrationTypesConfig` | `None`  
+Per-installation context configuration for guild (`0`) and user (`1`) contexts.
+
+*Added in 2.8.*
+
+event_webhooks_url: `str` | `None`  
+The URL used to receive application event webhooks, if set.
+
+*Added in 2.8.*
+
+event_webhooks_status: `ApplicationEventWebhookStatus` | `None`  
+The status of event webhooks for the application, if set.
+
+*Added in 2.8.*
+
+event_webhooks_types: List\[`str`\] | `None`  
+List of event webhook types subscribed to, if set.
+
+*Added in 2.8.*
+
+tags: List\[`str`\] | `None`  
+The list of tags describing the content and functionality of the app, if set.
+
+Maximum of 5 tags.
+
+*Added in 2.7.*
+
+custom_install_url: `str` | `None`  
+The default custom authorization URL for the application, if set.
+
+*Added in 2.7.*
+
+approximate_user_authorization_count: `int` | `None`  
+The approximate count of users who have authorized the application, if any.
+
+*Added in 2.8.*
+
+bot: `User` | `None`  
+The bot user associated with this application, if any.
+
+*Added in 2.8.*
+
+#### `edit()`
+
+```python
+edit(*, description: str | None = ..., icon: bytes | None = ..., cover_image: bytes | None = ..., tags: list[str] | None = ..., terms_of_service_url: str | None = ..., privacy_policy_url: str | None = ..., interactions_endpoint_url: str | None = ..., role_connections_verification_url: str | None = ..., install_params: AppInstallParams | None = ..., custom_install_url: str | None = ..., integration_types_config: IntegrationTypesConfig | None = ..., flags: ApplicationFlags | None = ..., event_webhooks_url: str | None = ..., event_webhooks_status: ApplicationEventWebhookStatus = ..., event_webhooks_types: list[str] | None = ...) -> AppInfo
+```
+
+*(coroutine)*
+
+Edit the current application's settings.
+
+*Added in 2.8.*
+
+#### Parameters
+
+description: `str` | `None`  
+The new application description or `None` to clear.
+
+icon: `bytes` | `None`  
+New icon image. If `bytes` is given it will be base64 encoded automatically. Pass `None` to clear.
+
+cover_image: `bytes` | `None`  
+New cover image for the store embed. If `bytes` is given it will be base64 encoded automatically. Pass `None` to clear.
+
+tags: List\[`str`\] | `None`  
+List of tags for the application (max 5). Pass `None` to clear.
+
+terms_of_service_url: `str` | `None`  
+The application's Terms of Service URL. Pass `None` to clear.
+
+privacy_policy_url: `str` | `None`  
+The application's Privacy Policy URL. Pass `None` to clear.
+
+interactions_endpoint_url: `str` | `None`  
+The interactions endpoint callback URL. Pass `None` to clear.
+
+role_connections_verification_url: `str` | `None`  
+The role connection verification URL for the application. Pass `None` to clear.
+
+install_params: `AppInstallParams` | `None`  
+Settings for the application's default in-app authorization link. Pass `None` to clear. Omit entirely to leave unchanged.
+
+custom_install_url: `str` | `None`  
+The default custom authorization URL for the application. Pass `None` to clear.
+
+integration_types_config: `IntegrationTypesConfig` | `None`  
+Object specifying per-installation context configuration (guild and/or user). You may set contexts individually and omit others to leave them unchanged. Pass the object with a context explicitly set to `None` to clear just that context, or pass `None` to clear the entire integration types configuration.
+
+flags: `ApplicationFlags` | `None`  
+Application public flags. Pass `None` to clear (not typical).
+
+event_webhooks_url: `str` | `None`  
+Event webhooks callback URL for receiving application webhook events. Pass `None` to clear.
+
+event_webhooks_status: `ApplicationEventWebhookStatus`  
+The desired webhook status.
+
+event_webhooks_types: List\[`str`\] | `None`  
+List of webhook event types to subscribe to. Pass `None` to clear.
+
+#### Returns
+
+`.AppInfo`  
+The updated application information.
+
+### `AppInstallParams`
+
+```python
+class AppInstallParams(data: AppInstallParamsPayload) -> None
+```
+
+Represents the settings for the custom authorization URL of an application.
+
+*Added in 2.7.*
+
+#### Attributes
+
+scopes: List\[`str`\]  
+The list of OAuth2 scopes for adding the application to a guild.
+
+permissions: `Permissions`  
+The permissions to request for the bot role in the guild.
+
+### `IntegrationTypesConfig`
+
+```python
+class IntegrationTypesConfig(*, guild: AppInstallParams | None = ..., user: AppInstallParams | None = ...) -> None
+```
+
+Represents per-installation context configuration for an application.
+
+This object is used to build the payload for the `integration_types_config` field when editing an application.
+
+*Added in 2.8.*
+
+#### Parameters
+
+guild: `AppInstallParams` | `None`  
+The configuration for the guild installation context. Omit to leave unchanged; pass `None` to clear.
+
+user: `AppInstallParams` | `None`  
+The configuration for the user installation context. Omit to leave unchanged; pass `None` to clear.
+
+#### `from_payload()`
+
+```python
+from_payload(data: dict[int | str, dict[str, Any] | None] | None) -> IntegrationTypesConfig | None
+```
+
+### `PartialAppInfo`
+
+```python
+class PartialAppInfo(*, state: ConnectionState, data: PartialAppInfoPayload)
+```
+
+Represents a partial AppInfo given by `discord.abc.GuildChannel.create_invite`
+
+*Added in 2.0.*
+
+#### Attributes
+
+id: `int`  
+The application ID.
+
+name: `str`  
+The application name.
+
+description: `str`  
+The application description.
+
+rpc_origins: List\[`str`\] | `None`  
+A list of RPC origin URLs, if RPC is enabled.
+
+summary: `str`  
+If this application is a game sold on Discord, this field will be the summary field for the store page of its primary SKU.
+
+verify_key: `str`  
+The hex encoded key for verification in interactions.
+
+terms_of_service_url: `str` | `None`  
+The application's terms of service URL, if set.
+
+privacy_policy_url: `str` | `None`  
+The application's privacy policy URL, if set.

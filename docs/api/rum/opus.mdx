@@ -1,0 +1,245 @@
+# `rum.opus`
+
+## Classes
+
+### `ApplicationCtl`
+
+```python
+class ApplicationCtl(...)
+```
+
+dict() -\> new empty dictionary dict(mapping) -\> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -\> new dictionary initialized as if via: d = {} for k, v in iterable: d\[k\] = v dict(\*\*kwargs) -\> new dictionary initialized with the name=value pairs in the keyword argument list. For example: dict(one=1, two=2)
+
+### `BandCtl`
+
+```python
+class BandCtl(...)
+```
+
+dict() -\> new empty dictionary dict(mapping) -\> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -\> new dictionary initialized as if via: d = {} for k, v in iterable: d\[k\] = v dict(\*\*kwargs) -\> new dictionary initialized with the name=value pairs in the keyword argument list. For example: dict(one=1, two=2)
+
+### `Decoder`
+
+```python
+class Decoder() -> None
+```
+
+#### `packet_get_nb_frames()`
+
+```python
+packet_get_nb_frames(data)
+```
+
+Gets the number of frames in an Opus packet
+
+#### `packet_get_nb_channels()`
+
+```python
+packet_get_nb_channels(data)
+```
+
+Gets the number of channels in an Opus packet
+
+#### `packet_get_samples_per_frame()`
+
+```python
+packet_get_samples_per_frame(data)
+```
+
+Gets the number of samples per frame from an Opus packet
+
+#### `set_gain()`
+
+```python
+set_gain(dB)
+```
+
+Sets the decoder gain in dB, from -128 to 128.
+
+#### `set_volume()`
+
+```python
+set_volume(mult)
+```
+
+Sets the output volume as a float percent, i.e. 0.5 for 50%, 1.75 for 175%, etc.
+
+#### `decode()`
+
+```python
+decode(data: bytes | None, *, fec: bool = True)
+```
+
+### `DecoderStruct`
+
+```python
+class DecoderStruct(...)
+```
+
+Structure base class
+
+### `Encoder`
+
+```python
+class Encoder(*, application: APPLICATION_CTL = 'audio', bitrate: int = 128, fec: bool = True, expected_packet_loss: float = 0.15, bandwidth: BAND_CTL = 'full', signal_type: SIGNAL_CTL = 'auto') -> None
+```
+
+#### `set_bitrate()`
+
+```python
+set_bitrate(kbps: int) -> int
+```
+
+#### `set_bandwidth()`
+
+```python
+set_bandwidth(req: BAND_CTL) -> None
+```
+
+#### `set_signal_type()`
+
+```python
+set_signal_type(req: SIGNAL_CTL) -> None
+```
+
+#### `set_fec()`
+
+```python
+set_fec(enabled: bool = True) -> None
+```
+
+#### `set_expected_packet_loss_percent()`
+
+```python
+set_expected_packet_loss_percent(percentage: float) -> None
+```
+
+#### `encode()`
+
+```python
+encode(pcm: bytes, frame_size: int | None = None) -> bytes
+```
+
+### `EncoderStruct`
+
+```python
+class EncoderStruct(...)
+```
+
+Structure base class
+
+### `OpusError`
+
+```python
+class OpusError(code: int = 0, message: str | None = None)
+```
+
+An exception that is thrown for libopus related errors.
+
+#### Attributes
+
+code: `int`  
+The error code returned.
+
+### `OpusNotLoaded`
+
+```python
+class OpusNotLoaded(...)
+```
+
+An exception that is thrown for when libopus is not loaded.
+
+### `PacketDecoder`
+
+```python
+class PacketDecoder(router: PacketRouter, ssrc: int) -> None
+```
+
+#### `push_packet()`
+
+```python
+push_packet(packet: Packet) -> None
+```
+
+#### `pop_data()`
+
+```python
+pop_data(*, timeout: float = 0) -> VoiceData | None
+```
+
+#### `set_user_id()`
+
+```python
+set_user_id(user_id: int) -> None
+```
+
+#### `reset()`
+
+```python
+reset() -> None
+```
+
+#### `destroy()`
+
+```python
+destroy() -> None
+```
+
+### `SignalCtl`
+
+```python
+class SignalCtl(...)
+```
+
+dict() -\> new empty dictionary dict(mapping) -\> new dictionary initialized from a mapping object's (key, value) pairs dict(iterable) -\> new dictionary initialized as if via: d = {} for k, v in iterable: d\[k\] = v dict(\*\*kwargs) -\> new dictionary initialized with the name=value pairs in the keyword argument list. For example: dict(one=1, two=2)
+
+## Functions
+
+### `is_loaded()`
+
+```python
+is_loaded() -> bool
+```
+
+Function to check if opus lib is successfully loaded either via the `ctypes.util.find_library` call of `load_opus`.
+
+This must return `True` for voice to work.
+
+#### Returns
+
+`bool`  
+Indicates if the opus library has been loaded.
+
+### `libopus_loader()`
+
+```python
+libopus_loader(name: str) -> Any
+```
+
+### `load_opus()`
+
+```python
+load_opus(name: str) -> None
+```
+
+Loads the libopus shared library for use with voice.
+
+If this function is not called then the library uses the function `ctypes.util.find_library` and then loads that one if available.
+
+Not loading a library and attempting to use PCM based AudioSources will lead to voice not working.
+
+This function propagates the exceptions thrown.
+
+> [!WARNING]
+> The bitness of the library must match the bitness of your python interpreter. If the library is 64-bit then your python interpreter must be 64-bit as well. Usually if there's a mismatch in bitness then the load will throw an exception.
+
+> [!NOTE]
+> On Windows, this function should not need to be called as the binaries are automatically loaded.
+
+> [!NOTE]
+> On Windows, the .dll extension is not necessary. However, on Linux the full extension is required to load the library, e.g. `libopus.so.1`. On Linux however, `ctypes.util.find_library` will usually find the library automatically without you having to call this.
+
+#### Parameters
+
+name: `str`  
+The filename of the shared library.

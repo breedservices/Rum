@@ -1,0 +1,970 @@
+# `rum.components`
+
+## Classes
+
+### `ActionRow`
+
+```python
+class ActionRow(data: ComponentPayload)
+```
+
+Represents a Discord Bot UI Kit Action Row.
+
+This is a component that holds up to 5 children components in a row.
+
+This inherits from `Component`.
+
+*Added in 2.0.*
+
+#### Attributes
+
+type: `ComponentType`  
+The type of component.
+
+children: List\[`Component`\]  
+The children components that this holds, if any.
+
+#### `to_dict()`
+
+```python
+to_dict() -> ActionRowPayload
+```
+
+#### `walk_components()`
+
+```python
+walk_components() -> Iterator[Component]
+```
+
+#### `get_component()`
+
+```python
+get_component(id: str | int) -> Component | None
+```
+
+Get a component from this action row. Roughly equivalent to <span class="title-ref">utils.get(row.children, ...)</span>. If an `int` is provided, the component will be retrieved by `id`, otherwise by `custom_id`.
+
+#### Parameters
+
+id: `str` | `int`  
+The custom_id or id of the component to get.
+
+#### Returns
+
+`Component` | `None`  
+The component with the matching `id` or `custom_id` if it exists.
+
+#### `with_components()`
+
+```python
+with_components(*components, id=None)
+```
+
+### `Button`
+
+```python
+class Button(data: ButtonComponentPayload)
+```
+
+Represents a button from the Discord Bot UI Kit.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Button` instead.
+
+*Added in 2.0.*
+
+#### Attributes
+
+style: `.ButtonStyle`  
+The style of the button.
+
+custom_id: `str` | `None`  
+The ID of the button that gets received during an interaction. If this button is for a URL, it does not have a custom ID.
+
+url: `str` | `None`  
+The URL this button sends you to.
+
+disabled: `bool`  
+Whether the button is disabled or not.
+
+label: `str` | `None`  
+The label of the button, if any.
+
+emoji: `PartialEmoji` | `None`  
+The emoji of the button, if available.
+
+sku_id: `int` | `None`  
+The ID of the SKU this button refers to.
+
+#### `to_dict()`
+
+```python
+to_dict() -> ButtonComponentPayload
+```
+
+### `Checkbox`
+
+```python
+class Checkbox(data: CheckboxComponentPayload)
+```
+
+Represents an Checkbox component from the Discord Bot UI Kit.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Checkbox` instead.
+
+*Added in 2.8.*
+
+#### Attributes
+
+custom_id: `str` | `None`  
+The custom ID of the checkbox group that gets received during an interaction.
+
+default: `bool` | `None`  
+Whether this checkbox is selected by default.
+
+id: `int` | `None`  
+The checkbox group's ID.
+
+#### `to_dict()`
+
+```python
+to_dict() -> CheckboxComponentPayload
+```
+
+### `CheckboxGroup`
+
+```python
+class CheckboxGroup(data: CheckboxGroupComponentPayload)
+```
+
+Represents an Checkbox Group component from the Discord Bot UI Kit.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.CheckboxGroup` instead.
+
+*Added in 2.8.*
+
+#### Attributes
+
+custom_id: `str` | `None`  
+The custom ID of the checkbox group that gets received during an interaction.
+
+options: List\[`CheckboxGroupOption`\]  
+A list of options that can be selected in this group.
+
+min_values: `int` | `None`  
+The minimum number of options that must be selected. Defaults to 1 and must be between 0 and 25. If set to 0, `required` must be `False`.
+
+max_values: `int` | `None`  
+The maximum number of options that can be selected. Must be between 1 and 10.
+
+required: `bool` | `None`  
+Whether the checkbox group requires a selection or not. Defaults to `True`.
+
+id: `int` | `None`  
+The checkbox group's ID.
+
+#### `to_dict()`
+
+```python
+to_dict() -> CheckboxGroupComponentPayload
+```
+
+### `CheckboxGroupOption`
+
+```python
+class CheckboxGroupOption(*, label: str, value: str = ..., description: str | None = None, default: bool = False) -> None
+```
+
+Represents a `discord.CheckboxGroup`'s option.
+
+These can be created by users.
+
+*Added in 2.8.*
+
+#### Attributes
+
+label: `str`  
+The label of the option. This is displayed to users. Can only be up to 100 characters.
+
+value: `str`  
+The value of the option. This is not displayed to users. If not provided when constructed then it defaults to the label. Can only be up to 100 characters.
+
+description: `str` | `None`  
+An additional description of the option, if any. Can only be up to 100 characters.
+
+default: `bool`  
+Whether this option is selected by default.
+
+#### `from_dict()`
+
+```python
+from_dict(data: CheckboxGroupOptionPayload) -> CheckboxGroupOption
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> CheckboxGroupOptionPayload
+```
+
+### `Component`
+
+```python
+class Component()
+```
+
+Represents a Discord Bot UI Kit Component.
+
+The components supported by Discord in messages are as follows:
+
+- `ActionRow`
+- `Button`
+- `SelectMenu`
+- `Section`
+- `TextDisplay`
+- `Thumbnail`
+- `MediaGallery`
+- `FileComponent`
+- `Separator`
+- `Container`
+
+This class is abstract and cannot be instantiated.
+
+*Added in 2.0.*
+
+#### Attributes
+
+type: `ComponentType`  
+The type of component.
+
+id: `int`  
+The component's ID. If not provided by the user, it is set sequentially by Discord. The ID <span class="title-ref">0</span> is treated as if no ID was provided.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+#### `is_v2()`
+
+```python
+is_v2() -> bool
+```
+
+Whether this component was introduced in Components V2.
+
+### `Container`
+
+```python
+class Container(data: ContainerComponentPayload, state=None)
+```
+
+Represents a Container from Components V2.
+
+This is a component that contains different `Component` objects. It may only contain:
+
+- `ActionRow`
+- `TextDisplay`
+- `Section`
+- `MediaGallery`
+- `Separator`
+- `FileComponent`
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Container` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+components: List\[`Component`\]  
+The components contained in this container.
+
+accent_color: `Colour` | `None`  
+The accent color of the container.
+
+spoiler: `bool` | `None`  
+Whether the entire container has the spoiler overlay.
+
+#### `to_dict()`
+
+```python
+to_dict() -> ContainerComponentPayload
+```
+
+#### `walk_components()`
+
+```python
+walk_components() -> Iterator[Component]
+```
+
+#### `get_component()`
+
+```python
+get_component(id: str | int) -> Component | None
+```
+
+Get a component from this container. Roughly equivalent to <span class="title-ref">utils.get(container.components, ...)</span>. If an `int` is provided, the component will be retrieved by `id`, otherwise by `custom_id`. This method will also search for nested components.
+
+#### Parameters
+
+id: `str` | `int`  
+The custom_id or id of the component to get.
+
+#### Returns
+
+`Component` | `None`  
+The component with the matching `id` or `custom_id` if it exists.
+
+### `FileComponent`
+
+```python
+class FileComponent(data: FileComponentPayload, state=None)
+```
+
+Represents a File from Components V2.
+
+This component displays a downloadable file in a message.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.File` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+file: `UnfurledMediaItem`  
+The file's media item.
+
+name: `str` | `None`  
+The file's name.
+
+size: `int` | `None`  
+The file's size in bytes.
+
+spoiler: `bool` | `None`  
+Whether the file has the spoiler overlay.
+
+#### `to_dict()`
+
+```python
+to_dict() -> FileComponentPayload
+```
+
+### `FileUpload`
+
+```python
+class FileUpload(data: FileUploadComponentPayload)
+```
+
+Represents an File Upload component from the Discord Bot UI Kit.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.FileUpload` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+custom_id: `str` | `None`  
+The custom ID of the file upload field that gets received during an interaction.
+
+min_values: `int` | `None`  
+The minimum number of files that must be uploaded.
+
+max_values: `int` | `None`  
+The maximum number of files that can be uploaded.
+
+required: `bool` | `None`  
+Whether the file upload field is required or not. Defaults to <span class="title-ref">True</span>.
+
+id: `int` | `None`  
+The file upload's ID.
+
+#### `to_dict()`
+
+```python
+to_dict() -> FileUploadComponentPayload
+```
+
+### `InputText`
+
+```python
+class InputText(data: InputTextComponentPayload)
+```
+
+Represents an Input Text field from the Discord Bot UI Kit. This inherits from `Component`.
+
+#### Attributes
+
+style: `.InputTextStyle`  
+The style of the input text field.
+
+custom_id: `str` | `None`  
+The custom ID of the input text field that gets received during an interaction.
+
+label: `str`  
+The label for the input text field.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any.
+
+min_length: `int` | `None`  
+The minimum number of characters that must be entered Defaults to 0
+
+max_length: `int` | `None`  
+The maximum number of characters that can be entered
+
+required: `bool` | `None`  
+Whether the input text field is required or not. Defaults to <span class="title-ref">True</span>.
+
+value: `str` | `None`  
+The value that has been entered in the input text field.
+
+id: `int` | `None`  
+The input text's ID.
+
+#### `to_dict()`
+
+```python
+to_dict() -> InputTextComponentPayload
+```
+
+### `Label`
+
+```python
+class Label(data: LabelComponentPayload)
+```
+
+Represents a Label used in modals as the top-level component.
+
+This is a component that allows you to add additional text to another component. `component` may only be:
+
+- `InputText`
+- `SelectMenu`
+
+This inherits from `Component`.
+
+*Added in 2.7.*
+
+#### Attributes
+
+component: `Component`  
+The component contained in this label. Currently supports `InputText` and `SelectMenu`.
+
+label: `str`  
+The main text associated with this label's `component`, up to 45 characters.
+
+description: `str` | `None`  
+The description associated with this label's `component`, up to 100 characters.
+
+#### `to_dict()`
+
+```python
+to_dict() -> LabelComponentPayload
+```
+
+#### `walk_components()`
+
+```python
+walk_components() -> Iterator[Component]
+```
+
+### `MediaGallery`
+
+```python
+class MediaGallery(data: MediaGalleryComponentPayload, state=None)
+```
+
+Represents a Media Gallery from Components V2.
+
+This is a component that displays up to 10 different `MediaGalleryItem` objects.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.MediaGallery` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+items: List\[`MediaGalleryItem`\]  
+The media this gallery contains.
+
+#### `to_dict()`
+
+```python
+to_dict() -> MediaGalleryComponentPayload
+```
+
+### `MediaGalleryItem`
+
+```python
+class MediaGalleryItem(url, *, description=None, spoiler=False)
+```
+
+Represents an item used in the `MediaGallery` component.
+
+This is used as an underlying component for other media-based components such as `Thumbnail`, `FileComponent`, and `MediaGalleryItem`.
+
+*Added in 2.7.*
+
+#### Attributes
+
+url: `str`  
+The URL of this gallery item. This can either be an arbitrary URL or an `attachment://` URL to work with local files.
+
+description: `str` | `None`  
+The gallery item's description, up to 1024 characters.
+
+spoiler: `bool` | `None`  
+Whether the gallery item is a spoiler.
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: MediaGalleryItemPayload, state=None) -> MediaGalleryItem
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `RadioGroup`
+
+```python
+class RadioGroup(data: RadioGroupComponentPayload)
+```
+
+Represents an Radio Group component from the Discord Bot UI Kit.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.RadioGroup` instead.
+
+*Added in 2.8.*
+
+#### Attributes
+
+custom_id: `str` | `None`  
+The custom ID of the radio group that gets received during an interaction.
+
+options: List\[`RadioGroupOption`\]  
+A list of options that can be selected in this group, between 2 and 10.
+
+required: `bool` | `None`  
+Whether the radio group requires a selection or not. Defaults to `True`.
+
+id: `int` | `None`  
+The radio group's ID.
+
+#### `to_dict()`
+
+```python
+to_dict() -> RadioGroupComponentPayload
+```
+
+### `RadioGroupOption`
+
+```python
+class RadioGroupOption(*, label: str, value: str = ..., description: str | None = None, default: bool = False) -> None
+```
+
+Represents a `discord.RadioGroup`'s option.
+
+These can be created by users.
+
+*Added in 2.8.*
+
+#### Attributes
+
+label: `str`  
+The label of the option. This is displayed to users. Can only be up to 100 characters.
+
+value: `str`  
+The value of the option. This is not displayed to users. If not provided when constructed then it defaults to the label. Can only be up to 100 characters.
+
+description: `str` | `None`  
+An additional description of the option, if any. Can only be up to 100 characters.
+
+default: `bool`  
+Whether this option is selected by default. Only 1 option should be set to default within a `discord.RadioGroup`.
+
+#### `from_dict()`
+
+```python
+from_dict(data: RadioGroupOptionPayload) -> RadioGroupOption
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> RadioGroupOptionPayload
+```
+
+### `Section`
+
+```python
+class Section(data: SectionComponentPayload, state=None)
+```
+
+Represents a Section from Components V2.
+
+This is a component that groups other components together with an additional component to the right as the accessory.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Section` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+components: List\[`Component`\]  
+The components contained in this section. Currently supports `TextDisplay`.
+
+accessory: `Component` | `None`  
+The accessory attached to this Section. Currently supports `Button` and `Thumbnail`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> SectionComponentPayload
+```
+
+#### `walk_components()`
+
+```python
+walk_components() -> Iterator[Component]
+```
+
+#### `get_component()`
+
+```python
+get_component(id: str | int) -> Component | None
+```
+
+Get a component from this section. Roughly equivalent to <span class="title-ref">utils.get(section.walk_components(), ...)</span>. If an `int` is provided, the component will be retrieved by `id`, otherwise by `custom_id`.
+
+#### Parameters
+
+id: `str` | `int`  
+The custom_id or id of the component to get.
+
+#### Returns
+
+`Component` | `None`  
+The component with the matching `id` or `custom_id` if it exists.
+
+### `SelectDefaultValue`
+
+```python
+class SelectDefaultValue(object: abc.Snowflake = ..., /, *, id: int = ..., type: SelectDefaultValueType = ...) -> None
+```
+
+Represents a `discord.SelectMenu`s default value.
+
+This is only applicable to selects of type other than `ComponentType.string_select`.
+
+*Added in 2.7.*
+
+#### Parameters
+
+object: `abc.Snowflake`  
+The model type this select default value is based of.
+
+Below, is a table defining the model instance type and the default value type it will be mapped:
+
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr>
+<td>Model Type</td>
+<td>Default Value Type</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.User</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Member</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Role</code> | <code>discord.SelectDefaultValueType.role</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.abc.GuildChannel</code> | <code>discord.SelectDefaultValueType.channel</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Object</code> | depending on <code>discord.Object.type</code>, it will be mapped to any above |</td>
+</tr>
+</tbody>
+</table>
+
+If you pass a model that is not defined in the table, `TypeError` will be raised.
+
+> [!NOTE]
+> The `discord.abc.GuildChannel` protocol includes `discord.TextChannel`, `discord.VoiceChannel`, `discord.StageChannel`, `discord.ForumChannel`, `discord.Thread`, `discord.MediaChannel`. This list is not exhaustive, and is bound to change based of the new channel types Discord adds.
+
+id: `int`  
+The ID of the default value. This cannot be used with `object`.
+
+type: `SelectDefaultValueType`  
+The default value type. This cannot be used with `object`.
+
+#### Raises
+
+TypeError  
+You did not provide any parameter, you provided all parameters, or you provided `id` but not `type`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> SelectDefaultValuePayload
+```
+
+### `SelectMenu`
+
+```python
+class SelectMenu(data: SelectMenuPayload)
+```
+
+Represents a select menu from the Discord Bot UI Kit.
+
+A select menu is functionally the same as a dropdown, however on mobile it renders a bit differently.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Select` instead.
+
+*Added in 2.0.*
+
+*Changed in 2.3
+
+Added support for `ComponentType.user_select`, `ComponentType.role_select`, `ComponentType.mentionable_select`, and `ComponentType.channel_select`.*
+
+*Changed in 2.7
+
+Added the `required` attribute for use in modals.*
+
+#### Attributes
+
+type: `ComponentType`  
+The select menu's type.
+
+custom_id: `str` | `None`  
+The ID of the select menu that gets received during an interaction.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any.
+
+min_values: `int`  
+The minimum number of items that must be chosen for this select menu. Defaults to 1 and must be between 0 and 25.
+
+max_values: `int`  
+The maximum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+options: List\[`SelectOption`\]  
+A list of options that can be selected in this menu. Will be an empty list for all component types except for `ComponentType.string_select`.
+
+channel_types: List\[`ChannelType`\]  
+A list of channel types that can be selected. Will be an empty list for all component types except for `ComponentType.channel_select`.
+
+disabled: `bool`  
+Whether the select is disabled or not. Not usable in modals. Defaults to `False`.
+
+required: `bool` | `None`  
+Whether the select is required or not. Only usable in modals. Defaults to `True`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> SelectMenuPayload
+```
+
+### `SelectOption`
+
+```python
+class SelectOption(*, label: str, value: str = ..., description: str | None = None, emoji: str | GuildEmoji | AppEmoji | PartialEmoji | None = None, default: bool = False) -> None
+```
+
+Represents a `discord.SelectMenu`'s option.
+
+These can be created by users.
+
+*Added in 2.0.*
+
+#### Attributes
+
+label: `str`  
+The label of the option. This is displayed to users. Can only be up to 100 characters.
+
+value: `str`  
+The value of the option. This is not displayed to users. If not provided when constructed then it defaults to the label. Can only be up to 100 characters.
+
+description: `str` | `None`  
+An additional description of the option, if any. Can only be up to 100 characters.
+
+default: `bool`  
+Whether this option is selected by default.
+
+#### `from_dict()`
+
+```python
+from_dict(data: SelectOptionPayload) -> SelectOption
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> SelectOptionPayload
+```
+
+### `Separator`
+
+```python
+class Separator(data: SeparatorComponentPayload)
+```
+
+Represents a Separator from Components V2.
+
+This is a component that visually separates components.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Separator` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+divider: `bool`  
+Whether the separator will show a horizontal line in addition to vertical spacing.
+
+spacing: `SeparatorSpacingSize` | `None`  
+The separator's spacing size.
+
+#### `to_dict()`
+
+```python
+to_dict() -> SeparatorComponentPayload
+```
+
+### `TextDisplay`
+
+```python
+class TextDisplay(data: TextDisplayComponentPayload)
+```
+
+Represents a Text Display from Components V2.
+
+This is a component that displays text.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.TextDisplay` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+content: `str`  
+The component's text content.
+
+#### `to_dict()`
+
+```python
+to_dict() -> TextDisplayComponentPayload
+```
+
+### `Thumbnail`
+
+```python
+class Thumbnail(data: ThumbnailComponentPayload, state=None)
+```
+
+Represents a Thumbnail from Components V2.
+
+This is a component that displays media, such as images and videos.
+
+This inherits from `Component`.
+
+> [!NOTE]
+> This class is not usable by end-users; see `discord.ui.Thumbnail` instead.
+
+*Added in 2.7.*
+
+#### Attributes
+
+media: `UnfurledMediaItem`  
+The component's underlying media object.
+
+description: `str` | `None`  
+The thumbnail's description, up to 1024 characters.
+
+spoiler: `bool` | `None`  
+Whether the thumbnail has the spoiler overlay.
+
+#### `to_dict()`
+
+```python
+to_dict() -> ThumbnailComponentPayload
+```
+
+### `UnfurledMediaItem`
+
+```python
+class UnfurledMediaItem(url: str)
+```
+
+Represents an Unfurled Media Item used in Components V2.
+
+This is used as an underlying component for other media-based components such as `Thumbnail`, `FileComponent`, and `MediaGalleryItem`.
+
+*Added in 2.7.*
+
+#### Attributes
+
+url: `str`  
+The URL of this media item. This can either be an arbitrary URL or an `attachment://` URL to work with local files.
+
+#### `from_dict()`
+
+```python
+from_dict(data: UnfurledMediaItemPayload, state=None) -> UnfurledMediaItem
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, str]
+```

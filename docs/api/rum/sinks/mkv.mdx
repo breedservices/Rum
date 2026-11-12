@@ -1,0 +1,29 @@
+# `rum.sinks.mkv`
+
+## Classes
+
+### `MKVSink`
+
+```python
+class MKVSink(*, filters=None)
+```
+
+A special sink for .mkv files.
+
+*Added in 2.0.*
+
+#### `format_audio()`
+
+```python
+format_audio(audio)
+```
+
+Formats the recorded audio.
+
+#### Raises
+
+MKVSinkError  
+Audio may only be formatted after recording is finished.
+
+MKVSinkError  
+Formatting the audio failed.

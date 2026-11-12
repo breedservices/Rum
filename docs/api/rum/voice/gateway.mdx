@@ -1,0 +1,133 @@
+# `rum.voice.gateway`
+
+## Classes
+
+### `KeepAliveHandler`
+
+```python
+class KeepAliveHandler(*args: Any, ws: VoiceWebSocket, interval: float | None = None, **kwargs: Any) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `get_payload()`
+
+```python
+get_payload() -> dict[str, Any]
+```
+
+#### `ack()`
+
+```python
+ack() -> None
+```
+
+### `VoiceWebSocket`
+
+```python
+class VoiceWebSocket(socket: Any, loop: asyncio.AbstractEventLoop, state: VoiceConnectionState, *, hook: Callable[..., Coroutine[Any, Any, Any]] | None = None) -> None
+```
+
+Implements a WebSocket for Discord's gateway v6.
+
+#### `send_as_bytes()`
+
+```python
+send_as_bytes(op: ConvertibleToInt, data: bytes) -> None
+```
+
+#### `send_as_json()`
+
+```python
+send_as_json(data: Any) -> None
+```
+
+#### `send_heartbeat()`
+
+```python
+send_heartbeat(data: Any) -> None
+```
+
+#### `resume()`
+
+```python
+resume() -> None
+```
+
+Sends the RESUME packet.
+
+#### `received_message()`
+
+```python
+received_message(msg: Any, /)
+```
+
+#### `received_binary_message()`
+
+```python
+received_binary_message(msg: bytes) -> None
+```
+
+#### `ready()`
+
+```python
+ready(data: dict[str, Any]) -> None
+```
+
+#### `select_protocol()`
+
+```python
+select_protocol(ip: str, port: int, mode: str) -> None
+```
+
+#### `get_ip()`
+
+```python
+get_ip() -> tuple[str, int]
+```
+
+#### `load_secret_key()`
+
+```python
+load_secret_key(data: dict[str, Any]) -> None
+```
+
+#### `poll_event()`
+
+```python
+poll_event() -> None
+```
+
+#### `close()`
+
+```python
+close(code: int = 1000) -> None
+```
+
+#### `speak()`
+
+```python
+speak(state: SpeakingState = <SpeakingState.voice: 1>) -> None
+```
+
+#### `from_state()`
+
+```python
+from_state(state: VoiceConnectionState, *, resume: bool = False, hook: Callable[..., Coroutine[Any, Any, Any]] | None = None, seq_ack: int = -1) -> Self
+```
+
+#### `identify()`
+
+```python
+identify() -> None
+```
+
+Sends the IDENTIFY packet.
+
+#### `send_dave_transition_ready()`
+
+```python
+send_dave_transition_ready(transition_id: int) -> None
+```

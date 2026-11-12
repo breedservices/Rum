@@ -1,0 +1,45 @@
+# `rum.mentions`
+
+## Classes
+
+### `AllowedMentions`
+
+```python
+class AllowedMentions(*, everyone: bool | DEFAULT_MENTIONS = DEFAULT_MENTIONS, users: bool | list[Snowflake] | DEFAULT_MENTIONS = DEFAULT_MENTIONS, roles: bool | list[Snowflake] | DEFAULT_MENTIONS = DEFAULT_MENTIONS, replied_user: bool | DEFAULT_MENTIONS = DEFAULT_MENTIONS)
+```
+
+A class that represents what mentions are allowed in a message.
+
+This class can be set during `Client` initialisation to apply to every message sent. It can also be applied on a per-message basis via `abc.Messageable.send` for more fine-grained control.
+
+#### `all()`
+
+```python
+all() -> A
+```
+
+A factory method that returns a `AllowedMentions` with all fields explicitly set to `True`
+
+*Added in 1.5.*
+
+#### `none()`
+
+```python
+none() -> A
+```
+
+A factory method that returns a `AllowedMentions` with all fields set to `False`
+
+*Added in 1.5.*
+
+#### `to_dict()`
+
+```python
+to_dict() -> AllowedMentionsPayload
+```
+
+#### `merge()`
+
+```python
+merge(other: AllowedMentions) -> AllowedMentions
+```

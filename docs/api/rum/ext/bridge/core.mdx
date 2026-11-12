@@ -1,0 +1,490 @@
+# `rum.ext.bridge.core`
+
+## Classes
+
+### `AttachmentConverter`
+
+```python
+class AttachmentConverter(*args, **kwargs)
+```
+
+The base class of custom converters that require the `.Context` to be passed to be useful.
+
+This allows you to implement converters that function similar to the special cased `discord` classes.
+
+Classes that derive from this should override the `.Converter.convert` method to do its conversion logic. This method must be a `coroutine <coroutine>`.
+
+#### `convert()`
+
+```python
+convert(ctx: Context, arg: str)
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `BooleanConverter`
+
+```python
+class BooleanConverter(*args, **kwargs)
+```
+
+The base class of custom converters that require the `.Context` to be passed to be useful.
+
+This allows you to implement converters that function similar to the special cased `discord` classes.
+
+Classes that derive from this should override the `.Converter.convert` method to do its conversion logic. This method must be a `coroutine <coroutine>`.
+
+#### `convert()`
+
+```python
+convert(ctx, arg: bool)
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `BridgeCommand`
+
+```python
+class BridgeCommand(callback, **kwargs)
+```
+
+Compatibility class between prefix-based commands and slash commands.
+
+#### Parameters
+
+callback: Callable\[\[`.BridgeContext`, ...\], Awaitable\[Any\]\]  
+The callback to invoke when the command is executed. The first argument will be a `BridgeContext`, and any additional arguments will be passed to the callback. This callback must be a coroutine.
+
+parent: `.BridgeCommandGroup` | `None`  
+Parent of the BridgeCommand.
+
+kwargs: Dict\[`str`, Any\] | `None`  
+Keyword arguments that are directly passed to the respective command constructors. (`.SlashCommand` and `.ext.commands.Command`)
+
+#### Attributes
+
+slash_variant: `.BridgeSlashCommand`  
+The slash command version of this bridge command.
+
+ext_variant: `.BridgeExtCommand`  
+The prefix-based version of this bridge command.
+
+#### `add_to()`
+
+```python
+add_to(bot: ExtBot) -> None
+```
+
+Adds the command to a bot. This method is inherited by `.BridgeCommandGroup`.
+
+#### Parameters
+
+bot: `.Bot` | `.AutoShardedBot`  
+The bot to add the command to.
+
+#### `invoke()`
+
+```python
+invoke(ctx: BridgeExtContext | BridgeApplicationContext, /, *args, **kwargs)
+```
+
+#### `error()`
+
+```python
+error(coro)
+```
+
+A decorator that registers a coroutine as a local error handler.
+
+This error handler is limited to the command it is defined to. However, higher scope handlers (per-cog and global) are still invoked afterwards as a catch-all. This handler also functions as the handler for both the prefixed and slash versions of the command.
+
+This error handler takes two parameters, a `.BridgeContext` and a `discord.DiscordException`.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the local error handler.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `before_invoke()`
+
+```python
+before_invoke(coro)
+```
+
+A decorator that registers a coroutine as a pre-invoke hook.
+
+This hook is called directly before the command is called, making it useful for any sort of set up required. This hook is called for both the prefixed and slash versions of the command.
+
+This pre-invoke hook takes a sole parameter, a `.BridgeContext`.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the pre-invoke hook.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `after_invoke()`
+
+```python
+after_invoke(coro)
+```
+
+A decorator that registers a coroutine as a post-invoke hook.
+
+This hook is called directly after the command is called, making it useful for any sort of clean up required. This hook is called for both the prefixed and slash versions of the command.
+
+This post-invoke hook takes a sole parameter, a `.BridgeContext`.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the post-invoke hook.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+### `BridgeCommandGroup`
+
+```python
+class BridgeCommandGroup(callback, *args, **kwargs)
+```
+
+Compatibility class between prefix-based commands and slash commands.
+
+#### Parameters
+
+callback: Callable\[\[`.BridgeContext`, ...\], Awaitable\[Any\]\]  
+The callback to invoke when the command is executed. The first argument will be a `BridgeContext`, and any additional arguments will be passed to the callback. This callback must be a coroutine.
+
+kwargs: Dict\[`str`, Any\] | `None`  
+Keyword arguments that are directly passed to the respective command constructors. (`.SlashCommand` and `.ext.commands.Command`)
+
+#### Attributes
+
+slash_variant: `.SlashCommandGroup`  
+The slash command version of this command group.
+
+ext_variant: `.ext.commands.Group`  
+The prefix-based version of this command group.
+
+subcommands: List\[`.BridgeCommand`\]  
+List of bridge commands in this group
+
+mapped: `.SlashCommand` | `None`  
+If `map_to` is used, the mapped slash command.
+
+#### `walk_commands()`
+
+```python
+walk_commands() -> Iterator[BridgeCommand]
+```
+
+An iterator that recursively walks through all the bridge group's subcommands.
+
+#### Yields
+
+`.BridgeCommand`  
+A bridge command of this bridge group.
+
+#### `command()`
+
+```python
+command(*args, **kwargs)
+```
+
+A decorator to register a function as a subcommand.
+
+#### Parameters
+
+kwargs: Dict\[`str`, Any\] | `None`  
+Keyword arguments that are directly passed to the respective command constructors. (`.SlashCommand` and `.ext.commands.Command`)
+
+### `BridgeExtCommand`
+
+```python
+class BridgeExtCommand(func, **kwargs)
+```
+
+A subclass of `.ext.commands.Command` that is used for bridge commands.
+
+#### `dispatch_error()`
+
+```python
+dispatch_error(ctx: BridgeExtContext, error: Exception) -> None
+```
+
+#### `transform()`
+
+```python
+transform(ctx: Context, param: inspect.Parameter) -> Any
+```
+
+### `BridgeExtGroup`
+
+```python
+class BridgeExtGroup(func, **kwargs)
+```
+
+A subclass of `.ext.commands.Group` that is used for bridge commands.
+
+### `BridgeOption`
+
+```python
+class BridgeOption(input_type, *args, **kwargs)
+```
+
+A subclass of `discord.Option` which represents a selectable slash command option and a prefixed command argument for bridge commands.
+
+#### `convert()`
+
+```python
+convert(ctx, argument: str) -> Any
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `BridgeSlashCommand`
+
+```python
+class BridgeSlashCommand(func, **kwargs)
+```
+
+A subclass of `.SlashCommand` that is used for bridge commands.
+
+#### `dispatch_error()`
+
+```python
+dispatch_error(ctx: BridgeApplicationContext, error: Exception) -> None
+```
+
+### `BridgeSlashGroup`
+
+```python
+class BridgeSlashGroup(callback, *args, **kwargs)
+```
+
+A subclass of `.SlashCommandGroup` that is used for bridge commands.
+
+### `MentionableConverter`
+
+```python
+class MentionableConverter(*args, **kwargs)
+```
+
+A converter that can convert a mention to a member, a user or a role.
+
+#### `convert()`
+
+```python
+convert(ctx, argument)
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+## Functions
+
+### `bridge_command()`
+
+```python
+bridge_command(**kwargs)
+```
+
+A decorator that is used to wrap a function as a bridge command.
+
+#### Parameters
+
+kwargs: Dict\[`str`, Any\] | `None`  
+Keyword arguments that are directly passed to the respective command constructors. (`.SlashCommand` and `.ext.commands.Command`)
+
+### `bridge_group()`
+
+```python
+bridge_group(**kwargs)
+```
+
+A decorator that is used to wrap a function as a bridge command group.
+
+#### Parameters
+
+kwargs: Dict\[`str`, Any\] | `None`  
+Keyword arguments that are directly passed to the respective command constructors (`.SlashCommandGroup` and `.ext.commands.Group`).
+
+### `bridge_option()`
+
+```python
+bridge_option(name, input_type=None, **kwargs)
+```
+
+A decorator that can be used instead of typehinting `.BridgeOption`.
+
+*Added in 2.6.*
+
+#### Attributes
+
+parameter_name: `str`  
+The name of the target function parameter this option is mapped to. This allows you to have a separate UI `name` and parameter name.
+
+### `guild_only()`
+
+```python
+guild_only()
+```
+
+Intended to work with `.ApplicationCommand` and `BridgeCommand`, adds a `ext.commands.check` that locks the command to only run in guilds, and also registers the command as guild only client-side (on discord).
+
+Basically a utility function that wraps both `discord.ext.commands.guild_only` and `discord.commands.guild_only`.
+
+### `has_permissions()`
+
+```python
+has_permissions(**perms: bool)
+```
+
+Intended to work with `.SlashCommand` and `BridgeCommand`, adds a `ext.commands.check` that locks the command to be run by people with certain permissions inside guilds, and also registers the command as locked behind said permissions.
+
+Basically a utility function that wraps both `discord.ext.commands.has_permissions` and `discord.commands.default_permissions`.
+
+#### Parameters
+
+\*\*perms: Dict\[`str`, `bool`\]  
+An argument list of permissions to check for.
+
+### `is_nsfw()`
+
+```python
+is_nsfw()
+```
+
+Intended to work with `.ApplicationCommand` and `BridgeCommand`, adds a `ext.commands.check` that locks the command to only run in nsfw contexts, and also registers the command as nsfw client-side (on discord).
+
+Basically a utility function that wraps both `discord.ext.commands.is_nsfw` and `discord.commands.is_nsfw`.
+
+> [!WARNING]
+> In DMs, the prefix-based command will always run as the user's privacy settings cannot be checked directly.
+
+### `map_to()`
+
+```python
+map_to(name, description=None)
+```
+
+To be used with bridge command groups, map the main command to a slash subcommand.
+
+#### Parameters
+
+name: `str`  
+The new name of the mapped command.
+
+description: `str` | `None`  
+The new description of the mapped command.
+
+#### Example
+
+``` python3
+@bot.bridge_group()
+@bridge.map_to("show")
+async def config(ctx: BridgeContext):
+    ...
+
+@config.command()
+async def toggle(ctx: BridgeContext):
+    ...
+```
+
+Prefixed commands will not be affected, but slash commands will appear as:
+
+```
+/config show
+/config toggle
+```

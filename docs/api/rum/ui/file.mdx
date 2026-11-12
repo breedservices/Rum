@@ -1,0 +1,45 @@
+# `rum.ui.file`
+
+## Classes
+
+### `File`
+
+```python
+class File(url: str, *, spoiler: bool = False, id: int | None = None)
+```
+
+Represents a UI File.
+
+> [!NOTE]
+> This component does not show media previews. Use `MediaGallery` for previews instead.
+
+*Added in 2.7.*
+
+#### Parameters
+
+url: `str`  
+The URL of this file. This must be an `attachment://` URL referring to a local file used with `discord.File`.
+
+spoiler: `bool` | `None`  
+Whether this file has the spoiler overlay.
+
+id: `int` | `None`  
+The file component's ID.
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: FileComponent) -> None
+```
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> FileComponentPayload
+```
+
+#### `from_component()`
+
+```python
+from_component(component: FileComponent) -> F
+```

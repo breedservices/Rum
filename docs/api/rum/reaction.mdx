@@ -1,0 +1,201 @@
+# `rum.reaction`
+
+## Classes
+
+### `Reaction`
+
+```python
+class Reaction(*, message: Message, data: ReactionPayload, emoji: PartialEmoji | GuildEmoji | AppEmoji | str | None = None)
+```
+
+Represents a reaction to a message.
+
+Depending on the way this object was created, some of the attributes can have a value of `None`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two reactions are equal. This works by checking if the emoji is the same. So two messages with the same reaction will be considered "equal".
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two reactions are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the reaction's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the string form of the reaction's emoji.
+
+</div>
+
+</div>
+
+#### Attributes
+
+emoji: `GuildEmoji` | `AppEmoji` | `PartialEmoji` | `str`  
+The reaction emoji. May be a custom emoji, or a unicode emoji.
+
+count: `int`  
+The combined total of normal and super reactions for this emoji.
+
+me: `bool`  
+If the user sent this as a normal reaction.
+
+me_burst: `bool`  
+If the user sent this as a super reaction.
+
+message: `Message`  
+Message this reaction is for.
+
+burst: `bool`  
+Whether this reaction is a burst (super) reaction.
+
+#### `is_custom_emoji()`
+
+```python
+is_custom_emoji() -> bool
+```
+
+If this is a custom emoji.
+
+#### `remove()`
+
+```python
+remove(user: Snowflake) -> None
+```
+
+*(coroutine)*
+
+Remove the reaction by the provided `User` from the message.
+
+If the reaction is not your own (i.e. `user` parameter is not you) then the `Permissions.manage_messages` permission is needed.
+
+The `user` parameter must represent a user or member and meet the `abc.Snowflake` abc.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user or member from which to remove the reaction.
+
+#### Raises
+
+HTTPException  
+Removing the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to remove the reaction.
+
+NotFound  
+The user you specified, or the reaction's message was not found.
+
+#### `clear()`
+
+```python
+clear() -> None
+```
+
+*(coroutine)*
+
+Clears this reaction from the message.
+
+You need the `Permissions.manage_messages` permission to use this.
+
+*Added in 1.3.*
+
+#### Raises
+
+HTTPException  
+Clearing the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to clear the reaction.
+
+NotFound  
+The emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `users()`
+
+```python
+users(*, limit: int | None = None, after: Snowflake | None = None, type: ReactionType | None = None) -> ReactionIterator
+```
+
+Returns an `AsyncIterator` representing the users that have reacted to the message.
+
+The `after` parameter must represent a member and meet the `abc.Snowflake` abc.
+
+#### Parameters
+
+limit: `int` | `None`  
+The maximum number of results to return. If not provided, returns all the users who reacted to the message.
+
+after: `abc.Snowflake` | `None`  
+For pagination, reactions are sorted by member.
+
+type: `ReactionType` | `None`  
+The type of reaction to get users for. Defaults to <span class="title-ref">normal</span>.
+
+#### Yields
+
+`User` | `Member`  
+The member (if retrievable) or the user that has reacted to this message. The case where it can be a `Member` is in a guild message context. Sometimes it can be a `User` if the member has left the guild.
+
+#### Raises
+
+HTTPException  
+Getting the users for the reaction failed.
+
+#### Examples
+
+Usage :
+
+    # I do not actually recommend doing this.
+    async for user in reaction.users():
+        await channel.send(f'{user} has reacted with {reaction.emoji}!')
+
+Flattening into a list: :
+
+    users = await reaction.users().flatten()
+    # users is now a list of User...
+    winner = random.choice(users)
+    await channel.send(f'{winner} has won the raffle.')
+
+Getting super reactors: :
+
+    users = await reaction.users(type=ReactionType.burst).flatten()
+
+### `ReactionCountDetails`
+
+```python
+class ReactionCountDetails(data: ReactionCountDetailsPayload)
+```
+
+Represents a breakdown of the normal and burst reaction counts for the emoji.
+
+#### Attributes
+
+normal: `int`  
+The number of normal reactions for this emoji.
+
+burst: `bool`  
+The number of super reactions for this emoji.

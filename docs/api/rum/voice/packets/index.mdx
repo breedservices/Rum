@@ -1,0 +1,33 @@
+# `rum.voice.packets`
+
+#### discord.voice.packets
+
+Sink packet handlers.
+
+## Classes
+
+### `VoiceData`
+
+```python
+class VoiceData(packet: Packet, source: User | Member | None, *, pcm: bytes | None = None) -> None
+```
+
+Represents an audio data from a source.
+
+*Added in 2.7.*
+
+#### Attributes
+
+packet: `discord.sinks.Packet`  
+The packet this source data contains.
+
+source: `discord.User` | `discord.Member` | None  
+The user that emitted this audio source.
+
+pcm: `bytes`  
+The PCM bytes of this source.
+
+## Modules
+
+- [`rum.voice.packets.core`](core.mdx)
+- [`rum.voice.packets.rtp`](rtp.mdx)

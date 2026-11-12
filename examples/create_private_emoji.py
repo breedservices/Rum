@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # create_private_emoji.py
 import os
+
 import rum
 
 bot = rum.Bot()

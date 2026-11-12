@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # slash_users.py
 import os
+
 import rum
 
 # debug_guilds must not be set if we want to set contexts and integration_types on commands

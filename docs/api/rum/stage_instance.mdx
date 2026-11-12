@@ -1,0 +1,129 @@
+# `rum.stage_instance`
+
+## Classes
+
+### `StageInstance`
+
+```python
+class StageInstance(*, state: ConnectionState, guild: Guild, data: StageInstancePayload) -> None
+```
+
+Represents a stage instance of a stage channel in a guild.
+
+*Added in 2.0.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two stage instances are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two stage instances are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the stage instance's hash.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The stage instance's ID.
+
+guild: `Guild`  
+The guild that the stage instance is running in.
+
+channel_id: `int`  
+The ID of the channel that the stage instance is running in.
+
+topic: `str`  
+The topic of the stage instance.
+
+privacy_level: `StagePrivacyLevel`  
+The privacy level of the stage instance.
+
+discoverable_disabled: `bool`  
+Whether discoverability for the stage instance is disabled.
+
+scheduled_event: `.ScheduledEvent` | `None`  
+The scheduled event linked with the stage instance, if any.
+
+#### `is_public()`
+
+```python
+is_public() -> bool
+```
+
+#### `edit()`
+
+```python
+edit(*, topic: str = ..., privacy_level: StagePrivacyLevel = ..., reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Edits the stage instance.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+#### Parameters
+
+topic: `str`  
+The stage instance's new topic.
+
+privacy_level: `StagePrivacyLevel`  
+The stage instance's new privacy level.
+
+reason: `str`  
+The reason the stage instance was edited. Shows up on the audit log.
+
+#### Raises
+
+InvalidArgument  
+If the `privacy_level` parameter is not the proper type.
+
+Forbidden  
+You do not have permissions to edit the stage instance.
+
+HTTPException  
+Editing a stage instance failed.
+
+#### `delete()`
+
+```python
+delete(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the stage instance.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+#### Parameters
+
+reason: `str`  
+The reason the stage instance was deleted. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to delete the stage instance.
+
+HTTPException  
+Deleting the stage instance failed.

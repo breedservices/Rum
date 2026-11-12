@@ -1,0 +1,29 @@
+# `rum.sinks.mka`
+
+## Classes
+
+### `MKASink`
+
+```python
+class MKASink(*, filters=None)
+```
+
+A special sink for .mka files.
+
+*Added in 2.0.*
+
+#### `format_audio()`
+
+```python
+format_audio(audio)
+```
+
+Formats the recorded audio.
+
+#### Raises
+
+MKASinkError  
+Audio may only be formatted after recording is finished.
+
+MKASinkError  
+Formatting the audio failed.

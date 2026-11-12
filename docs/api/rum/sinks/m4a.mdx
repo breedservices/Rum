@@ -1,0 +1,29 @@
+# `rum.sinks.m4a`
+
+## Classes
+
+### `M4ASink`
+
+```python
+class M4ASink(*, filters=None)
+```
+
+A special sink for .m4a files.
+
+*Added in 2.0.*
+
+#### `format_audio()`
+
+```python
+format_audio(audio)
+```
+
+Formats the recorded audio.
+
+#### Raises
+
+M4ASinkError  
+Audio may only be formatted after recording is finished.
+
+M4ASinkError  
+Formatting the audio failed.

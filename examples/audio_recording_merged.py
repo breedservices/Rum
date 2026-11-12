@@ -29,8 +29,8 @@ DEALINGS IN THE SOFTWARE.
 # It can also be set in the .env file in the repository root.
 #
 # audio_recording_merged.py
-import os
 import io
+import os
 
 import pydub  # pip install pydub==0.25.1
 

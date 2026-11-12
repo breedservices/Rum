@@ -1,0 +1,113 @@
+# `rum.ext.bridge.bot`
+
+## Classes
+
+### `AutoShardedBot`
+
+```python
+class AutoShardedBot(command_prefix: str | Iterable[str] | Callable[[Bot | AutoShardedBot, Message], str | Iterable[str] | Coroutine[Any, Any, str | Iterable[str]]] = <function when_mentioned at 0x70de7296f480>, help_command: HelpCommand | None = ..., **options)
+```
+
+This is similar to `.Bot` except that it is inherited from `.ext.commands.AutoShardedBot` instead.
+
+*Added in 2.0.*
+
+### `Bot`
+
+```python
+class Bot(command_prefix: str | Iterable[str] | Callable[[Bot | AutoShardedBot, Message], str | Iterable[str] | Coroutine[Any, Any, str | Iterable[str]]] = <function when_mentioned at 0x70de7296f480>, help_command: HelpCommand | None = ..., **options)
+```
+
+Represents a discord bot, with support for cross-compatibility between command types.
+
+This class is a subclass of `.ext.commands.Bot` and as a result anything that you can do with a `.ext.commands.Bot` you can do with this bot.
+
+*Added in 2.0.*
+
+### `BotBase`
+
+```python
+class BotBase()
+```
+
+Helper class that provides a standard way to create an ABC using inheritance.
+
+#### `walk_bridge_commands()`
+
+```python
+walk_bridge_commands() -> Iterator[BridgeCommand | BridgeCommandGroup]
+```
+
+An iterator that recursively walks through all the bot's bridge commands.
+
+#### Yields
+
+`.BridgeCommand` | `.BridgeCommandGroup`  
+A bridge command or bridge group of the bot.
+
+#### `get_application_context()`
+
+```python
+get_application_context(interaction: Interaction, cls=None) -> BridgeApplicationContext
+```
+
+#### `get_context()`
+
+```python
+get_context(message: Message, cls=None) -> BridgeExtContext
+```
+
+#### `add_bridge_command()`
+
+```python
+add_bridge_command(command: BridgeCommand)
+```
+
+Takes a `.BridgeCommand` and adds both a slash and traditional (prefix-based) version of the command to the bot.
+
+#### `bridge_command()`
+
+```python
+bridge_command(**kwargs)
+```
+
+A shortcut decorator that invokes `bridge_command` and adds it to the internal command list via `.Bot.add_bridge_command`.
+
+#### Returns
+
+Callable\[..., `BridgeCommand`\]  
+A decorator that converts the provided method into an `.BridgeCommand`, adds both a slash and traditional (prefix-based) version of the command to the bot, and returns the `.BridgeCommand`.
+
+#### `bridge_group()`
+
+```python
+bridge_group(**kwargs)
+```
+
+A decorator that is used to wrap a function as a bridge command group.
+
+#### Parameters
+
+kwargs: Dict\[`str`, Any\] | `None`  
+Keyword arguments that are directly passed to the respective command constructors. (`.SlashCommandGroup` and `.ext.commands.Group`)
+
+#### `invoke()`
+
+```python
+invoke(ctx: ExtContext | BridgeExtContext)
+```
+
+#### `invoke_application_command()`
+
+```python
+invoke_application_command(ctx: ApplicationContext | BridgeApplicationContext) -> None
+```
+
+*(coroutine)*
+
+Invokes the application command given under the invocation context and handles all the internal event dispatch mechanisms.
+
+#### Parameters
+
+ctx: `.ApplicationCommand`  
+The invocation context to invoke.

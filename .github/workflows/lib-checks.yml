@@ -91,7 +91,7 @@ jobs:
       - name: "Run codespell"
         run:
           codespell --ignore-words-list="groupt,nd,ot,ro,falsy,BU,womens,pre-select,pre-emptively" \
-          --skip="*.po,*.pot,uv.lock,docs/build,.venv,rum-cache"
+          --skip="uv.lock,.venv,rum-cache"
   bandit:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' && github.event_name != 'schedule' }}
@@ -104,7 +104,7 @@ jobs:
         with:
           python-version: "3.14"
       - name: "Run bandit"
-        run: bandit --recursive  --skip B101,B104,B105,B110,B307,B311,B404,B603,B607 --exclude ./.venv,./build,./dist,./docs/_build .
+        run: bandit --recursive  --skip B101,B104,B105,B110,B307,B311,B404,B603,B607 --exclude ./.venv,./build,./dist .
   readme-metadata:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' }}

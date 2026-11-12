@@ -1,0 +1,42 @@
+# `rum.ext.commands.cog`
+
+## Classes
+
+### `Cog`
+
+```python
+class Cog(*args: Any, **kwargs: Any) -> CogT
+```
+
+The base class that all cogs must inherit from.
+
+A cog is a collection of commands, listeners, and optional state to help group commands together. More information on them can be found on the `ext_commands_cogs` page.
+
+When inheriting from this class, the options shown in `CogMeta` are equally valid here.
+
+#### `walk_commands()`
+
+```python
+walk_commands() -> Generator[Command]
+```
+
+An iterator that recursively walks through this cog's commands and subcommands.
+
+#### Yields
+
+`.Command` | `.Group`  
+A command or group from the cog.
+
+#### `get_commands()`
+
+```python
+get_commands() -> list[ApplicationCommand | Command]
+```
+
+#### Returns
+
+List\[`discord.ApplicationCommand` | `.Command`\]  
+A `list` of commands that are defined inside this cog.
+
+> [!NOTE]
+> This does not include subcommands.

@@ -1,0 +1,42 @@
+# `rum.ui.checkbox`
+
+## Classes
+
+### `Checkbox`
+
+```python
+class Checkbox(*, custom_id: str | None = None, default: bool = False, id: int | None = None)
+```
+
+Represents a UI Checkbox component.
+
+*Added in 2.8.*
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the checkbox that gets received during an interaction.
+
+default: `bool`  
+Whether this checkbox is selected by default or not.
+
+id: `int`  
+The checkbox's ID.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> CheckboxComponentPayload
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(data) -> None
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: CheckboxComponentPayload) -> None
+```

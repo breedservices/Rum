@@ -1,0 +1,39 @@
+# `rum.ui.thumbnail`
+
+## Classes
+
+### `Thumbnail`
+
+```python
+class Thumbnail(url: str, *, description: str = None, spoiler: bool = False, id: int = None)
+```
+
+Represents a UI Thumbnail.
+
+*Added in 2.7.*
+
+#### Parameters
+
+url: `str`  
+The url of the thumbnail. This can either be an arbitrary URL or an `attachment://` URL to work with local files.
+
+description: `str` | `None`  
+The thumbnail's description, up to 1024 characters.
+
+spoiler: `bool` | `None`  
+Whether the thumbnail has the spoiler overlay. Defaults to `False`.
+
+id: `int` | `None`  
+The thumbnail's ID.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> ThumbnailComponentPayload
+```
+
+#### `from_component()`
+
+```python
+from_component(component: ThumbnailComponent) -> T
+```

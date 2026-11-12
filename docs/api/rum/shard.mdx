@@ -1,0 +1,254 @@
+# `rum.shard`
+
+## Classes
+
+### `AutoShardedClient`
+
+```python
+class AutoShardedClient(*args: Any, loop: asyncio.AbstractEventLoop | None = None, **kwargs: Any) -> None
+```
+
+A client similar to `Client` except it handles the complications of sharding for the user into a more manageable and transparent single process bot.
+
+When using this client, you will be able to use it as-if it was a regular `Client` with a single shard when implementation wise internally it is split up into multiple shards. This allows you to not have to deal with IPC or other complicated infrastructure.
+
+It is recommended to use this client only if you have surpassed at least 1000 guilds.
+
+If no `.shard_count` is provided, then the library will use the Bot Gateway endpoint call to figure out how many shards to use.
+
+If a `shard_ids` parameter is given, then those shard IDs will be used to launch the internal shards. Note that `.shard_count` must be provided if this is used. By default, when omitted, the client will launch shards from 0 to `shard_count - 1`.
+
+#### Attributes
+
+shard_ids: List\[`int`\] | `None`  
+An optional list of shard_ids to launch the shards with.
+
+#### `get_shard()`
+
+```python
+get_shard(shard_id: int) -> ShardInfo | None
+```
+
+Gets the shard information at a given shard ID or `None` if not found.
+
+#### `launch_shard()`
+
+```python
+launch_shard(gateway: str, shard_id: int, *, initial: bool = False) -> None
+```
+
+#### `launch_shards()`
+
+```python
+launch_shards() -> None
+```
+
+Launch every shard, respecting Discord's IDENTIFY concurrency limit.
+
+Shards are identified in batches of `max_concurrency`, waiting five seconds between batches. The limit comes from `/gateway/bot`; when `shard_count` is passed to the client that endpoint is not called, so shards are identified one at a time.
+
+#### `connect()`
+
+```python
+connect(*, reconnect: bool = True) -> None
+```
+
+*(coroutine)*
+
+Creates a WebSocket connection and lets the WebSocket listen to messages from Discord. This is a loop that runs the entire event system and miscellaneous aspects of the library. Control is not resumed until the WebSocket connection is terminated.
+
+#### Parameters
+
+reconnect: `bool`  
+If we should attempt reconnecting, either due to internet failure or a specific failure on Discord's part. Certain disconnects that lead to bad state will not be handled (such as invalid sharding payloads or bad tokens).
+
+#### Raises
+
+`GatewayNotFound`  
+The gateway to connect to Discord is not found. Usually if this is thrown then there is a Discord API outage.
+
+`ConnectionClosed`  
+The WebSocket connection has been terminated.
+
+#### `close()`
+
+```python
+close() -> None
+```
+
+*(coroutine)*
+
+Closes the connection to Discord.
+
+#### `change_presence()`
+
+```python
+change_presence(*, activity: BaseActivity | None = None, status: Status | None = None, shard_id: int = None) -> None
+```
+
+*(coroutine)*
+
+Changes the client's presence.
+
+Example: :
+
+    game = discord.Game("with the API")
+    await client.change_presence(status=discord.Status.idle, activity=game)
+
+*Changed in 2.0 Removed the `afk` keyword-only parameter.*
+
+#### Parameters
+
+activity: `BaseActivity` | `None`  
+The activity being done. `None` if no currently active activity is done.
+
+status: `Status` | `None`  
+Indicates what status to change to. If `None`, then `Status.online` is used.
+
+shard_id: `int` | `None`  
+The shard_id to change the presence to. If not specified or `None`, then it will change the presence of every shard the bot can see.
+
+#### Raises
+
+InvalidArgument  
+If the `activity` parameter is not of proper type.
+
+#### `is_ws_ratelimited()`
+
+```python
+is_ws_ratelimited() -> bool
+```
+
+Whether the websocket is currently rate limited.
+
+This can be useful to know when deciding whether you should query members using HTTP or via the gateway.
+
+This implementation checks if any of the shards are rate limited. For more granular control, consider `ShardInfo.is_ws_ratelimited`.
+
+*Added in 1.6.*
+
+### `EventItem`
+
+```python
+class EventItem(etype: int, shard: Shard | None, error: Exception | None) -> None
+```
+
+### `EventType`
+
+```python
+class EventType()
+```
+
+### `Shard`
+
+```python
+class Shard(ws: DiscordWebSocket, client: AutoShardedClient, queue_put: Callable[[EventItem], None]) -> None
+```
+
+#### `launch()`
+
+```python
+launch() -> None
+```
+
+#### `close()`
+
+```python
+close() -> None
+```
+
+#### `disconnect()`
+
+```python
+disconnect() -> None
+```
+
+#### `worker()`
+
+```python
+worker() -> None
+```
+
+#### `reidentify()`
+
+```python
+reidentify(exc: ReconnectWebSocket) -> None
+```
+
+#### `reconnect()`
+
+```python
+reconnect() -> None
+```
+
+### `ShardInfo`
+
+```python
+class ShardInfo(parent: Shard, shard_count: int | None) -> None
+```
+
+A class that gives information and control over a specific shard.
+
+You can retrieve this object via `AutoShardedClient.get_shard` or `AutoShardedClient.shards`.
+
+*Added in 1.4.*
+
+#### Attributes
+
+id: `int`  
+The shard ID for this shard.
+
+shard_count: `int` | `None`  
+The shard count for this cluster. If this is `None` then the bot has not started yet.
+
+#### `is_closed()`
+
+```python
+is_closed() -> bool
+```
+
+Whether the shard connection is currently closed.
+
+#### `disconnect()`
+
+```python
+disconnect() -> None
+```
+
+*(coroutine)*
+
+Disconnects a shard. When this is called, the shard connection will no longer be open.
+
+If the shard is already disconnected this does nothing.
+
+#### `reconnect()`
+
+```python
+reconnect() -> None
+```
+
+*(coroutine)*
+
+Disconnects and then connects the shard again.
+
+#### `connect()`
+
+```python
+connect() -> None
+```
+
+*(coroutine)*
+
+Connects a shard. If the shard is already connected this does nothing.
+
+#### `is_ws_ratelimited()`
+
+```python
+is_ws_ratelimited() -> bool
+```
+
+Whether the websocket is currently rate limited.
+
+This can be useful to know when deciding whether you should query members using HTTP or via the gateway.
+
+*Added in 1.6.*

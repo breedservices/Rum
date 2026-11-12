@@ -1,0 +1,2915 @@
+# `rum.guild`
+
+## Classes
+
+### `BanEntry`
+
+```python
+class BanEntry(reason: str | None, user: User)
+```
+
+BanEntry(reason, user)
+
+### `Guild`
+
+```python
+class Guild(*, data: GuildPayload, state: ConnectionState)
+```
+
+Represents a Discord guild.
+
+This is referred to as a "server" in the official Discord UI.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two guilds are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two guilds are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the guild's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the guild's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The guild name.
+
+emojis: Tuple\[`GuildEmoji`, ...\]  
+All emojis that the guild owns.
+
+stickers: Tuple\[`GuildSticker`, ...\]  
+All stickers that the guild owns.
+
+*Added in 2.0.*
+
+afk_timeout: `int`  
+The timeout to get sent to the AFK channel.
+
+afk_channel: `VoiceChannel` | `None`  
+The channel that denotes the AFK channel. `None` if it doesn't exist.
+
+id: `int`  
+The guild's ID.
+
+owner_id: `int`  
+The guild owner's ID. Use `Guild.owner` instead.
+
+unavailable: `bool`  
+Indicates if the guild is unavailable. If this is `True` then the reliability of other attributes outside of `Guild.id` is slim and they might all be `None`. It is best to not do anything with the guild if it is unavailable.
+
+Check the `on_guild_unavailable` and `on_guild_available` events.
+
+max_presences: `int` | `None`  
+The maximum amount of presences for the guild.
+
+max_members: `int` | `None`  
+The maximum amount of members for the guild.
+
+> [!NOTE]
+> This attribute is only available via `.Client.fetch_guild`.
+
+max_video_channel_users: `int` | `None`  
+The maximum amount of users in a video channel.
+
+*Added in 1.4.*
+
+description: `str` | `None`  
+The guild's description.
+
+mfa_level: `int`  
+Indicates the guild's two-factor authorisation level. If this value is 0 then the guild does not require 2FA for their administrative members. If the value is 1 then they do.
+
+verification_level: `VerificationLevel`  
+The guild's verification level.
+
+explicit_content_filter: `ContentFilter`  
+The guild's explicit content filter.
+
+default_notifications: `NotificationLevel`  
+The guild's notification settings.
+
+features: List\[`str`\]  
+A list of features that the guild has. The features that a guild can have are subject to arbitrary change by Discord. You can find a catalog of guild features [here](https://github.com/Delitefully/DiscordLists?tab=readme-ov-file#guild-feature-glossary).
+
+premium_tier: `int`  
+The premium tier for this guild. Corresponds to "Nitro Server" in the official UI. The number goes from 0 to 3 inclusive.
+
+premium_subscription_count: `int`  
+The number of "boosts" this guild currently has.
+
+premium_progress_bar_enabled: `bool`  
+Indicates if the guild has premium progress bar enabled.
+
+*Added in 2.0.*
+
+preferred_locale: `str` | `None`  
+The preferred locale for the guild. Used when filtering Server Discovery results to a specific language.
+
+nsfw_level: `NSFWLevel`  
+The guild's NSFW level.
+
+*Added in 2.0.*
+
+approximate_member_count: `int` | `None`  
+The approximate number of members in the guild. This is `None` unless the guild is obtained using `Client.fetch_guild` with `with_counts=True`.
+
+*Added in 2.0.*
+
+approximate_presence_count: `int` | `None`  
+The approximate number of members currently active in the guild. This includes idle, dnd, online, and invisible members. Offline members are excluded. This is `None` unless the guild is obtained using `Client.fetch_guild` with `with_counts=True`.
+
+*Added in 2.0.*
+
+incidents_data: `IncidentsData` | `None`  
+The incidents data for the guild.
+
+*Added in 2.7.*
+
+#### `fetch_sounds()`
+
+```python
+fetch_sounds() -> list[SoundboardSound]
+```
+
+*(coroutine)* Fetches all the soundboard sounds in the guild.
+
+*Added in 2.7.*
+
+#### Returns
+
+List\[`SoundboardSound`\]  
+The sounds in the guild.
+
+#### `fetch_sound()`
+
+```python
+fetch_sound(sound_id: int) -> SoundboardSound
+```
+
+*(coroutine)* Fetches a soundboard sound in the guild.
+
+*Added in 2.7.*
+
+#### Parameters
+
+sound_id: `int`  
+The ID of the sound.
+
+#### Returns
+
+`SoundboardSound`  
+The sound.
+
+#### `create_sound()`
+
+```python
+create_sound(name: str, sound: bytes, volume: float = 1.0, emoji: PartialEmoji | GuildEmoji | str | None = None, reason: str | None = None) -> SoundboardSound
+```
+
+*(coroutine)* Creates a `SoundboardSound` in the guild. You must have `Permissions.manage_expressions` permission to use this.
+
+*Added in 2.7.*
+
+#### Parameters
+
+name: `str`  
+The name of the sound.
+
+sound: `bytes`  
+The `bytes-like object` representing the sound data. Only MP3 sound files that are less than 5.2 seconds long are supported.
+
+volume: `float`  
+The volume of the sound. Defaults to 1.0.
+
+emoji: `PartialEmoji` | `GuildEmoji` | `str` | `None`  
+The emoji of the sound.
+
+reason: `str` | `None`  
+The reason for creating this sound. Shows up on the audit log.
+
+#### Returns
+
+`SoundboardSound`  
+The created sound.
+
+#### Raises
+
+`HTTPException`  
+Creating the sound failed.
+
+`Forbidden`  
+You do not have permissions to create sounds.
+
+#### `by_category()`
+
+```python
+by_category() -> list[ByCategoryItem]
+```
+
+Returns every `CategoryChannel` and their associated channels.
+
+These channels and categories are sorted in the official Discord UI order.
+
+If the channels do not have a category, then the first element of the tuple is `None`.
+
+#### Returns
+
+List\[Tuple\[`CategoryChannel` | `None`, List\[`abc.GuildChannel`\]\]\]:  
+The categories and their associated channels.
+
+#### `get_channel_or_thread()`
+
+```python
+get_channel_or_thread(channel_id: int, /) -> Thread | GuildChannel | None
+```
+
+Returns a channel or thread with the given ID.
+
+*Added in 2.0.*
+
+#### Parameters
+
+channel_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`Thread` | `.abc.GuildChannel` | `None`  
+The returned channel or thread or `None` if not found.
+
+#### `get_channel()`
+
+```python
+get_channel(channel_id: int, /) -> GuildChannel | None
+```
+
+Returns a channel with the given ID.
+
+> [!NOTE]
+> This does *not* search for threads.
+
+#### Parameters
+
+channel_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.abc.GuildChannel` | `None`  
+The returned channel or `None` if not found.
+
+#### `get_thread()`
+
+```python
+get_thread(thread_id: int, /) -> Thread | None
+```
+
+Returns a thread with the given ID.
+
+*Added in 2.0.*
+
+#### Parameters
+
+thread_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`Thread` | `None`  
+The returned thread or `None` if not found.
+
+#### `get_member()`
+
+```python
+get_member(user_id: int, /) -> Member | None
+```
+
+Returns a member with the given ID.
+
+#### Parameters
+
+user_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`Member` | `None`  
+The member or `None` if not found.
+
+#### `get_or_fetch()`
+
+```python
+get_or_fetch(object_type: type[_FETCHABLE], object_id: int | None, default: _D = None) -> _FETCHABLE | _D | None
+```
+
+Shortcut method to get data from this guild either by returning the cached version, or if it does not exist, attempting to fetch it from the API.
+
+#### Parameters
+
+object_type: Type\[`VoiceChannel` | `TextChannel` | `ForumChannel` | `StageChannel` | `CategoryChannel` | `Thread` | `Role` | `Member` | `GuildEmoji`\]  
+Type of object to fetch or get.
+
+object_id: `int` | `None`  
+ID of the object to get. If `None`, returns <span class="title-ref">default</span> if provided, otherwise `None`.
+
+default: Any | `None`  
+The value to return instead of raising if fetching fails or if <span class="title-ref">object_id</span> is `None`.
+
+#### Returns
+
+`VoiceChannel` | `TextChannel` | `ForumChannel` | `StageChannel` | `CategoryChannel` | `Thread` | `Role` | `Member` | `GuildEmoji` | `None`  
+The object if found, or <span class="title-ref">default</span> if provided when not found.
+
+#### Raises
+
+`TypeError`  
+Raised when required parameters are missing or invalid types are provided.
+
+`InvalidArgument`  
+Raised when an unsupported or incompatible object type is used.
+
+#### `get_role()`
+
+```python
+get_role(role_id: int, /) -> Role | None
+```
+
+Returns a role with the given ID.
+
+#### Parameters
+
+role_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`Role` | `None`  
+The role or `None` if not found.
+
+#### `fetch_roles_member_counts()`
+
+```python
+fetch_roles_member_counts() -> GuildRoleCounts
+```
+
+*(coroutine)* Fetches a mapping of role IDs to their member counts for this guild.
+
+*Added in 2.7.*
+
+#### Returns
+
+`GuildRoleCounts`  
+A mapping of role IDs to their member counts. Can be accessed with either role IDs (`int`) or Snowflake objects (e.g., `Role`).
+
+#### Raises
+
+`HTTPException`  
+Fetching the role member counts failed.
+
+#### Examples
+
+Getting member counts using role IDs:
+
+``` python3
+counts = await guild.fetch_roles_member_counts()
+member_count = counts[123456789]
+```
+
+Using a role object:
+
+``` python3
+counts = await guild.fetch_roles_member_counts()
+role = guild.get_role(123456789)
+member_count = counts[role]
+```
+
+#### `get_stage_instance()`
+
+```python
+get_stage_instance(stage_instance_id: int, /) -> StageInstance | None
+```
+
+Returns a stage instance with the given ID.
+
+*Added in 2.0.*
+
+#### Parameters
+
+stage_instance_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`StageInstance` | `None`  
+The stage instance or `None` if not found.
+
+#### `get_member_named()`
+
+```python
+get_member_named(name: str, /) -> Member | None
+```
+
+Returns the first member found that matches the name provided.
+
+The name can have an optional discriminator argument, e.g. "Jake#0001" or "Jake" will both do the lookup. However, the former will give a more precise result. Note that the discriminator must have all 4 digits for this to work.
+
+If a nickname is passed, then it is looked up via the nickname. Note however, that a nickname + discriminator combo will not look up the nickname but rather the username + discriminator combo due to nickname + discriminator not being unique.
+
+If no member is found, `None` is returned.
+
+#### Parameters
+
+name: `str`  
+The name of the member to lookup with an optional discriminator.
+
+#### Returns
+
+`Member` | `None`  
+The member in this guild with the associated name. If not found then `None` is returned.
+
+#### `create_text_channel()`
+
+```python
+create_text_channel(name: str, *, reason: str | None = None, category: CategoryChannel | None = None, position: int = ..., topic: str = ..., slowmode_delay: int = ..., nsfw: bool = ..., overwrites: dict[Role | Member, PermissionOverwrite] = ..., default_thread_slowmode_delay: int | None = ..., default_auto_archive_duration: int = ...) -> TextChannel
+```
+
+*(coroutine)*
+
+Creates a `TextChannel` for the guild.
+
+Note that you need the `Permissions.manage_channels` permission to create the channel.
+
+The `overwrites` parameter can be used to create a 'secret' channel upon creation. This parameter expects a `dict` of overwrites with the target (either a `Member` or a `Role`) as the key and a `PermissionOverwrite` as the value.
+
+> [!NOTE]
+> Creating a channel of a specified position will not update the position of other channels to follow suit. A follow-up call to `TextChannel.edit` will be required to update the position of the channel in the channel list.
+
+#### Parameters
+
+name: `str`  
+The channel's name.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to the channel. Useful for creating secret channels.
+
+category: `CategoryChannel` | `None`  
+The category to place the newly created channel under. The permissions will be automatically synced to category if no overwrites are provided.
+
+position: `int`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0.
+
+topic: `str`  
+The new channel's topic.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of <span class="title-ref">0</span> disables slowmode. The maximum value possible is <span class="title-ref">21600</span>.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+reason: `str` | `None`  
+The reason for creating this channel. Shows up on the audit log.
+
+default_thread_slowmode_delay: `int` | `None`  
+The initial slowmode delay to set on newly created threads in this channel.
+
+*Added in 2.7.*
+
+default_auto_archive_duration: `int`  
+The default auto archive duration in minutes for threads created in this channel.
+
+*Added in 2.7.*
+
+#### Returns
+
+`TextChannel`  
+The channel that was just created.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to create this channel.
+
+HTTPException  
+Creating the channel failed.
+
+InvalidArgument  
+The permission overwrite information is not in proper form.
+
+#### Examples
+
+Creating a basic channel:
+
+``` python3
+channel = await guild.create_text_channel('cool-channel')
+```
+
+Creating a "secret" channel:
+
+``` python3
+overwrites = {
+    guild.default_role: discord.PermissionOverwrite(read_messages=False),
+    guild.me: discord.PermissionOverwrite(read_messages=True)
+}
+
+channel = await guild.create_text_channel('secret', overwrites=overwrites)
+```
+
+#### `create_voice_channel()`
+
+```python
+create_voice_channel(name: str, *, reason: str | None = None, category: CategoryChannel | None = None, position: int = ..., bitrate: int = ..., user_limit: int = ..., rtc_region: VoiceRegion | str | None = ..., video_quality_mode: VideoQualityMode = ..., overwrites: dict[Role | Member, PermissionOverwrite] = ..., slowmode_delay: int = ..., nsfw: bool = ...) -> VoiceChannel
+```
+
+*(coroutine)*
+
+This is similar to `create_text_channel` except makes a `VoiceChannel` instead.
+
+#### Parameters
+
+name: `str`  
+The channel's name.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to the channel. Useful for creating secret channels.
+
+category: `CategoryChannel` | `None`  
+The category to place the newly created channel under. The permissions will be automatically synced to category if no overwrites are provided.
+
+position: `int`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0.
+
+bitrate: `int`  
+The channel's preferred audio bitrate in bits per second.
+
+user_limit: `int`  
+The channel's limit for number of members that can be in a voice channel.
+
+rtc_region: `str` | `VoiceRegion` | `None`  
+The region ID for the voice channel's voice communication. A value of `None` indicates automatic voice region detection.
+
+*Changed in 2.9
+
+A region ID string is now accepted.*
+
+*Added in 1.7.*
+
+video_quality_mode: `VideoQualityMode`  
+The camera video quality for the voice channel's participants.
+
+*Added in 2.0.*
+
+reason: `str` | `None`  
+The reason for creating this channel. Shows up on the audit log.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of `0` disables slowmode. The maximum value possible is `21600`.
+
+*Added in 2.7.*
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+*Added in 2.7.*
+
+#### Returns
+
+`VoiceChannel`  
+The channel that was just created.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to create this channel.
+
+HTTPException  
+Creating the channel failed.
+
+InvalidArgument  
+The permission overwrite information is not in proper form.
+
+#### `create_stage_channel()`
+
+```python
+create_stage_channel(name: str, *, topic: str, position: int = ..., overwrites: dict[Role | Member, PermissionOverwrite] = ..., category: CategoryChannel | None = None, reason: str | None = None, bitrate: int = ..., user_limit: int = ..., rtc_region: VoiceRegion | str | None = ..., video_quality_mode: VideoQualityMode = ..., slowmode_delay: int = ..., nsfw: bool = ...) -> StageChannel
+```
+
+*(coroutine)*
+
+This is similar to `create_text_channel` except makes a `StageChannel` instead.
+
+*Added in 1.7.*
+
+#### Parameters
+
+name: `str`  
+The channel's name.
+
+topic: `str`  
+The new channel's topic.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to the channel. Useful for creating secret channels.
+
+category: `CategoryChannel` | `None`  
+The category to place the newly created channel under. The permissions will be automatically synced to category if no overwrites are provided.
+
+position: `int`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0.
+
+reason: `str` | `None`  
+The reason for creating this channel. Shows up on the audit log.
+
+bitrate: `int`  
+The channel's preferred audio bitrate in bits per second.
+
+*Added in 2.7.*
+
+user_limit: `int`  
+The channel's limit for number of members that can be in a voice channel.
+
+*Added in 2.7.*
+
+rtc_region: `str` | `VoiceRegion` | `None`  
+The region ID for the voice channel's voice communication. A value of `None` indicates automatic voice region detection.
+
+*Changed in 2.9
+
+A `VoiceRegion` member is now accepted.*
+
+*Added in 2.7.*
+
+video_quality_mode: `VideoQualityMode`  
+The camera video quality for the voice channel's participants.
+
+*Added in 2.7.*
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of `0` disables slowmode. The maximum value possible is `21600`.
+
+*Added in 2.7.*
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+*Added in 2.7.*
+
+#### Returns
+
+`StageChannel`  
+The channel that was just created.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to create this channel.
+
+HTTPException  
+Creating the channel failed.
+
+InvalidArgument  
+The permission overwrite information is not in proper form.
+
+#### `create_forum_channel()`
+
+```python
+create_forum_channel(name: str, *, reason: str | None = None, category: CategoryChannel | None = None, position: int = ..., topic: str = ..., slowmode_delay: int = ..., nsfw: bool = ..., overwrites: dict[Role | Member, PermissionOverwrite] = ..., default_reaction_emoji: GuildEmoji | int | str = ..., available_tags: list[ForumTag] = ..., default_sort_order: SortOrder | None = ..., default_thread_slowmode_delay: int | None = ..., default_auto_archive_duration: int = ...) -> ForumChannel
+```
+
+*(coroutine)*
+
+Creates a `ForumChannel` for the guild.
+
+Note that you need the `Permissions.manage_channels` permission to create the channel.
+
+The `overwrites` parameter can be used to create a 'secret' channel upon creation. This parameter expects a `dict` of overwrites with the target (either a `Member` or a `Role`) as the key and a `PermissionOverwrite` as the value.
+
+> [!NOTE]
+> Creating a channel of a specified position will not update the position of other channels to follow suit. A follow-up call to `ForumChannel.edit` will be required to update the position of the channel in the channel list.
+
+#### Parameters
+
+name: `str`  
+The channel's name.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to the channel. Useful for creating secret channels.
+
+category: `CategoryChannel` | `None`  
+The category to place the newly created channel under. The permissions will be automatically synced to category if no overwrites are provided.
+
+position: `int`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0.
+
+topic: `str`  
+The new channel's topic.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of `0` disables slowmode. The maximum value possible is `21600`.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+reason: `str` | `None`  
+The reason for creating this channel. Shows up on the audit log.
+
+default_reaction_emoji: `GuildEmoji` | `int` | `str` | `None`  
+The default reaction emoji. Can be a unicode emoji or a custom emoji in the forms: `GuildEmoji`, snowflake ID, string representation (eg. '\<a:emoji_name:emoji_id\>').
+
+*Added in v2.5.*
+
+available_tags: List\[`ForumTag`\]  
+The set of tags that can be used in a forum channel.
+
+*Added in 2.7.*
+
+default_sort_order: `SortOrder` | `None`  
+The default sort order type used to order posts in this channel.
+
+*Added in 2.7.*
+
+default_thread_slowmode_delay: `int` | `None`  
+The initial slowmode delay to set on newly created threads in this channel.
+
+*Added in 2.7.*
+
+default_auto_archive_duration: `int`  
+The default auto archive duration in minutes for threads created in this channel.
+
+*Added in 2.7.*
+
+#### Returns
+
+`ForumChannel`  
+The channel that was just created.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to create this channel.
+
+HTTPException  
+Creating the channel failed.
+
+InvalidArgument  
+The argument is not in proper form.
+
+#### Examples
+
+Creating a basic channel:
+
+``` python3
+channel = await guild.create_forum_channel('cool-channel')
+```
+
+Creating a "secret" channel:
+
+``` python3
+overwrites = {
+    guild.default_role: discord.PermissionOverwrite(read_messages=False),
+    guild.me: discord.PermissionOverwrite(read_messages=True)
+}
+
+channel = await guild.create_forum_channel('secret', overwrites=overwrites)
+```
+
+#### `create_category()`
+
+```python
+create_category(name: str, *, overwrites: dict[Role | Member, PermissionOverwrite] = ..., reason: str | None = None, position: int = ...) -> CategoryChannel
+```
+
+*(coroutine)*
+
+Same as `create_text_channel` except makes a `CategoryChannel` instead.
+
+> [!NOTE]
+> The `category` parameter is not supported in this function since categories cannot have categories.
+
+#### Returns
+
+`CategoryChannel`  
+The channel that was just created.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to create this channel.
+
+HTTPException  
+Creating the channel failed.
+
+InvalidArgument  
+The permission overwrite information is not in proper form.
+
+#### `create_category_channel()`
+
+```python
+create_category_channel(name: str, *, overwrites: dict[Role | Member, PermissionOverwrite] = ..., reason: str | None = None, position: int = ...) -> CategoryChannel
+```
+
+*(coroutine)*
+
+Same as `create_text_channel` except makes a `CategoryChannel` instead.
+
+> [!NOTE]
+> The `category` parameter is not supported in this function since categories cannot have categories.
+
+#### Returns
+
+`CategoryChannel`  
+The channel that was just created.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to create this channel.
+
+HTTPException  
+Creating the channel failed.
+
+InvalidArgument  
+The permission overwrite information is not in proper form.
+
+#### `leave()`
+
+```python
+leave() -> None
+```
+
+*(coroutine)*
+
+Leaves the guild.
+
+> [!NOTE]
+> You cannot leave the guild that you own, you must delete it instead via `delete`.
+
+#### Raises
+
+HTTPException  
+Leaving the guild failed.
+
+#### `edit()`
+
+```python
+edit(*, reason: str | None = ..., name: str = ..., description: str | None = ..., icon: bytes | None = ..., banner: bytes | None = ..., splash: bytes | None = ..., discovery_splash: bytes | None = ..., community: bool = ..., afk_channel: VoiceChannel | None = ..., afk_timeout: int = ..., default_notifications: NotificationLevel = ..., verification_level: VerificationLevel = ..., explicit_content_filter: ContentFilter = ..., system_channel: TextChannel | None = ..., system_channel_flags: SystemChannelFlags = ..., preferred_locale: str = ..., rules_channel: TextChannel | None = ..., public_updates_channel: TextChannel | None = ..., premium_progress_bar_enabled: bool = ..., disable_invites: bool = ..., discoverable: bool = ..., disable_raid_alerts: bool = ..., enable_activity_feed: bool = ...) -> Guild
+```
+
+*(coroutine)*
+
+Edits the guild.
+
+You must have the `Permissions.manage_guild` permission to edit the guild.
+
+*Changed in 1.4 The <span class="title-ref">rules_channel</span> and <span class="title-ref">public_updates_channel</span> keyword-only parameters were added.*
+
+*Changed in 2.0 The <span class="title-ref">discovery_splash</span> and <span class="title-ref">community</span> keyword-only parameters were added.*
+
+*Changed in 2.0 The newly updated guild is returned.*
+
+#### Parameters
+
+name: `str`  
+The new name of the guild.
+
+description: `str` | `None`  
+The new description of the guild. Could be `None` for no description. This is only available to guilds that contain `PUBLIC` in `Guild.features`.
+
+icon: `bytes`  
+A `bytes-like object` representing the icon. Only PNG/JPEG is supported. GIF is only available to guilds that contain `ANIMATED_ICON` in `Guild.features`. Could be `None` to denote removal of the icon.
+
+banner: `bytes`  
+A `bytes-like object` representing the banner. Could be `None` to denote removal of the banner. This is only available to guilds that contain `BANNER` in `Guild.features`.
+
+splash: `bytes`  
+A `bytes-like object` representing the invite splash. Only PNG/JPEG supported. Could be `None` to denote removing the splash. This is only available to guilds that contain `INVITE_SPLASH` in `Guild.features`.
+
+discovery_splash: `bytes`  
+A `bytes-like object` representing the discovery splash. Only PNG/JPEG supported. Could be `None` to denote removing the splash. This is only available to guilds that contain `DISCOVERABLE` in `Guild.features`.
+
+community: `bool`  
+Whether the guild should be a Community guild. If set to `True`, both `rules_channel` and `public_updates_channel` parameters are required.
+
+afk_channel: `VoiceChannel` | `None`  
+The new channel that is the AFK channel. Could be `None` for no AFK channel.
+
+afk_timeout: `int`  
+The number of seconds until someone is moved to the AFK channel.
+
+verification_level: `VerificationLevel`  
+The new verification level for the guild.
+
+default_notifications: `NotificationLevel`  
+The new default notification level for the guild.
+
+explicit_content_filter: `ContentFilter`  
+The new explicit content filter for the guild.
+
+system_channel: `TextChannel` | `None`  
+The new channel that is used for the system channel. Could be `None` for no system channel.
+
+system_channel_flags: `SystemChannelFlags`  
+The new system channel settings to use with the new system channel.
+
+preferred_locale: `str`  
+The new preferred locale for the guild. Used as the primary language in the guild. If set, this must be an ISO 639 code, e.g. `en-US` or `ja` or `zh-CN`.
+
+rules_channel: `TextChannel` | `None`  
+The new channel that is used for rules. This is only available to guilds that contain `PUBLIC` in `Guild.features`. Could be `None` for no rules channel.
+
+public_updates_channel: `TextChannel` | `None`  
+The new channel that is used for public updates from Discord. This is only available to guilds that contain `PUBLIC` in `Guild.features`. Could be `None` for no public updates channel.
+
+premium_progress_bar_enabled: `bool`  
+Whether the guild should have premium progress bar enabled.
+
+disable_invites: `bool`  
+Whether the guild should have server invites enabled or disabled.
+
+discoverable: `bool`  
+Whether the guild should be discoverable in the discover tab.
+
+disable_raid_alerts: `bool`  
+Whether activity alerts for the guild should be disabled.
+
+enable_activity_feed: class:\`bool\`  
+Whether the guild's user activity feed should be enabled.
+
+reason: `str` | `None`  
+The reason for editing this guild. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to edit the guild.
+
+HTTPException  
+Editing the guild failed.
+
+InvalidArgument  
+The image format passed in to `icon` is invalid. It must be PNG or JPG.
+
+#### Returns
+
+`Guild`  
+The newly updated guild. Note that this has the same limitations as mentioned in `Client.fetch_guild` and may not have full data.
+
+#### `fetch_channels()`
+
+```python
+fetch_channels() -> Sequence[GuildChannel]
+```
+
+*(coroutine)*
+
+Retrieves all `abc.GuildChannel` that the guild has.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `channels` instead.
+
+*Added in 1.2.*
+
+#### Returns
+
+Sequence\[`abc.GuildChannel`\]  
+All channels in the guild.
+
+#### Raises
+
+InvalidData  
+An unknown channel type was received from Discord.
+
+HTTPException  
+Retrieving the channels failed.
+
+#### `active_threads()`
+
+```python
+active_threads() -> list[Thread]
+```
+
+*(coroutine)*
+
+Returns a list of active `Thread` that the client can access.
+
+This includes both private and public threads.
+
+*Added in 2.0.*
+
+#### Returns
+
+List\[`Thread`\]  
+The active threads
+
+#### Raises
+
+HTTPException  
+The request to get the active threads failed.
+
+#### `fetch_members()`
+
+```python
+fetch_members(*, limit: int | None = 1000, after: SnowflakeTime | None = None) -> MemberIterator
+```
+
+Retrieves an `.AsyncIterator` that enables receiving the guild's members. In order to use this, `Intents.members` must be enabled.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `members` instead.
+
+*Added in 1.3.*
+
+All parameters are optional.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of members to retrieve. Defaults to 1000. Pass `None` to fetch all members. Note that this is potentially slow.
+
+after: `.abc.Snowflake` | `datetime.datetime` | `None`  
+Retrieve members after this date or object. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+#### Yields
+
+`.Member`  
+The member with the member data parsed.
+
+#### Raises
+
+ClientException  
+The members intent is not enabled.
+
+HTTPException  
+Getting the members failed.
+
+#### Examples
+
+Usage :
+
+    async for member in guild.fetch_members(limit=150):
+        print(member.name)
+
+Flattening into a list :
+
+    members = await guild.fetch_members(limit=150).flatten()
+    # members is now a list of Member...
+
+#### `search_members()`
+
+```python
+search_members(query: str, *, limit: int = 1000) -> list[Member]
+```
+
+Search for guild members whose usernames or nicknames start with the query string. Unlike `fetch_members`, this does not require `Intents.members`.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider filtering `members` instead.
+
+*Added in 2.6.*
+
+#### Parameters
+
+query: `str`  
+Searches for usernames and nicknames that start with this string, case-insensitive.
+
+limit: `int`  
+The maximum number of members to retrieve, up to 1000.
+
+#### Returns
+
+List\[`Member`\]  
+The list of members that have matched the query.
+
+#### Raises
+
+HTTPException  
+Getting the members failed.
+
+#### `fetch_member()`
+
+```python
+fetch_member(member_id: int, /) -> Member
+```
+
+*(coroutine)*
+
+Retrieves a `Member` from a guild ID, and a member ID.
+
+> [!NOTE]
+> This method is an API call. If you have `Intents.members` and member cache enabled, consider `get_member` instead.
+
+#### Parameters
+
+member_id: `int`  
+The member's ID to fetch from.
+
+#### Returns
+
+`Member`  
+The member from the member ID.
+
+#### Raises
+
+Forbidden  
+You do not have access to the guild.
+
+HTTPException  
+Fetching the member failed.
+
+#### `fetch_ban()`
+
+```python
+fetch_ban(user: Snowflake) -> BanEntry
+```
+
+*(coroutine)*
+
+Retrieves the `BanEntry` for a user.
+
+You must have the `Permissions.ban_members` permission to get this information.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user to get ban information from.
+
+#### Returns
+
+`BanEntry`  
+The `BanEntry` object for the specified user.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to get the information.
+
+NotFound  
+This user is not banned.
+
+HTTPException  
+An error occurred while fetching the information.
+
+#### `fetch_channel()`
+
+```python
+fetch_channel(channel_id: int, /) -> GuildChannel | Thread
+```
+
+*(coroutine)*
+
+Retrieves a `.abc.GuildChannel` or `.Thread` with the specified ID.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `get_channel_or_thread` instead.
+
+*Added in 2.0.*
+
+#### Returns
+
+`.abc.GuildChannel` | `.Thread`  
+The channel from the ID.
+
+#### Raises
+
+InvalidData  
+An unknown channel type was received from Discord or the guild the channel belongs to is not the same as the one in this object points to.
+
+HTTPException  
+Retrieving the channel failed.
+
+NotFound  
+Invalid Channel ID.
+
+Forbidden  
+You do not have permission to fetch this channel.
+
+#### `bans()`
+
+```python
+bans(limit: int | None = None, before: Snowflake | None = None, after: Snowflake | None = None) -> BanIterator
+```
+
+*(coroutine)*
+
+Retrieves an `.AsyncIterator` that enables receiving the guild's bans. In order to use this, you must have the `Permissions.ban_members` permission. Users will always be returned in ascending order sorted by user ID. If both the `before` and `after` parameters are provided, only before is respected.
+
+*Changed in 2.5 The `before`. and `after` parameters were changed. They are now of the type `.abc.Snowflake` instead of <span class="title-ref">SnowflakeTime</span> to comply with the discord api.*
+
+*Changed in 2.0 The `limit`, `before`. and `after` parameters were added. Now returns a `.BanIterator` instead of a list of `BanEntry` objects.*
+
+All parameters are optional.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of bans to retrieve. Defaults to 1000.
+
+before: `.abc.Snowflake` | `None`  
+Retrieve bans before the given user.
+
+after: `.abc.Snowflake` | `None`  
+Retrieve bans after the given user.
+
+#### Yields
+
+`.BanEntry`  
+The ban entry for the ban.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to get the information.
+
+HTTPException  
+An error occurred while fetching the information.
+
+#### Examples
+
+Usage :
+
+    async for ban in guild.bans(limit=150):
+        print(ban.user.name)
+
+Flattening into a list :
+
+    bans = await guild.bans(limit=150).flatten()
+    # bans is now a list of BanEntry...
+
+#### `prune_members()`
+
+```python
+prune_members(*, days: int, compute_prune_count: bool = True, roles: list[Snowflake] = ..., reason: str | None = None) -> int | None
+```
+
+*(coroutine)*
+
+Prunes the guild from its inactive members.
+
+The inactive members are denoted if they have not logged on in `days` number of days and have no roles.
+
+You must have the `Permissions.kick_members` and `Permissions.manage_guild` permissions to use this. If the guild has the `PRUNE_REQUIRES_ADMIN` guild feature, you must have the `Permissions.administrator` permission instead.
+
+To check how many members you would prune without actually pruning, see the `estimate_pruned_members` function.
+
+To prune members that have specific roles see the `roles` parameter.
+
+*Changed in 1.4 The `roles` keyword-only parameter was added.*
+
+#### Parameters
+
+days: `int`  
+The number of days before counting as inactive.
+
+reason: `str` | `None`  
+The reason for doing this action. Shows up on the audit log.
+
+compute_prune_count: `bool`  
+Whether to compute the prune count. This defaults to `True` which makes it prone to timeouts in very large guilds. In order to prevent timeouts, you must set this to `False`. If this is set to `False`, then this function will always return `None`.
+
+roles: List\[`abc.Snowflake`\]  
+A list of `abc.Snowflake` that represent roles to include in the pruning process. If a member has a role that is not specified, they'll be excluded.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to prune members.
+
+HTTPException  
+An error occurred while pruning members.
+
+InvalidArgument  
+An integer was not passed for `days`.
+
+#### Returns
+
+`int` | `None`  
+The number of members pruned. If `compute_prune_count` is `False` then this returns `None`.
+
+#### `templates()`
+
+```python
+templates() -> list[Template]
+```
+
+*(coroutine)*
+
+Gets the list of templates from this guild.
+
+Requires `.Permissions.manage_guild` permissions.
+
+*Added in 1.7.*
+
+#### Returns
+
+List\[`Template`\]  
+The templates for this guild.
+
+#### Raises
+
+Forbidden  
+You don't have permissions to get the templates.
+
+#### `webhooks()`
+
+```python
+webhooks() -> list[Webhook]
+```
+
+*(coroutine)*
+
+Gets the list of webhooks from this guild.
+
+Requires `.Permissions.manage_webhooks` permissions.
+
+#### Returns
+
+List\[`Webhook`\]  
+The webhooks for this guild.
+
+#### Raises
+
+Forbidden  
+You don't have permissions to get the webhooks.
+
+#### `estimate_pruned_members()`
+
+```python
+estimate_pruned_members(*, days: int, roles: list[Snowflake] = ...) -> int
+```
+
+*(coroutine)*
+
+Similar to `prune_members` except instead of actually pruning members, it returns how many members it would prune from the guild had it been called.
+
+You must have the `Permissions.kick_members` and `Permissions.manage_guild` permissions to use this. If the guild has the `PRUNE_REQUIRES_ADMIN` guild feature, you must have the `Permissions.administrator` permission instead.
+
+#### Parameters
+
+days: `int`  
+The number of days before counting as inactive.
+
+roles: List\[`abc.Snowflake`\]  
+A list of `abc.Snowflake` that represent roles to include in the estimate. If a member has a role that is not specified, they'll be excluded.
+
+*Added in 1.7.*
+
+#### Returns
+
+`int`  
+The number of members estimated to be pruned.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to prune members.
+
+HTTPException  
+An error occurred while fetching the prune members estimate.
+
+InvalidArgument  
+An integer was not passed for `days`.
+
+#### `invites()`
+
+```python
+invites() -> list[Invite]
+```
+
+*(coroutine)*
+
+Returns a list of all active instant invites from the guild.
+
+You must have the `Permissions.manage_guild` permission to get this information.
+
+#### Returns
+
+List\[`Invite`\]  
+The list of invites that are currently active.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to get the information.
+
+HTTPException  
+An error occurred while fetching the information.
+
+#### `create_template()`
+
+```python
+create_template(*, name: str, description: str = ...) -> Template
+```
+
+*(coroutine)*
+
+Creates a template for the guild.
+
+You must have the `Permissions.manage_guild` permission to do this.
+
+*Added in 1.7.*
+
+#### Parameters
+
+name: `str`  
+The name of the template.
+
+description: `str`  
+The description of the template.
+
+#### `create_integration()`
+
+```python
+create_integration(*, type: str, id: int) -> None
+```
+
+*(coroutine)*
+
+Attaches an integration to the guild.
+
+You must have the `Permissions.manage_guild` permission to do this.
+
+*Added in 1.4.*
+
+#### Parameters
+
+type: `str`  
+The integration type (e.g. Twitch).
+
+id: `int`  
+The integration ID.
+
+#### Raises
+
+Forbidden  
+You do not have permission to create the integration.
+
+HTTPException  
+The account could not be found.
+
+#### `integrations()`
+
+```python
+integrations() -> list[Integration]
+```
+
+*(coroutine)*
+
+Returns a list of all integrations attached to the guild.
+
+You must have the `Permissions.manage_guild` permission to do this.
+
+*Added in 1.4.*
+
+#### Returns
+
+List\[`Integration`\]  
+The list of integrations that are attached to the guild.
+
+#### Raises
+
+Forbidden  
+You do not have permission to create the integration.
+
+HTTPException  
+Fetching the integrations failed.
+
+#### `fetch_stickers()`
+
+```python
+fetch_stickers() -> list[GuildSticker]
+```
+
+*(coroutine)*
+
+Retrieves a list of all `Sticker`s for the guild.
+
+*Added in 2.0.*
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `stickers` instead.
+
+#### Raises
+
+HTTPException  
+An error occurred fetching the stickers.
+
+#### Returns
+
+List\[`GuildSticker`\]  
+The retrieved stickers.
+
+#### `fetch_sticker()`
+
+```python
+fetch_sticker(sticker_id: int, /) -> GuildSticker
+```
+
+*(coroutine)*
+
+Retrieves a custom `Sticker` from the guild.
+
+*Added in 2.0.*
+
+> [!NOTE]
+> This method is an API call. For general usage, consider iterating over `stickers` instead.
+
+#### Parameters
+
+sticker_id: `int`  
+The sticker's ID.
+
+#### Returns
+
+`GuildSticker`  
+The retrieved sticker.
+
+#### Raises
+
+NotFound  
+The sticker requested could not be found.
+
+HTTPException  
+An error occurred fetching the sticker.
+
+#### `create_sticker()`
+
+```python
+create_sticker(*, name: str, description: str | None = None, emoji: str, file: File, reason: str | None = None) -> GuildSticker
+```
+
+*(coroutine)*
+
+Creates a `Sticker` for the guild.
+
+You must have `Permissions.manage_emojis_and_stickers` permission to do this.
+
+*Added in 2.0.*
+
+#### Parameters
+
+name: `str`  
+The sticker name. Must be 2 to 30 characters.
+
+description: `str` | `None`  
+The sticker's description. If used, must be 2 to 100 characters.
+
+emoji: `str`  
+The name of a unicode emoji that represents the sticker's expression.
+
+file: `File`  
+The file of the sticker to upload.
+
+reason: `str`  
+The reason for creating this sticker. Shows up on the audit log.
+
+#### Returns
+
+`GuildSticker`  
+The created sticker.
+
+#### Raises
+
+Forbidden  
+You are not allowed to create stickers.
+
+HTTPException  
+An error occurred creating a sticker.
+
+TypeError  
+The parameters for the sticker are not correctly formatted.
+
+#### `delete_sticker()`
+
+```python
+delete_sticker(sticker: Snowflake, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the custom `Sticker` from the guild.
+
+You must have `Permissions.manage_emojis_and_stickers` permission to do this.
+
+*Added in 2.0.*
+
+#### Parameters
+
+sticker: `abc.Snowflake`  
+The sticker you are deleting.
+
+reason: `str` | `None`  
+The reason for deleting this sticker. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You are not allowed to delete stickers.
+
+HTTPException  
+An error occurred deleting the sticker.
+
+#### `get_emoji()`
+
+```python
+get_emoji(emoji_id: int, /) -> GuildEmoji | None
+```
+
+Returns an emoji with the given ID.
+
+*Added in 2.7.*
+
+#### Parameters
+
+emoji_id: int  
+The ID to get.
+
+#### Returns
+
+`Emoji` | `None`  
+The returned Emoji or `None` if not found.
+
+#### `fetch_emojis()`
+
+```python
+fetch_emojis() -> list[GuildEmoji]
+```
+
+*(coroutine)*
+
+Retrieves all custom `GuildEmoji`s from the guild.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `emojis` instead.
+
+#### Raises
+
+HTTPException  
+An error occurred fetching the emojis.
+
+#### Returns
+
+List\[`GuildEmoji`\]  
+The retrieved emojis.
+
+#### `fetch_emoji()`
+
+```python
+fetch_emoji(emoji_id: int, /) -> GuildEmoji
+```
+
+*(coroutine)*
+
+Retrieves a custom `GuildEmoji` from the guild.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider iterating over `emojis` instead.
+
+#### Parameters
+
+emoji_id: `int`  
+The emoji's ID.
+
+#### Returns
+
+`GuildEmoji`  
+The retrieved emoji.
+
+#### Raises
+
+NotFound  
+The emoji requested could not be found.
+
+HTTPException  
+An error occurred fetching the emoji.
+
+#### `create_custom_emoji()`
+
+```python
+create_custom_emoji(*, name: str, image: bytes, roles: list[Role] = ..., reason: str | None = None) -> GuildEmoji
+```
+
+*(coroutine)*
+
+Creates a custom `GuildEmoji` for the guild.
+
+There is currently a limit of 50 static and animated emojis respectively per guild, unless the guild has the `MORE_EMOJI` feature which extends the limit to 200.
+
+You must have the `Permissions.manage_emojis` permission to do this.
+
+#### Parameters
+
+name: `str`  
+The emoji name. Must be at least 2 characters.
+
+image: `bytes`  
+The `bytes-like object` representing the image data to use. Only JPEG, PNG, GIF, WebP and AVIF images are supported.
+
+roles: List\[`Role`\]  
+A `list` of `Role`s that can use this emoji. Leave empty to make it available to everyone.
+
+reason: `str` | `None`  
+The reason for creating this emoji. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You are not allowed to create emojis.
+
+HTTPException  
+An error occurred creating an emoji.
+
+#### Returns
+
+`GuildEmoji`  
+The created emoji.
+
+#### `delete_emoji()`
+
+```python
+delete_emoji(emoji: Snowflake, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the custom `GuildEmoji` from the guild.
+
+You must have `Permissions.manage_emojis` permission to do this.
+
+#### Parameters
+
+emoji: `abc.Snowflake`  
+The emoji you are deleting.
+
+reason: `str` | `None`  
+The reason for deleting this emoji. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You are not allowed to delete emojis.
+
+HTTPException  
+An error occurred deleting the emoji.
+
+#### `fetch_roles()`
+
+```python
+fetch_roles() -> list[Role]
+```
+
+*(coroutine)*
+
+Retrieves all `Role` that the guild has.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `roles` instead.
+
+*Added in 1.3.*
+
+#### Returns
+
+List\[`Role`\]  
+All roles in the guild.
+
+#### Raises
+
+HTTPException  
+Retrieving the roles failed.
+
+#### `fetch_role()`
+
+```python
+fetch_role(role_id: int) -> Role
+```
+
+*(coroutine)*
+
+Retrieves a `Role` that the guild has.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider using `get_role` instead.
+
+*Added in 2.7.*
+
+#### Returns
+
+`Role`  
+The role in the guild with the specified ID.
+
+#### Raises
+
+HTTPException  
+Retrieving the role failed.
+
+#### `create_role()`
+
+```python
+create_role(*, name: str = ..., permissions: Permissions = ..., color: Colour | int = ..., colour: Colour | int = ..., colors: RoleColours = ..., colours: RoleColours = ..., holographic: bool = ..., hoist: bool = ..., mentionable: bool = ..., reason: str | None = None, icon: bytes | None = ..., unicode_emoji: str | None = ...) -> Role
+```
+
+*(coroutine)*
+
+Creates a `Role` for the guild.
+
+All fields are optional.
+
+You must have the `Permissions.manage_roles` permission to do this.
+
+*Changed in 1.6 Can now pass `int` to `colour` keyword-only parameter.*
+
+#### Parameters
+
+name: `str`  
+The role name. Defaults to 'new role'.
+
+permissions: `Permissions`  
+The permissions to have. Defaults to no permissions.
+
+colour: `Colour` | `int`  
+The colour for the role. Defaults to `Colour.default`. This is aliased to `color` as well.
+
+hoist: `bool`  
+Indicates if the role should be shown separately in the member list. Defaults to `False`.
+
+mentionable: `bool`  
+Indicates if the role should be mentionable by others. Defaults to `False`.
+
+reason: `str` | `None`  
+The reason for creating this role. Shows up on the audit log.
+
+icon: `bytes` | `None`  
+A `bytes-like object` representing the icon. Only PNG/JPEG/WebP is supported. If this argument is passed, `unicode_emoji` is set to None. Only available to guilds that contain `ROLE_ICONS` in `Guild.features`.
+
+unicode_emoji: `str` | `None`  
+The role's unicode emoji. If this argument is passed, `icon` is set to None. Only available to guilds that contain `ROLE_ICONS` in `Guild.features`.
+
+#### Returns
+
+`Role`  
+The newly created role.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to create the role.
+
+HTTPException  
+Creating the role failed.
+
+InvalidArgument  
+An invalid keyword argument was given.
+
+#### `edit_role_positions()`
+
+```python
+edit_role_positions(positions: dict[Snowflake, int], *, reason: str | None = None) -> list[Role]
+```
+
+*(coroutine)*
+
+Bulk edits a list of `Role` in the guild.
+
+You must have the `Permissions.manage_roles` permission to do this.
+
+*Added in 1.4.*
+
+Example:
+
+``` python3
+positions = {
+    bots_role: 1, # penultimate role
+    tester_role: 2,
+    admin_role: 6
+}
+
+await guild.edit_role_positions(positions=positions)
+```
+
+#### Parameters
+
+positions: Dict\[`Role`, `int`\]  
+A `dict` of `Role` to `int` to change the positions of each given role.
+
+reason: `str` | `None`  
+The reason for editing the role positions. Shows up on the audit log.
+
+#### Returns
+
+List\[`Role`\]  
+A list of all the roles in the guild.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to move the roles.
+
+HTTPException  
+Moving the roles failed.
+
+InvalidArgument  
+An invalid keyword argument was given.
+
+#### `kick()`
+
+```python
+kick(user: Snowflake, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Kicks a user from the guild.
+
+The user must meet the `abc.Snowflake` abc.
+
+You must have the `Permissions.kick_members` permission to do this.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user to kick from their guild.
+
+reason: `str` | `None`  
+The reason the user got kicked.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to kick.
+
+HTTPException  
+Kicking failed.
+
+#### `ban()`
+
+```python
+ban(user: Snowflake, *, delete_message_seconds: int | None = None, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Bans a user from the guild.
+
+The user must meet the `abc.Snowflake` abc.
+
+You must have the `Permissions.ban_members` permission to do this.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user to ban from their guild.
+
+delete_message_seconds: `int` | `None`  
+The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (i.e. 7 days). The default is 0.
+
+reason: `str` | `None`  
+The reason the user got banned.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to ban.
+
+HTTPException  
+Banning failed.
+
+#### `bulk_ban()`
+
+```python
+bulk_ban(*users: Snowflake, delete_message_seconds: int | None = None, reason: str | None = None) -> tuple[list[Snowflake], list[Snowflake]]
+```
+
+*(coroutine)*
+
+Bulk ban users from the guild.
+
+The users must meet the `abc.Snowflake` abc.
+
+You must have the `Permissions.ban_members` permission to do this.
+
+Example Usage: :
+
+    # Ban multiple users
+    successes, failures = await guild.bulk_ban(user1, user2, user3, ..., reason="Raid")
+
+    # Ban a list of users
+    successes, failures = await guild.bulk_ban(*users)
+
+#### Parameters
+
+\*users: `abc.Snowflake`  
+An argument list of users to ban from the guild, up to 200.
+
+delete_message_seconds: `int` | `None`  
+The number of seconds worth of messages to delete from the user in the guild. The minimum is 0 and the maximum is 604800 (i.e. 7 days). The default is 0.
+
+reason: `str` | `None`  
+The reason the users were banned.
+
+#### Returns
+
+Tuple\[List\[`abc.Snowflake`\], List\[`abc.Snowflake`\]\]  
+Returns two lists: the first contains members that were successfully banned, while the second is members that could not be banned.
+
+#### Raises
+
+ValueError  
+You tried to ban more than 200 users.
+
+Forbidden  
+You do not have the proper permissions to ban.
+
+HTTPException  
+No users were banned.
+
+#### `unban()`
+
+```python
+unban(user: Snowflake, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Unbans a user from the guild.
+
+The user must meet the `abc.Snowflake` abc.
+
+You must have the `Permissions.ban_members` permission to do this.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user to unban.
+
+reason: `str` | `None`  
+The reason for doing this action. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to unban.
+
+HTTPException  
+Unbanning failed.
+
+#### `vanity_invite()`
+
+```python
+vanity_invite() -> Invite | None
+```
+
+*(coroutine)*
+
+Returns the guild's special vanity invite.
+
+The guild must have `VANITY_URL` in `Guild.features`.
+
+You must have the `Permissions.manage_guild` permission to use this as well.
+
+#### Returns
+
+`Invite` | `None`  
+The special vanity invite. If `None` then the guild does not have a vanity invite set.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to get this.
+
+HTTPException  
+Retrieving the vanity invite failed.
+
+#### `fetch_voice_regions()`
+
+```python
+fetch_voice_regions() -> list[VoiceServerRegion]
+```
+
+*(coroutine)*
+
+Retrieves the voice regions that the guild has access to.
+
+The list of voice regions is dynamic, so this method is the recommended way to get the currently available regions.
+
+*Added in 2.9.*
+
+#### Returns
+
+List\[`VoiceServerRegion`\]  
+The list of voice regions the guild has access to.
+
+#### Raises
+
+HTTPException  
+Retrieving the voice regions failed.
+
+#### `audit_logs()`
+
+```python
+audit_logs(*, limit: int | None = 100, before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, user: Snowflake = None, action: AuditLogAction = None) -> AuditLogIterator
+```
+
+Returns an `AsyncIterator` that enables receiving the guild's audit logs.
+
+You must have the `Permissions.view_audit_log` permission to use this.
+
+See [API documentation](https://docs.discord.com/developers/resources/audit-log#get-guild-audit-log) for more information about the <span class="title-ref">before</span> and <span class="title-ref">after</span> parameters.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of entries to retrieve. If `None` retrieve all entries.
+
+before: `abc.Snowflake` | `datetime.datetime`  
+Retrieve entries before this date or entry. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+after: `abc.Snowflake` | `datetime.datetime`  
+Retrieve entries after this date or entry. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+user: `abc.Snowflake`  
+The moderator to filter entries from.
+
+action: `AuditLogAction`  
+The action to filter with.
+
+#### Yields
+
+`AuditLogEntry`  
+The audit log entry.
+
+#### Raises
+
+Forbidden  
+You are not allowed to fetch audit logs
+
+HTTPException  
+An error occurred while fetching the audit logs.
+
+#### Examples
+
+Getting the first 100 entries: :
+
+    async for entry in guild.audit_logs(limit=100):
+        print(f'{entry.user} did {entry.action} to {entry.target}')
+
+Getting entries for a specific action: :
+
+    async for entry in guild.audit_logs(action=discord.AuditLogAction.ban):
+        print(f'{entry.user} banned {entry.target}')
+
+Getting entries made by a specific user: :
+
+    entries = await guild.audit_logs(limit=None, user=guild.me).flatten()
+    await channel.send(f'I made {len(entries)} moderation actions.')
+
+#### `widget()`
+
+```python
+widget() -> Widget
+```
+
+*(coroutine)*
+
+Returns the widget of the guild.
+
+> [!NOTE]
+> The guild must have the widget enabled to get this information.
+
+#### Returns
+
+`Widget`  
+The guild's widget.
+
+#### Raises
+
+Forbidden  
+The widget for this guild is disabled.
+
+HTTPException  
+Retrieving the widget failed.
+
+#### `edit_widget()`
+
+```python
+edit_widget(*, enabled: bool = ..., channel: Snowflake | None = ...) -> None
+```
+
+*(coroutine)*
+
+Edits the widget of the guild.
+
+You must have the `Permissions.manage_guild` permission to use this
+
+*Added in 2.0.*
+
+#### Parameters
+
+enabled: `bool`  
+Whether to enable the widget for the guild.
+
+channel: `discord.abc.Snowflake` | `None`  
+The new widget channel. `None` removes the widget channel.
+
+#### Raises
+
+Forbidden  
+You do not have permission to edit the widget.
+
+HTTPException  
+Editing the widget failed.
+
+#### `chunk()`
+
+```python
+chunk(*, cache: bool = True) -> None
+```
+
+*(coroutine)*
+
+Requests all members that belong to this guild. In order to use this, `Intents.members` must be enabled.
+
+This is a websocket operation and can be slow.
+
+*Added in 1.5.*
+
+#### Parameters
+
+cache: `bool`  
+Whether to cache the members as well.
+
+#### Raises
+
+ClientException  
+The members intent is not enabled.
+
+#### `request_channel_info()`
+
+```python
+request_channel_info(*, cache: bool = True) -> None | list[ChannelInfo]
+```
+
+*(coroutine)*
+
+Requests all channel statuses for this guild over the websocket.
+
+*Added in 2.9.*
+
+#### Parameters
+
+cache: `bool`  
+Whether to cache the channel statuses as well.
+
+#### `query_members()`
+
+```python
+query_members(query: str | None = None, *, limit: int | None = 5, user_ids: list[int] | None = None, presences: bool = False, cache: bool = True) -> list[Member]
+```
+
+*(coroutine)*
+
+Request members that belong to this guild whose username starts with the query given.
+
+This is a websocket operation and can be slow.
+
+*Added in 1.3.*
+
+#### Parameters
+
+query: `str` | `None`  
+The string that the username's start with.
+
+user_ids: List\[`int`\] | `None`  
+List of user IDs to search for. If the user ID is not in the guild then it won't be returned.
+
+*Added in 1.4.*
+
+limit: `int` | `None`  
+The maximum number of members to send back. If no query is passed, passing `None` returns all members. If a `query` or `user_ids` is passed, must be between 1 and 100. Defaults to 5.
+
+presences: `bool` | `None`  
+Whether to request for presences to be provided. This defaults to `False`.
+
+*Added in 1.6.*
+
+cache: `bool`  
+Whether to cache the members internally. This makes operations such as `get_member` work for those that matched. Defaults to `True`.
+
+#### Returns
+
+List\[`Member`\]  
+The list of members that have matched the query.
+
+#### Raises
+
+asyncio.TimeoutError  
+The query timed out waiting for the members.
+
+ValueError  
+Invalid parameters were passed to the function
+
+ClientException  
+The presences intent is not enabled.
+
+#### `change_voice_state()`
+
+```python
+change_voice_state(*, channel: VocalGuildChannel | None, self_mute: bool = False, self_deaf: bool = False)
+```
+
+*(coroutine)*
+
+Changes client's voice state in the guild.
+
+*Added in 1.4.*
+
+#### Parameters
+
+channel: `VoiceChannel` | `StageChannel` | `None`  
+Channel the client wants to join. Use `None` to disconnect.
+
+self_mute: `bool`  
+Indicates if the client should be self-muted.
+
+self_deaf: `bool`  
+Indicates if the client should be self-deafened.
+
+#### `welcome_screen()`
+
+```python
+welcome_screen()
+```
+
+*(coroutine)*
+
+Returns the `WelcomeScreen` of the guild.
+
+The guild must have `COMMUNITY` in `Guild.features`.
+
+You must have the `Permissions.manage_guild` permission in order to get this.
+
+*Added in 2.0.*
+
+#### Returns
+
+`WelcomeScreen`  
+The welcome screen of guild.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to get this.
+
+HTTPException  
+Retrieving the welcome screen failed somehow.
+
+NotFound  
+The guild doesn't have a welcome screen or community feature is disabled.
+
+#### `edit_welcome_screen()`
+
+```python
+edit_welcome_screen(**options)
+```
+
+*(coroutine)*
+
+A shorthand for `WelcomeScreen.edit` without fetching the welcome screen.
+
+You must have the `Permissions.manage_guild` permission in the guild to do this.
+
+The guild must have `COMMUNITY` in `Guild.features`
+
+#### Parameters
+
+description: `str` | `None`  
+The new description of welcome screen.
+
+welcome_channels: List\[`WelcomeScreenChannel`\] | `None`  
+The welcome channels. The order of the channels would be same as the passed list order.
+
+enabled: `bool` | `None`  
+Whether the welcome screen should be displayed.
+
+reason: `str` | `None`  
+The reason that shows up on audit log.
+
+#### Returns
+
+`WelcomeScreen`  
+The edited welcome screen.
+
+#### Raises
+
+HTTPException  
+Editing the welcome screen failed somehow.
+
+Forbidden  
+You don't have permissions to edit the welcome screen.
+
+NotFound  
+This welcome screen does not exist.
+
+#### `fetch_scheduled_events()`
+
+```python
+fetch_scheduled_events(*, with_user_count: bool = True) -> list[ScheduledEvent]
+```
+
+*(coroutine)*
+
+Returns a list of `ScheduledEvent` in the guild.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `scheduled_events` instead.
+
+#### Parameters
+
+with_user_count: `bool` | `None`  
+If the scheduled event should be fetched with the number of users that are interested in the events. Defaults to `True`.
+
+#### Returns
+
+List\[`ScheduledEvent`\]  
+The fetched scheduled events.
+
+#### Raises
+
+ClientException  
+The scheduled events intent is not enabled.
+
+HTTPException  
+Getting the scheduled events failed.
+
+#### `fetch_scheduled_event()`
+
+```python
+fetch_scheduled_event(event_id: int, /, *, with_user_count: bool = True) -> ScheduledEvent | None
+```
+
+*(coroutine)*
+
+Retrieves a `ScheduledEvent` from event ID.
+
+> [!NOTE]
+> This method is an API call. If you have `Intents.scheduled_events`, consider `get_scheduled_event` instead.
+
+#### Parameters
+
+event_id: `int`  
+The event's ID to fetch with.
+
+with_user_count: `bool` | `None`  
+If the scheduled vent should be fetched with the number of users that are interested in the event. Defaults to `True`.
+
+#### Returns
+
+`ScheduledEvent` | `None`  
+The scheduled event from the event ID.
+
+#### Raises
+
+HTTPException  
+Fetching the event failed.
+
+NotFound  
+Event not found.
+
+#### `get_scheduled_event()`
+
+```python
+get_scheduled_event(event_id: int, /) -> ScheduledEvent | None
+```
+
+Returns a Scheduled Event with the given ID.
+
+#### Parameters
+
+event_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`ScheduledEvent` | `None`  
+The scheduled event or `None` if not found.
+
+#### `create_scheduled_event()`
+
+```python
+create_scheduled_event(*, name: str, description: str = ..., start_time: datetime.datetime, end_time: datetime.datetime = ..., location: str | int | VoiceChannel | StageChannel | ScheduledEventLocation, privacy_level: ScheduledEventPrivacyLevel = <ScheduledEventPrivacyLevel.guild_only: 2>, reason: str | None = None, image: bytes = ...) -> ScheduledEvent | None
+```
+
+*(coroutine)* Creates a scheduled event.
+
+#### Parameters
+
+name: `str`  
+The name of the scheduled event.
+
+description: `str` | `None`  
+The description of the scheduled event.
+
+start_time: `datetime.datetime`  
+A datetime object of when the scheduled event is supposed to start.
+
+end_time: `datetime.datetime` | `None`  
+A datetime object of when the scheduled event is supposed to end.
+
+location: `ScheduledEventLocation`  
+The location of where the event is happening.
+
+privacy_level: `ScheduledEventPrivacyLevel`  
+The privacy level of the event. Currently, the only possible value is `ScheduledEventPrivacyLevel.guild_only`, which is default, so there is no need to change this parameter.
+
+reason: `str` | `None`  
+The reason to show in the audit log.
+
+image: `bytes` | `None`  
+The cover image of the scheduled event
+
+#### Returns
+
+`ScheduledEvent` | `None`  
+The created scheduled event.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Events permission.
+
+HTTPException  
+The operation failed.
+
+#### `fetch_auto_moderation_rules()`
+
+```python
+fetch_auto_moderation_rules() -> list[AutoModRule]
+```
+
+*(coroutine)*
+
+Retrieves a list of auto moderation rules for this guild.
+
+#### Returns
+
+List\[`AutoModRule`\]  
+The auto moderation rules for this guild.
+
+#### Raises
+
+HTTPException  
+Getting the auto moderation rules failed.
+
+Forbidden  
+You do not have the Manage Guild permission.
+
+#### `fetch_auto_moderation_rule()`
+
+```python
+fetch_auto_moderation_rule(id: int) -> AutoModRule
+```
+
+*(coroutine)*
+
+Retrieves a `AutoModRule` from rule ID.
+
+#### Returns
+
+`AutoModRule`  
+The requested auto moderation rule.
+
+#### Raises
+
+HTTPException  
+Getting the auto moderation rule failed.
+
+Forbidden  
+You do not have the Manage Guild permission.
+
+#### `create_auto_moderation_rule()`
+
+```python
+create_auto_moderation_rule(*, name: str, event_type: AutoModEventType, trigger_type: AutoModTriggerType, trigger_metadata: AutoModTriggerMetadata, actions: list[AutoModAction], enabled: bool = False, exempt_roles: list[Snowflake] = None, exempt_channels: list[Snowflake] = None, reason: str | None = None) -> AutoModRule
+```
+
+Creates an auto moderation rule.
+
+#### Parameters
+
+name: `str`  
+The name of the auto moderation rule.
+
+event_type: `AutoModEventType`  
+The type of event that triggers the rule.
+
+trigger_type: `AutoModTriggerType`  
+The rule's trigger type.
+
+trigger_metadata: `AutoModTriggerMetadata`  
+The rule's trigger metadata.
+
+actions: List\[`AutoModAction`\]  
+The actions to take when the rule is triggered.
+
+enabled: `bool`  
+Whether the rule is enabled.
+
+exempt_roles: List\[`.abc.Snowflake`\]  
+A list of roles that are exempt from the rule.
+
+exempt_channels: List\[`.abc.Snowflake`\]  
+A list of channels that are exempt from the rule.
+
+reason: `str` | `None`  
+The reason for creating the rule. Shows up in the audit log.
+
+#### Returns
+
+`AutoModRule`  
+The new auto moderation rule.
+
+#### Raises
+
+HTTPException  
+Creating the auto moderation rule failed.
+
+Forbidden  
+You do not have the Manage Guild permission.
+
+#### `onboarding()`
+
+```python
+onboarding()
+```
+
+*(coroutine)*
+
+Returns the `Onboarding` flow for the guild.
+
+*Added in 2.5.*
+
+#### Returns
+
+`Onboarding`  
+The onboarding flow for the guild.
+
+#### Raises
+
+HTTPException  
+Retrieving the onboarding flow failed somehow.
+
+#### `edit_onboarding()`
+
+```python
+edit_onboarding(*, prompts: list[OnboardingPrompt] | None = ..., default_channels: list[Snowflake] | None = ..., enabled: bool | None = ..., mode: OnboardingMode | None = ..., reason: str | None = ...) -> Onboarding
+```
+
+*(coroutine)*
+
+A shorthand for `Onboarding.edit` without fetching the onboarding flow.
+
+You must have the `Permissions.manage_guild` and `Permissions.manage_roles` permissions in the guild to do this.
+
+#### Parameters
+
+prompts: List\[`OnboardingPrompt`\] | `None`  
+The new list of prompts for this flow.
+
+default_channels: List\[`Snowflake`\] | `None`  
+The new default channels that users are opted into.
+
+enabled: `bool` | `None`  
+Whether onboarding should be enabled. Setting this to `True` requires the guild to have `COMMUNITY` in `Guild.features` and at least 7 `default_channels`.
+
+mode: `OnboardingMode` | `None`  
+The new onboarding mode.
+
+reason: `str` | `None`  
+The reason that shows up on Audit log.
+
+#### Returns
+
+`Onboarding`  
+The updated onboarding flow.
+
+#### Raises
+
+HTTPException  
+Editing the onboarding flow failed somehow.
+
+Forbidden  
+You don't have permissions to edit the onboarding flow.
+
+#### `modify_incident_actions()`
+
+```python
+modify_incident_actions(*, invites_disabled_until: datetime.datetime | None = ..., dms_disabled_until: datetime.datetime | None = ..., reason: str | None = ...) -> IncidentsData
+```
+
+*(coroutine)*
+
+Modify the guild's incident actions, controlling when invites or DMs are re-enabled after being temporarily disabled. Requires the `Permissions.manage_guild` permission.
+
+#### Parameters
+
+invites_disabled_until: `datetime.datetime` | `None`  
+The ISO8601 timestamp indicating when invites will be enabled again, or `None` to enable invites immediately.
+
+dms_disabled_until: `datetime.datetime` | `None`  
+The ISO8601 timestamp indicating when DMs will be enabled again, or `None` to enable DMs immediately.
+
+reason: `str` | `None`  
+The reason for this action, used for the audit log.
+
+#### Returns
+
+`IncidentsData`  
+The updated incidents data for the guild.
+
+#### `delete_auto_moderation_rule()`
+
+```python
+delete_auto_moderation_rule(id: int, *, reason: str | None = None) -> None
+```
+
+Deletes an auto moderation rule.
+
+#### Parameters
+
+id: `int`  
+The ID of the auto moderation rule.
+
+reason: `str` | `None`  
+The reason for deleting the rule. Shows up in the audit log.
+
+#### Raises
+
+HTTPException  
+Deleting the auto moderation rule failed.
+
+Forbidden  
+You do not have the Manage Guild permission.
+
+#### `create_test_entitlement()`
+
+```python
+create_test_entitlement(sku: Snowflake) -> Entitlement
+```
+
+*(coroutine)*
+
+Creates a test entitlement for the guild.
+
+#### Parameters
+
+sku: `Snowflake`  
+The SKU to create a test entitlement for.
+
+#### Returns
+
+`Entitlement`  
+The created entitlement.
+
+#### `entitlements()`
+
+```python
+entitlements(skus: list[Snowflake] | None = None, before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, limit: int | None = 100, exclude_ended: bool = False) -> EntitlementIterator
+```
+
+Returns an `.AsyncIterator` that enables fetching the guild's entitlements.
+
+This is identical to `Client.entitlements` with the `guild` parameter.
+
+*Added in 2.6.*
+
+#### Parameters
+
+skus: list\[`.abc.Snowflake`\] | None  
+Limit the fetched entitlements to entitlements that are for these SKUs.
+
+before: `.abc.Snowflake` | `datetime.datetime` | None  
+Retrieves guilds before this date or object. If a datetime is provided, it is recommended to use a UTC-aware datetime. If the datetime is naive, it is assumed to be local time.
+
+after: `.abc.Snowflake` | `datetime.datetime` | None  
+Retrieve guilds after this date or object. If a datetime is provided, it is recommended to use a UTC-aware datetime. If the datetime is naive, it is assumed to be local time.
+
+limit: `int` | `None`  
+The number of entitlements to retrieve. If `None`, retrieves every entitlement, which may be slow. Defaults to `100`.
+
+exclude_ended: `bool`  
+Whether to limit the fetched entitlements to those that have not ended. Defaults to `False`.
+
+#### Yields
+
+`.Entitlement`  
+The application's entitlements.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the entitlements failed.
+
+#### `get_sound()`
+
+```python
+get_sound(sound_id: int) -> SoundboardSound | None
+```
+
+Returns a sound with the given ID.
+
+#### Parameters
+
+sound_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`SoundboardSound` | `None`  
+The sound or `None` if not found.
+
+### `GuildRoleCounts`
+
+```python
+class GuildRoleCounts(...)
+```
+
+A dictionary subclass that maps role IDs to their member counts.
+
+This class allows accessing member counts by either role ID (`int`) or by a Snowflake object (which has an `.id` attribute).
+
+*Added in 2.7.*
+
+#### `get()`
+
+```python
+get(key: int | abc.Snowflake, default: T = None) -> int | T
+```
+
+Get the member count for a role, returning a default if not found.
+
+#### Parameters
+
+key: `int` | `discord.abc.Snowflake`  
+The role ID or a Snowflake object (e.g., a `Role`).
+
+default: Any  
+The value to return if the role ID is not found.
+
+#### Returns
+
+`int` | `None`  
+The member count for the role, or `default` if the role is not present.
+
+### `VoiceServerRegion`
+
+```python
+class VoiceServerRegion(id: str, name: str, optimal: bool, deprecated: bool, custom: bool) -> None
+```
+
+Represents a voice region a guild can use for voice channels.
+
+This is returned by `Guild.fetch_voice_regions`.
+
+*Added in 2.9.*
+
+#### Attributes
+
+id: `str`  
+The region ID, e.g. `"us-west"`. Use this as the `VoiceChannel.rtc_region` of a voice channel.
+
+name: `str`  
+The region's display name, e.g. `"US West"`.
+
+optimal: `bool`  
+Whether the region is optimal for the guild's members.
+
+deprecated: `bool`  
+Whether the region is deprecated.
+
+custom: `bool`  
+Whether the region is a custom region.

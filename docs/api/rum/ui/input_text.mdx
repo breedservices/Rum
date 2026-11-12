@@ -1,0 +1,129 @@
+# `rum.ui.input_text`
+
+## Classes
+
+### `InputText`
+
+```python
+class InputText(*, style: InputTextStyle = <InputTextStyle.short: 1>, custom_id: str | None = None, label: str | None = None, placeholder: str | None = None, min_length: int | None = None, max_length: int | None = None, required: bool | None = True, value: str | None = None, row: int | None = None, id: int | None = None)
+```
+
+Represents a UI text input field.
+
+*Added in 2.0.*
+
+#### Parameters
+
+style: `discord.InputTextStyle`  
+The style of the input text field.
+
+custom_id: `str` | `None`  
+The ID of the input text field that gets received during an interaction.
+
+label: `str`  
+The label for the input text field. Must be 45 characters or fewer.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any. Must be 100 characters or fewer.
+
+min_length: `int` | `None`  
+The minimum number of characters that must be entered. Defaults to 0 and must be less than 4000.
+
+max_length: `int` | `None`  
+The maximum number of characters that can be entered. Must be between 1 and 4000.
+
+required: `bool` | `None`  
+Whether the input text field is required or not. Defaults to `True`.
+
+value: `str` | `None`  
+Pre-fills the input text field with this value. Must be 4000 characters or fewer.
+
+row: `int` | `None`  
+The relative row this input text field belongs to. A modal dialog can only have 5 rows. By default, items are arranged automatically into those 5 rows. If you'd like to control the relative positioning of the row then passing an index is advised. For example, row=1 will show up before row=2. Defaults to `None`, which is automatic ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> InputTextComponentPayload
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(data) -> None
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: InputTextComponentPayload) -> None
+```
+
+#### `from_component()`
+
+```python
+from_component(component: InputTextComponent) -> InputText
+```
+
+### `InputText`
+
+```python
+class InputText(*, style: InputTextStyle = <InputTextStyle.short: 1>, custom_id: str | None = None, label: str | None = None, placeholder: str | None = None, min_length: int | None = None, max_length: int | None = None, required: bool | None = True, value: str | None = None, row: int | None = None, id: int | None = None)
+```
+
+Represents a UI text input field.
+
+*Added in 2.0.*
+
+#### Parameters
+
+style: `discord.InputTextStyle`  
+The style of the input text field.
+
+custom_id: `str` | `None`  
+The ID of the input text field that gets received during an interaction.
+
+label: `str`  
+The label for the input text field. Must be 45 characters or fewer.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any. Must be 100 characters or fewer.
+
+min_length: `int` | `None`  
+The minimum number of characters that must be entered. Defaults to 0 and must be less than 4000.
+
+max_length: `int` | `None`  
+The maximum number of characters that can be entered. Must be between 1 and 4000.
+
+required: `bool` | `None`  
+Whether the input text field is required or not. Defaults to `True`.
+
+value: `str` | `None`  
+Pre-fills the input text field with this value. Must be 4000 characters or fewer.
+
+row: `int` | `None`  
+The relative row this input text field belongs to. A modal dialog can only have 5 rows. By default, items are arranged automatically into those 5 rows. If you'd like to control the relative positioning of the row then passing an index is advised. For example, row=1 will show up before row=2. Defaults to `None`, which is automatic ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> InputTextComponentPayload
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(data) -> None
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: InputTextComponentPayload) -> None
+```
+
+#### `from_component()`
+
+```python
+from_component(component: InputTextComponent) -> InputText
+```

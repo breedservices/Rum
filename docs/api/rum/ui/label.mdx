@@ -1,0 +1,299 @@
+# `rum.ui.label`
+
+## Classes
+
+### `Label`
+
+```python
+class Label(label: str, item: ModalItem = None, *, description: str | None = None, id: int | None = None)
+```
+
+Represents a UI Label used in `discord.ui.DesignerModal`.
+
+The items currently supported are as follows:
+
+- `discord.ui.Select`
+- `discord.ui.InputText`
+- `discord.ui.FileUpload`
+- `discord.ui.RadioGroup`
+- `discord.ui.CheckboxGroup`
+- `discord.ui.Checkbox`
+
+*Added in 2.7.*
+
+#### Parameters
+
+item: `ModalItem`  
+The initial item attached to this label.
+
+label: `str`  
+The label text. Must be 45 characters or fewer.
+
+description: `str` | `None`  
+The description for this label. Must be 100 characters or fewer.
+
+id: `int` | `None`  
+The label's ID.
+
+#### Attributes
+
+item: `ViewItem`  
+The label's attached item.
+
+#### `set_item()`
+
+```python
+set_item(item: ModalItem) -> Self
+```
+
+Set this label's item.
+
+#### Parameters
+
+item: `ModalItem`  
+The item to set.
+
+#### Raises
+
+TypeError  
+A `ModalItem` was not passed.
+
+#### `get_item()`
+
+```python
+get_item(id: str | int) -> ModalItem | None
+```
+
+Get the item from this label if it matches the provided id. If an `int` is provided, the item will match by `id`, otherwise by `custom_id`.
+
+#### Parameters
+
+id: `str` | `int`  
+The id or custom_id of the item to match.
+
+#### Returns
+
+`ModalItem` | `None`  
+The item if its `id` or `custom_id` matches.
+
+#### `set_input_text()`
+
+```python
+set_input_text(*, style: InputTextStyle = <InputTextStyle.short: 1>, custom_id: str | None = None, placeholder: str | None = None, min_length: int | None = None, max_length: int | None = None, required: bool | None = True, value: str | None = None, id: int | None = None) -> Self
+```
+
+Set this label's item to an input text.
+
+To set a pre-existing `InputText`, use the `set_item` method, instead.
+
+#### Parameters
+
+style: `discord.InputTextStyle`  
+The style of the input text field.
+
+custom_id: `str` | `None`  
+The ID of the input text field that gets received during an interaction.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any. Must be 100 characters or fewer.
+
+min_length: `int` | `None`  
+The minimum number of characters that must be entered. Defaults to 0 and must be less than 4000.
+
+max_length: `int` | `None`  
+The maximum number of characters that can be entered. Must be between 1 and 4000.
+
+required: `bool` | `None`  
+Whether the input text field is required or not. Defaults to `True`.
+
+value: `str` | `None`  
+Pre-fills the input text field with this value. Must be 4000 characters or fewer.
+
+id: `int` | `None`  
+The button's ID.
+
+#### `set_select()`
+
+```python
+set_select(select_type: ComponentType = <ComponentType.string_select: 3>, *, custom_id: str | None = None, placeholder: str | None = None, min_values: int = 1, max_values: int = 1, options: list[SelectOption] | None = None, channel_types: list[ChannelType] | None = None, required: bool = True, id: int | None = None, default_values: Sequence[SelectDefaultValue] | None = None) -> Self
+```
+
+Set this label's item to a select menu.
+
+#### Parameters
+
+select_type: `discord.ComponentType`  
+The type of select to create. Must be one of `discord.ComponentType.string_select`, `discord.ComponentType.user_select`, `discord.ComponentType.role_select`, `discord.ComponentType.mentionable_select`, or `discord.ComponentType.channel_select`.
+
+custom_id: `str`  
+The custom ID of the select menu that gets received during an interaction. If not given then one is generated for you.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any.
+
+min_values: `int`  
+The minimum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+max_values: `int`  
+The maximum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+options: List\[`discord.SelectOption`\]  
+A list of options that can be selected in this menu. Only valid for selects of type `discord.ComponentType.string_select`.
+
+channel_types: List\[`discord.ChannelType`\]  
+A list of channel types that can be selected in this menu. Only valid for selects of type `discord.ComponentType.channel_select`.
+
+required: `bool`  
+Whether the select is required or not. Defaults to `True`.
+
+id: `int` | `None`  
+The select menu's ID.
+
+default_values: Sequence\[`discord.SelectDefaultValue` | `discord.abc.Snowflake`\] | `None`  
+The default values of this select. Only applicable if `.select_type` is not `discord.ComponentType.string_select`.
+
+These can be either `discord.SelectDefaultValue` instances or models, which will be converted into `discord.SelectDefaultValue` instances.
+
+#### `set_file_upload()`
+
+```python
+set_file_upload(*, custom_id: str | None = None, min_values: int | None = None, max_values: int | None = None, required: bool = True, id: int | None = None) -> Self
+```
+
+Set this label's item to a file upload.
+
+To set a pre-existing `FileUpload`, use the `set_item` method, instead.
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the input text field that gets received during an interaction.
+
+min_values: `int` | `None`  
+The minimum number of files that must be uploaded. Defaults to 0 and must be between 0 and 10, inclusive.
+
+max_values: `int` | `None`  
+The maximum number of files that can be uploaded. Must be between 1 and 10, inclusive.
+
+required: `bool`  
+Whether the file upload field is required or not. Defaults to `True`.
+
+id: `int` | `None`  
+The file upload field's ID.
+
+#### `set_radio_group()`
+
+```python
+set_radio_group(*, custom_id: str | None = None, options: list[RadioGroupOption] | None = None, required: bool = True, id: int | None = None) -> Self
+```
+
+Set this label's item to a radio group.
+
+To set a pre-existing `RadioGroup`, use the `set_item` method, instead.
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the radio group that gets received during an interaction.
+
+options: List\[`discord.RadioGroupOption`\]  
+A list of options that can be selected from this group.
+
+required: `bool` | `None`  
+Whether an option selection is required or not. Defaults to `True`.
+
+id: `int` | `None`  
+The radio group's ID.
+
+#### `set_checkbox_group()`
+
+```python
+set_checkbox_group(*, custom_id: str | None = None, options: list[CheckboxGroupOption] | None = None, min_values: int | None = None, max_values: int | None = None, required: bool | None = True, id: int | None = None) -> Self
+```
+
+Set this label's item to a checkbox group.
+
+To set a pre-existing `CheckboxGroup`, use the `set_item` method, instead.
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the checkbox group that gets received during an interaction.
+
+options: List\[`discord.CheckboxGroupOption`\]  
+A list of options that can be selected in this group.
+
+min_values: `int` | `None`  
+The minimum number of options that must be selected. Defaults to 0 and must be between 0 and 10, inclusive.
+
+max_values: `int` | `None`  
+The maximum number of options that can be selected. Must be between 1 and 10, inclusive.
+
+required: `bool` | `None`  
+Whether an option selection is required or not. Defaults to `True`.
+
+id: `int` | `None`  
+The checkbox group's ID.
+
+#### `set_checkbox()`
+
+```python
+set_checkbox(*, custom_id: str | None = None, default: bool | None = False, id: int | None = None) -> Self
+```
+
+Set this label's item to a checkbox.
+
+To set a pre-existing `Checkbox`, use the `set_item` method, instead.
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the checkbox that gets received during an interaction.
+
+default: `bool` | `None`  
+Whether this checkbox is selected by default or not.
+
+id: `int` | `None`  
+The checkbox's ID.
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: LabelComponent) -> None
+```
+
+#### `walk_items()`
+
+```python
+walk_items() -> Iterator[ModalItem]
+```
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> LabelComponentPayload
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: LabelComponentPayload) -> None
+```
+
+#### `from_component()`
+
+```python
+from_component(component: LabelComponent) -> L
+```

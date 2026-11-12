@@ -1,0 +1,510 @@
+# `rum.cache`
+
+## Classes
+
+### `CacheKind`
+
+```python
+class CacheKind(*values)
+```
+
+The kinds of things the cache holds.
+
+Every kind has its own rule, so a bot can cache the members of one guild and no presences at all.
+
+### `CacheProvider`
+
+```python
+class CacheProvider(*, max_messages: int | None = 1000, max_users: int | None = None, max_members: int | None = None, rules: Mapping[CacheKind, CacheRule] | None = None) -> None
+```
+
+Alias for `DefaultCacheProvider` for convenience.
+
+### `CacheRule`
+
+```python
+class CacheRule(enabled: bool = True, max_entries: int | None = None, ttl: float | None = None, fields: frozenset[str] | None = None) -> None
+```
+
+How one kind of thing is cached.
+
+#### Parameters
+
+enabled: `bool`  
+Whether the kind is cached at all.
+
+max_entries: `int` | `None`  
+How many entries are kept. The least recently used ones are dropped beyond that.
+
+ttl: `float` | `None`  
+How long an entry lives, in seconds. It is dropped when it is read after that.
+
+fields: `frozenset`\[`str`\] | `None`  
+The fields to keep. Every other field is dropped when the entry is cached, so the cache only holds what the bot reads.
+
+### `DefaultCacheProvider`
+
+```python
+class DefaultCacheProvider(*, max_messages: int | None = 1000, max_users: int | None = None, max_members: int | None = None, rules: Mapping[CacheKind, CacheRule] | None = None) -> None
+```
+
+Default cache backend provider.
+
+This provider creates the same in-memory cache objects that rum uses by default. Subclass this and override methods to customize specific caches.
+
+All mapping caches should behave like mutable mappings (`dict`-like) and implement at least `__getitem__`, `__setitem__`, `__delitem__`, `__iter__`, `__len__`, `get`, `pop`, `values`, `items`, and `__contains__` as needed by the library.
+
+#### Parameters
+
+max_messages: Optional\[`int`\]  
+Maximum number of messages to keep in the default message cache. `None` disables the message cache. Defaults to `1000` to match library behavior when not specified by the client.
+
+max_users: Optional\[`int`\]  
+Maximum number of users to keep. The least recently used users are dropped beyond that. `None` keeps every user, which is the default.
+
+max_members: Optional\[`int`\]  
+Maximum number of members to keep per guild. The least recently used members are dropped beyond that. `None` keeps every member, which is the default.
+
+#### Attributes
+
+state: Optional\[`discord.state.ConnectionState`\]  
+The connection state the provider is attached to. The library sets this before it creates any cache, so implementations can use it to rebuild Discord objects when loading a cache from an external store.
+
+keeps_object_references: `bool`  
+Whether the caches keep a reference to the Discord objects they store. rum evicts a user from the user cache when the `discord.User` object is garbage collected. A cache that does not hold on to the objects, such as one backed by an external store, would lose its entries straight away, so set this to `False` for those. Defaults to `True`.
+
+#### `rule_for()`
+
+```python
+rule_for(kind: CacheKind) -> CacheRule
+```
+
+Returns the rule of a kind.
+
+#### `cache_for()`
+
+```python
+cache_for(kind: CacheKind, container: MutableMapping[Any, Any] | None = None, *, max_entries: int | None = None) -> MutableMapping[Any, Any]
+```
+
+Builds the container of a kind, with the rule of that kind applied.
+
+Pass a container to keep the entries somewhere else, a Redis store for example. The rule is applied either way: the fields are trimmed when an entry is written, the entries expire after the time to live and the least recently used ones are dropped past the limit.
+
+#### Parameters
+
+kind: `CacheKind`  
+The kind of thing the container holds.
+
+container: `MutableMapping` | `None`  
+Where the entries are kept. Defaults to a plain dictionary.
+
+max_entries: `int` | `None`  
+How many entries to keep. The rule of the kind wins over this.
+
+#### `create_user_cache()`
+
+```python
+create_user_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_guild_cache()`
+
+```python
+create_guild_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_emoji_cache()`
+
+```python
+create_emoji_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_sticker_cache()`
+
+```python
+create_sticker_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_poll_cache()`
+
+```python
+create_poll_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_private_channel_cache()`
+
+```python
+create_private_channel_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_private_channel_by_user_cache()`
+
+```python
+create_private_channel_by_user_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_voice_client_cache()`
+
+```python
+create_voice_client_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_sound_cache()`
+
+```python
+create_sound_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_guild_channel_cache()`
+
+```python
+create_guild_channel_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_member_cache()`
+
+```python
+create_guild_member_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_thread_cache()`
+
+```python
+create_guild_thread_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_voice_state_cache()`
+
+```python
+create_guild_voice_state_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_scheduled_event_cache()`
+
+```python
+create_guild_scheduled_event_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_sound_cache()`
+
+```python
+create_guild_sound_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_stage_instance_cache()`
+
+```python
+create_guild_stage_instance_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_role_cache()`
+
+```python
+create_guild_role_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_message_cache()`
+
+```python
+create_message_cache() -> MessageCache | None
+```
+
+#### `clear_message_cache()`
+
+```python
+clear_message_cache(current: MessageCache | None) -> MessageCache | None
+```
+
+Return a cleared/reset message cache.
+
+Called when the state is cleared. The default implementation recreates the deque with the same `maxlen`.
+
+#### `create_view_store()`
+
+```python
+create_view_store(state: ConnectionState) -> ViewStore
+```
+
+#### `create_modal_store()`
+
+```python
+create_modal_store(state: ConnectionState) -> ModalStore
+```
+
+### `DefaultCacheProvider`
+
+```python
+class DefaultCacheProvider(*, max_messages: int | None = 1000, max_users: int | None = None, max_members: int | None = None, rules: Mapping[CacheKind, CacheRule] | None = None) -> None
+```
+
+Default cache backend provider.
+
+This provider creates the same in-memory cache objects that rum uses by default. Subclass this and override methods to customize specific caches.
+
+All mapping caches should behave like mutable mappings (`dict`-like) and implement at least `__getitem__`, `__setitem__`, `__delitem__`, `__iter__`, `__len__`, `get`, `pop`, `values`, `items`, and `__contains__` as needed by the library.
+
+#### Parameters
+
+max_messages: Optional\[`int`\]  
+Maximum number of messages to keep in the default message cache. `None` disables the message cache. Defaults to `1000` to match library behavior when not specified by the client.
+
+max_users: Optional\[`int`\]  
+Maximum number of users to keep. The least recently used users are dropped beyond that. `None` keeps every user, which is the default.
+
+max_members: Optional\[`int`\]  
+Maximum number of members to keep per guild. The least recently used members are dropped beyond that. `None` keeps every member, which is the default.
+
+#### Attributes
+
+state: Optional\[`discord.state.ConnectionState`\]  
+The connection state the provider is attached to. The library sets this before it creates any cache, so implementations can use it to rebuild Discord objects when loading a cache from an external store.
+
+keeps_object_references: `bool`  
+Whether the caches keep a reference to the Discord objects they store. rum evicts a user from the user cache when the `discord.User` object is garbage collected. A cache that does not hold on to the objects, such as one backed by an external store, would lose its entries straight away, so set this to `False` for those. Defaults to `True`.
+
+#### `rule_for()`
+
+```python
+rule_for(kind: CacheKind) -> CacheRule
+```
+
+Returns the rule of a kind.
+
+#### `cache_for()`
+
+```python
+cache_for(kind: CacheKind, container: MutableMapping[Any, Any] | None = None, *, max_entries: int | None = None) -> MutableMapping[Any, Any]
+```
+
+Builds the container of a kind, with the rule of that kind applied.
+
+Pass a container to keep the entries somewhere else, a Redis store for example. The rule is applied either way: the fields are trimmed when an entry is written, the entries expire after the time to live and the least recently used ones are dropped past the limit.
+
+#### Parameters
+
+kind: `CacheKind`  
+The kind of thing the container holds.
+
+container: `MutableMapping` | `None`  
+Where the entries are kept. Defaults to a plain dictionary.
+
+max_entries: `int` | `None`  
+How many entries to keep. The rule of the kind wins over this.
+
+#### `create_user_cache()`
+
+```python
+create_user_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_guild_cache()`
+
+```python
+create_guild_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_emoji_cache()`
+
+```python
+create_emoji_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_sticker_cache()`
+
+```python
+create_sticker_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_poll_cache()`
+
+```python
+create_poll_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_private_channel_cache()`
+
+```python
+create_private_channel_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_private_channel_by_user_cache()`
+
+```python
+create_private_channel_by_user_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_voice_client_cache()`
+
+```python
+create_voice_client_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_sound_cache()`
+
+```python
+create_sound_cache() -> MutableMapping[int, Any]
+```
+
+#### `create_guild_channel_cache()`
+
+```python
+create_guild_channel_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_member_cache()`
+
+```python
+create_guild_member_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_thread_cache()`
+
+```python
+create_guild_thread_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_voice_state_cache()`
+
+```python
+create_guild_voice_state_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_scheduled_event_cache()`
+
+```python
+create_guild_scheduled_event_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_sound_cache()`
+
+```python
+create_guild_sound_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_stage_instance_cache()`
+
+```python
+create_guild_stage_instance_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_guild_role_cache()`
+
+```python
+create_guild_role_cache(guild: Any) -> MutableMapping[int, Any]
+```
+
+#### `create_message_cache()`
+
+```python
+create_message_cache() -> MessageCache | None
+```
+
+#### `clear_message_cache()`
+
+```python
+clear_message_cache(current: MessageCache | None) -> MessageCache | None
+```
+
+Return a cleared/reset message cache.
+
+Called when the state is cleared. The default implementation recreates the deque with the same `maxlen`.
+
+#### `create_view_store()`
+
+```python
+create_view_store(state: ConnectionState) -> ViewStore
+```
+
+#### `create_modal_store()`
+
+```python
+create_modal_store(state: ConnectionState) -> ModalStore
+```
+
+### `LRUCache`
+
+```python
+class LRUCache(max_entries: int, *, ttl: float | None = None, fields: frozenset[str] | None = None) -> None
+```
+
+A mapping that drops the least recently used entries beyond a limit.
+
+The library uses it for the caches that would otherwise grow for as long as the bot runs, like the user cache of a bot in many guilds. It also applies the rule of its kind: the entries expire after the time to live and only the fields of the rule are kept.
+
+#### Parameters
+
+max_entries: `int`  
+How many entries to keep.
+
+ttl: `float` | `None`  
+How long an entry lives, in seconds.
+
+fields: `frozenset`\[`str`\] | `None`  
+The fields to keep on the entries.
+
+### `MessageCache`
+
+```python
+class MessageCache(*args, **kwargs)
+```
+
+Protocol for the global message cache used by `discord.state.ConnectionState`.
+
+The default implementation is a `collections.deque` with a `maxlen`. Custom implementations should support the operations used by the library.
+
+#### `append()`
+
+```python
+append(message: Message, /) -> Any
+```
+
+#### `remove()`
+
+```python
+remove(message: Message, /) -> Any
+```
+
+#### `clear()`
+
+```python
+clear() -> Any
+```
+
+### `NullCache`
+
+```python
+class NullCache()
+```
+
+A mapping that keeps nothing, for the kinds that are not cached.
+
+### `RuledCache`
+
+```python
+class RuledCache(container: MutableMapping[Any, Any], rule: CacheRule | None = None) -> None
+```
+
+A container that applies the rule of its kind.
+
+It wraps any mapping, so the entries can live in a database or in Redis while the rule of the kind still applies.
+
+#### Parameters
+
+container: `MutableMapping`  
+Where the entries are kept.
+
+rule: `CacheRule`  
+The rule of the kind.
+
+## Functions
+
+### `trim_fields()`
+
+```python
+trim_fields(value: Any, fields: frozenset[str]) -> None
+```
+
+Drops every field of a cached object that the rule does not keep.
+
+The fields that say what an object is and where it belongs are always kept, and the private fields of the model are left alone.

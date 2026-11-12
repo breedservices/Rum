@@ -1,0 +1,29 @@
+# `rum.sinks.wave`
+
+## Classes
+
+### `WaveSink`
+
+```python
+class WaveSink(*, filters=None)
+```
+
+A special sink for .wav(wave) files.
+
+*Added in 2.0.*
+
+#### `format_audio()`
+
+```python
+format_audio(audio)
+```
+
+Formats the recorded audio.
+
+#### Raises
+
+WaveSinkError  
+Audio may only be formatted after recording is finished.
+
+WaveSinkError  
+Formatting the audio failed.

@@ -1,0 +1,359 @@
+# `rum.ext.tasks`
+
+## Classes
+
+### `Loop`
+
+```python
+class Loop(coro: LF, seconds: float, hours: float, minutes: float, time: datetime.time | Sequence[datetime.time], count: int | None, reconnect: bool, loop: asyncio.AbstractEventLoop, overlap: bool | int) -> None
+```
+
+A background task helper that abstracts the loop and reconnection logic for you.
+
+The main interface to create this is through `loop`.
+
+#### `start()`
+
+```python
+start(*args: Any, **kwargs: Any) -> asyncio.Task[None]
+```
+
+Starts the internal task in the event loop.
+
+#### Parameters
+
+\*args  
+The arguments to use.
+
+\*\*kwargs  
+The keyword arguments to use.
+
+#### Raises
+
+RuntimeError  
+A task has already been launched and is running.
+
+#### Returns
+
+`asyncio.Task`  
+The task that has been created.
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+Gracefully stops the task from running.
+
+Unlike `cancel`, this allows the task to finish its current iteration before gracefully exiting.
+
+> [!NOTE]
+> If the internal function raises an error that can be handled before finishing then it will retry until it succeeds.
+>
+> If this is undesirable, either remove the error handling before stopping via `clear_exception_types` or use `cancel` instead.
+
+*Added in 1.2.*
+
+#### `cancel()`
+
+```python
+cancel() -> None
+```
+
+Cancels the internal task, if it is running.
+
+#### `restart()`
+
+```python
+restart(*args: Any, **kwargs: Any) -> None
+```
+
+A convenience method to restart the internal task.
+
+> [!NOTE]
+> Due to the way this function works, the task is not returned like `start`.
+
+#### Parameters
+
+\*args  
+The arguments to use.
+
+\*\*kwargs  
+The keyword arguments to use.
+
+#### `add_exception_type()`
+
+```python
+add_exception_type(*exceptions: type[BaseException]) -> None
+```
+
+Adds exception types to be handled during the reconnect logic.
+
+By default, the exception types handled are those handled by `discord.Client.connect`, which includes a lot of internet disconnection errors.
+
+This function is useful if you're interacting with a 3rd party library that raises its own set of exceptions.
+
+#### Parameters
+
+\*exceptions: Type\[`BaseException`\]  
+An argument list of exception classes to handle.
+
+#### Raises
+
+TypeError  
+An exception passed is either not a class or not inherited from `BaseException`.
+
+#### `clear_exception_types()`
+
+```python
+clear_exception_types() -> None
+```
+
+Removes all exception types that are handled.
+
+> [!NOTE]
+> This operation obviously cannot be undone!
+
+#### `remove_exception_type()`
+
+```python
+remove_exception_type(*exceptions: type[BaseException]) -> bool
+```
+
+Removes exception types from being handled during the reconnect logic.
+
+#### Parameters
+
+\*exceptions: Type\[`BaseException`\]  
+An argument list of exception classes to handle.
+
+#### Returns
+
+`bool`  
+Whether all exceptions were successfully removed.
+
+#### `get_task()`
+
+```python
+get_task() -> asyncio.Task[None] | None
+```
+
+Fetches the internal task or `None` if there isn't one running.
+
+#### `is_being_cancelled()`
+
+```python
+is_being_cancelled() -> bool
+```
+
+Whether the task is being cancelled.
+
+#### `failed()`
+
+```python
+failed() -> bool
+```
+
+Whether the internal task has failed.
+
+*Added in 1.2.*
+
+#### `is_running()`
+
+```python
+is_running() -> bool
+```
+
+Check if the task is currently running.
+
+*Added in 1.4.*
+
+#### `before_loop()`
+
+```python
+before_loop(coro: FT) -> FT
+```
+
+A decorator that registers a coroutine to be called before the loop starts running.
+
+This is useful if you want to wait for some bot state before the loop starts, such as `discord.Client.wait_until_ready`.
+
+The coroutine must take no arguments (except `self` in a class context).
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register before the loop runs.
+
+#### Raises
+
+TypeError  
+The function was not a coroutine.
+
+#### `after_loop()`
+
+```python
+after_loop(coro: FT) -> FT
+```
+
+A decorator that register a coroutine to be called after the loop finished running.
+
+The coroutine must take no arguments (except `self` in a class context).
+
+> [!NOTE]
+> This coroutine is called even during cancellation. If it is desirable to tell apart whether something was cancelled or not, check to see whether `is_being_cancelled` is `True` or not.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register after the loop finishes.
+
+#### Raises
+
+TypeError  
+The function was not a coroutine.
+
+#### `error()`
+
+```python
+error(coro: ET) -> ET
+```
+
+A decorator that registers a coroutine to be called if the task encounters an unhandled exception.
+
+The coroutine must take only one argument the exception raised (except `self` in a class context).
+
+By default, this prints to `sys.stderr` however it could be overridden to have a different implementation.
+
+*Added in 1.4.*
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register in the event of an unhandled exception.
+
+#### Raises
+
+TypeError  
+The function was not a coroutine.
+
+#### `change_interval()`
+
+```python
+change_interval(*, seconds: float = 0, minutes: float = 0, hours: float = 0, time: datetime.time | Sequence[datetime.time] = ...) -> None
+```
+
+Changes the interval for the sleep time.
+
+*Added in 1.2.*
+
+#### Parameters
+
+seconds: `float`  
+The number of seconds between every iteration.
+
+minutes: `float`  
+The number of minutes between every iteration.
+
+hours: `float`  
+The number of hours between every iteration.
+
+time: `datetime.time` | Sequence\[`datetime.time`\]  
+The exact times to run this loop at. Either a non-empty list or a single value of `datetime.time` should be passed. This cannot be used in conjunction with the relative time parameters.
+
+*Added in 2.0.*
+
+> [!NOTE]
+> Duplicate times will be ignored, and only run once.
+
+#### Raises
+
+ValueError  
+An invalid value was given.
+
+TypeError  
+An invalid value for the `time` parameter was passed, or the `time` parameter was passed in conjunction with relative time parameters.
+
+### `SleepHandle`
+
+```python
+class SleepHandle(dt: datetime.datetime, *, loop: asyncio.AbstractEventLoop) -> None
+```
+
+#### `recalculate()`
+
+```python
+recalculate(dt: datetime.datetime) -> None
+```
+
+#### `wait()`
+
+```python
+wait() -> asyncio.Future[Any]
+```
+
+#### `done()`
+
+```python
+done() -> bool
+```
+
+#### `cancel()`
+
+```python
+cancel() -> None
+```
+
+## Functions
+
+### `loop()`
+
+```python
+loop(*, seconds: float = ..., minutes: float = ..., hours: float = ..., time: datetime.time | Sequence[datetime.time] = ..., count: int | None = None, reconnect: bool = True, loop: asyncio.AbstractEventLoop = ..., overlap: bool | int = False) -> Callable[[LF], Loop[LF]]
+```
+
+A decorator that schedules a task in the background for you with optional reconnect logic. The decorator returns a `Loop`.
+
+#### Parameters
+
+seconds: `float`  
+The number of seconds between every iteration.
+
+minutes: `float`  
+The number of minutes between every iteration.
+
+hours: `float`  
+The number of hours between every iteration.
+
+time: `datetime.time` | Sequence\[`datetime.time`\]  
+The exact times to run this loop at. Either a non-empty list or a single value of `datetime.time` should be passed. Timezones are supported. If no timezone is given for the times, it is assumed to represent UTC time.
+
+This cannot be used in conjunction with the relative time parameters.
+
+> [!NOTE]
+> Duplicate times will be ignored, and only run once.
+
+*Added in 2.0.*
+
+count: `int` | `None`  
+The number of loops to do, `None` if it should be an infinite loop.
+
+reconnect: `bool`  
+Whether to handle errors and restart the task using an exponential back-off algorithm similar to the one used in `discord.Client.connect`.
+
+loop: `asyncio.AbstractEventLoop`  
+The loop to use to register the task, if not given the default event loop is used via `asyncio.get_event_loop()` if it exists or one is created via `asyncio.new_event_loop()`.
+
+overlap: `bool` | `int`  
+Controls whether overlapping executions of the task loop are allowed. Set to False (default) to run iterations one at a time, True for unlimited overlap, or an int to cap the number of concurrent runs.
+
+*Added in 2.7.*
+
+#### Raises
+
+ValueError  
+An invalid value was given.
+
+TypeError  
+The function was not a coroutine, an invalid value for the `time` parameter was passed, or `time` parameter was passed in conjunction with relative time parameters.

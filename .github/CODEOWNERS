@@ -10,10 +10,4 @@
 # /rum/ext/testing/ @breedservices/maintain-tests
 # /rum/ext/bridge/ @breedservices/maintain-ext-bridge
 # /.github/ @breedservices/maintainers
-# /docs/locales/ @breedservices/maintain-translations
-# /docs/build/locales/ @breedservices/maintain-translations
-# /.github/workflows/docs-localization-download.yml @breedservices/maintain-translations
-# /.github/workflows/docs-localization-upload.yml @breedservices/maintain-translations
-# /crowdin.yml @breedservices/maintain-translations
-# /requirements/_locale.txt @breedservices/maintain-translations
 # /CHANGELOG.md @breedservices/maintain-changelog

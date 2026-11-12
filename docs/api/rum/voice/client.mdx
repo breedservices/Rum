@@ -1,0 +1,431 @@
+# `rum.voice.client`
+
+## Classes
+
+### `VoiceClient`
+
+```python
+class VoiceClient(client: Client, channel: abc.Connectable) -> None
+```
+
+Represents a Discord voice connection.
+
+You do not create these, you typically get them from e.g. `VoiceChannel.connect`.
+
+#### Attributes
+
+channel: `VoiceChannel` | `StageChannel`  
+The channel we are connected to.
+
+#### Warning
+
+In order to use PCM based AudioSources, you must have the opus library installed on your system and loaded through `opus.load_opus`. Otherwise, your AudioSources must be opus encoded (e.g. using `FFmpegOpusAudio`) or the library will not be able to transmit audio.
+
+#### `is_dave_connection()`
+
+```python
+is_dave_connection() -> bool
+```
+
+Whether the voice client is connected to a DAVE call.
+
+#### `checked_add()`
+
+```python
+checked_add(attr: str, value: int, limit: int) -> None
+```
+
+#### `create_connection_state()`
+
+```python
+create_connection_state() -> VoiceConnectionState
+```
+
+#### `dispatch()`
+
+```python
+dispatch(event: str, /, *args: Any, **kwargs: Any) -> None
+```
+
+#### `on_voice_state_update()`
+
+```python
+on_voice_state_update(data: RawVoiceStateUpdateEvent) -> None
+```
+
+*(coroutine)*
+
+A method called when the client's voice state has changed. This corresponds to the `VOICE_STATE_UPDATE` event.
+
+#### Parameters
+
+data: `RawVoiceStateUpdateEvent`  
+The voice state payload.
+
+*Changed in 2.7 This now gets passed a <span class="title-ref">RawVoiceStateUpdateEvent</span> object instead of a `dict`, but accessing keys via `data[key]` or `data.get(key)` is still supported, but deprecated.*
+
+#### `on_voice_server_update()`
+
+```python
+on_voice_server_update(data: RawVoiceServerUpdateEvent) -> None
+```
+
+*(coroutine)*
+
+A method called when the client is initially connecting to voice. This corresponds to the `VOICE_SERVER_UPDATE` event.
+
+#### Parameters
+
+data: `RawVoiceServerUpdateEvent`  
+The voice server payload.
+
+*Changed in 2.7 This now gets passed a <span class="title-ref">RawVoiceServerUpdateEvent</span> object instead of a `dict`, but accessing keys via `data[key]` or `data.get(key)` is still supported, but deprecated.*
+
+#### `connect()`
+
+```python
+connect(*, reconnect: bool, timeout: float, self_deaf: bool = False, self_mute: bool = False) -> None
+```
+
+*(coroutine)*
+
+A method called to initialise the connection.
+
+The library initialises this class and calls `__init__`, and then `connect` when attempting to start a connection to the voice. If an error occurs, it calls `disconnect`, so if you need to implement any cleanup, you should manually call it in `disconnect` as the library will not do so for you.
+
+Within this method, to start the voice connection flow, it is recommended to use `Guild.change_voice_state` to start the flow. After which `on_voice_server_update` and `on_voice_state_update` will be called, although this could vary and cause unexpected behaviour, but that falls under Discord's way of handling the voice connection.
+
+#### Parameters
+
+timeout: `float`  
+The timeout for the connection.
+
+reconnect: `bool`  
+Whether reconnection is expected.
+
+#### `wait_until_connected()`
+
+```python
+wait_until_connected(timeout: float | None = 30.0) -> bool
+```
+
+#### `disconnect()`
+
+```python
+disconnect(*, force: bool = False) -> None
+```
+
+*(coroutine)*
+
+Disconnects this voice client from voice.
+
+#### `move_to()`
+
+```python
+move_to(channel: abc.Snowflake | None, *, timeout: float | None = 30.0) -> None
+```
+
+*(coroutine)*
+
+moves you to a different voice channel.
+
+#### Parameters
+
+channel: `abc.Snowflake` | `None`  
+The channel to move to. If this is `None`, it is an equivalent of calling `.disconnect`.
+
+timeout: `float` | `None`  
+The maximum time in seconds to wait for the channel move to be completed, defaults to 30. If it is `None`, then there is no timeout.
+
+#### Raises
+
+asyncio.TimeoutError  
+Waiting for channel move timed out.
+
+#### `is_connected()`
+
+```python
+is_connected() -> bool
+```
+
+Whether the voice client is connected to voice.
+
+#### `is_playing()`
+
+```python
+is_playing() -> bool
+```
+
+INdicates if we're playing audio.
+
+#### `is_paused()`
+
+```python
+is_paused() -> bool
+```
+
+Indicates if we're playing audio, but if we're paused.
+
+#### `play()`
+
+```python
+play(source: AudioSource, *, after: AfterCallback | None = None, application: APPLICATION_CTL = 'audio', bitrate: int = 128, fec: bool = True, expected_packet_loss: float = 0.15, bandwidth: BAND_CTL = 'full', signal_type: SIGNAL_CTL = 'auto', wait_finish: bool = False) -> None | asyncio.Future[None]
+```
+
+Plays an `AudioSource`.
+
+The finalizer, `after` is called after the source has been exhausted or an error occurred.
+
+IF an error happens while the audio player is running, the exception is caught and the audio player is then stopped. If no after callback is passed, any caught exception will be displayed as if it were raised.
+
+#### Parameters
+
+source: `AudioSource`  
+The audio source we're reading from.
+
+after: Callable\[\[`Exception` | `None`\], Any\]  
+The finalizer that is called after the stream is exhausted. This function must have a single parameter, `error`, that denotes an optional exception that was raised during playing.
+
+application: `str`  
+The intended application encoder application type. Must be one of `audio`, `voip`, or `lowdelay`. Defaults to `audio`.
+
+bitrate: `int`  
+The encoder's bitrate. Must be between `16` and `512`. Defaults to `128`.
+
+fec: `bool`  
+Configures the encoder's use of inband forward error correction (fec). Defaults to `True`.
+
+expected_packet_loss: `float`  
+How much packet loss percentage is expected from the encoder. This requires `fec` to be set to `True`. Defaults to `0.15`.
+
+bandwidth: `str`  
+The encoder's bandpass. Must be one of `narrow`, `medium`, `wide`, `superwide`, or `full`. Defaults to `full`.
+
+signal_type: `str`  
+The type of signal being encoded. Must be one of `auto`, `voice`, `music`. Defaults to `auto`.
+
+wait_finish: `bool`  
+If `True`, then an awaitable is returned that waits for the audio source to be exhausted, and will return an optional exception that could have been raised.
+
+If `False`, `None` is returned and the function does not block.
+
+*Added in 2.5.*
+
+#### Raises
+
+ClientException  
+Already playing audio, or not connected to voice.
+
+TypeError  
+Source is not a `AudioSource`, or after is not a callable.
+
+OpusNotLoaded  
+Source is not opus encoded and opus is not loaded.
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+Stops playing audio, if applicable.
+
+#### `pause()`
+
+```python
+pause() -> None
+```
+
+Pauses the audio playing.
+
+#### `resume()`
+
+```python
+resume() -> None
+```
+
+Resumes the audio playing.
+
+#### `send_audio_packet()`
+
+```python
+send_audio_packet(data: bytes, *, encode: bool = True) -> None
+```
+
+Sends an audio packet composed of the `data`.
+
+You must be connected to play audio.
+
+#### Parameters
+
+data: `bytes`  
+The `bytes-like object` denoting PCM or Opus voice data.
+
+encode: `bool`  
+Indicates if `data` should be encoded into Opus.
+
+#### Raises
+
+ClientException  
+You are not connected.
+
+opus.OpusError  
+Encoding the data failed.
+
+#### `elapsed()`
+
+```python
+elapsed() -> datetime.timedelta
+```
+
+Returns the elapsed time of the playing audio.
+
+#### `start_recording()`
+
+```python
+start_recording(sink: Sink, callback: AfterCallback | None = None, *args: Any, sync_start: bool = ...) -> None
+```
+
+Start recording the audio from the current connected channel to the provided sink.
+
+*Added in 2.0.*
+
+> [!WARNING]
+> Recording may not work as expected due to the new DAVE (End-to-End Encryption) for voice calls.
+
+#### Parameters
+
+sink: `.Sink`  
+A Sink in which all audio packets will be processed in.
+
+callback: Callable\[\[`Exception` | None\], Any\]  
+A function which is called after the bot has stopped recording. This must take exactly one positional(-only) parameter, `exception`, which is the exception that was raised during the recording of the Sink.
+
+*Changed in 2.7 This parameter is now optional, and must take exactly one parameter, `exception`.*
+
+\*args:  
+The arguments to pass to the callback coroutine.
+
+<div class="deprecated">
+
+2.7 Passing custom arguments to the callback is now deprecated and ignored.
+
+</div>
+
+sync_start: `bool`  
+If `True`, the recordings of subsequent users will start with silence. This is useful for recording audio just as it was heard.
+
+<div class="deprecated">
+
+2.7 This parameter is now ignored and deprecated.
+
+</div>
+
+#### Raises
+
+RecordingException  
+Not connected to a voice channel
+
+TypeError  
+You did not provide a Sink object.
+
+#### `start_listening()`
+
+```python
+start_listening(sink: Sink, callback: AfterCallback | None = None, *args: Any, sync_start: bool = ...) -> None
+```
+
+Start recording the audio from the current connected channel to the provided sink.
+
+*Added in 2.0.*
+
+> [!WARNING]
+> Recording may not work as expected due to the new DAVE (End-to-End Encryption) for voice calls.
+
+#### Parameters
+
+sink: `.Sink`  
+A Sink in which all audio packets will be processed in.
+
+callback: Callable\[\[`Exception` | None\], Any\]  
+A function which is called after the bot has stopped recording. This must take exactly one positional(-only) parameter, `exception`, which is the exception that was raised during the recording of the Sink.
+
+*Changed in 2.7 This parameter is now optional, and must take exactly one parameter, `exception`.*
+
+\*args:  
+The arguments to pass to the callback coroutine.
+
+<div class="deprecated">
+
+2.7 Passing custom arguments to the callback is now deprecated and ignored.
+
+</div>
+
+sync_start: `bool`  
+If `True`, the recordings of subsequent users will start with silence. This is useful for recording audio just as it was heard.
+
+<div class="deprecated">
+
+2.7 This parameter is now ignored and deprecated.
+
+</div>
+
+#### Raises
+
+RecordingException  
+Not connected to a voice channel
+
+TypeError  
+You did not provide a Sink object.
+
+#### `stop_recording()`
+
+```python
+stop_recording() -> None
+```
+
+Stops the recording of the provided `sink`, or all recording sinks.
+
+*Added in 2.0.*
+
+#### Raises
+
+RecordingException  
+You are not recording.
+
+#### `stop_listening()`
+
+```python
+stop_listening() -> None
+```
+
+Stops the recording of the provided `sink`, or all recording sinks.
+
+*Added in 2.0.*
+
+#### Raises
+
+RecordingException  
+You are not recording.
+
+#### `is_recording()`
+
+```python
+is_recording() -> bool
+```
+
+Whether the current client is recording in any sink.
+
+#### `is_speaking()`
+
+```python
+is_speaking(member: Member | User) -> bool | None
+```
+
+Whether a user is speaking.
+
+This is an approximate calculation and may have outdated or wrong data.
+
+If the member speaking status has not been yet saved, it returns `None`.
+
+*Added in 2.7.*

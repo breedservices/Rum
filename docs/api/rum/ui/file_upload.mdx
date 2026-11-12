@@ -1,0 +1,48 @@
+# `rum.ui.file_upload`
+
+## Classes
+
+### `FileUpload`
+
+```python
+class FileUpload(*, custom_id: str | None = None, min_values: int | None = None, max_values: int | None = None, required: bool = True, id: int | None = None)
+```
+
+Represents a UI File Upload component.
+
+*Added in 2.7.*
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the file upload field that gets received during an interaction.
+
+min_values: `int` | `None`  
+The minimum number of files that must be uploaded. Defaults to 0 and must be between 0 and 10, inclusive.
+
+max_values: `int` | `None`  
+The maximum number of files that can be uploaded. Must be between 1 and 10, inclusive.
+
+required: `bool`  
+Whether the file upload field is required or not. Defaults to `True`.
+
+id: `int` | `None`  
+The file upload field's ID.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> FileUploadComponentPayload
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: dict) -> None
+```
+
+#### `from_component()`
+
+```python
+from_component(component: FileUploadComponent) -> FileUpload
+```

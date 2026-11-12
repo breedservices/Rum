@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 
 
 import os
+
 import rum
 from rum.ext import commands
 

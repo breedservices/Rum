@@ -1,0 +1,22 @@
+# `rum.voice.packets.core`
+
+## Classes
+
+### `Packet`
+
+```python
+class Packet(data: bytes) -> None
+```
+
+Represents an audio stream bytes packet.
+
+#### Attributes
+
+data: `bytes`  
+The bytes data of this packet. This has not been decoded.
+
+#### `is_silence()`
+
+```python
+is_silence() -> bool
+```

@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 # This example requires the 'members' privileged intent to use the Member converter.
 
 import os
+
 import rum
 from rum.commands import SlashCommandGroup
 from rum.ext import commands

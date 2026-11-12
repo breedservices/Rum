@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 # It can also be set in the .env file in the repository root.
 #
 # button_roles.py
-import os
 import rum
 from rum.ext import commands
 

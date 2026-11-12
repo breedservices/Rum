@@ -1,0 +1,243 @@
+# `rum.ui.modal`
+
+## Classes
+
+### `BaseModal`
+
+```python
+class BaseModal(*children: ModalItem, title: str, custom_id: str | None = None, timeout: float | None = None, store: bool = True) -> None
+```
+
+The base class for creating pop-up modals.
+
+*Added in 2.7.*
+
+#### `callback()`
+
+```python
+callback(interaction: Interaction)
+```
+
+*(coroutine)*
+
+The coroutine that is called when the modal is submitted. Should be overridden to handle the values submitted by the user.
+
+#### Parameters
+
+interaction: `discord.Interaction`  
+The interaction that submitted the modal.
+
+#### `add_item()`
+
+```python
+add_item(item: ModalItem) -> Self
+```
+
+Adds a component to the modal.
+
+#### Parameters
+
+item: `ModalItem`  
+The item to add to the modal
+
+#### `remove_item()`
+
+```python
+remove_item(item: ModalItem) -> Self
+```
+
+Removes a component from the modal.
+
+#### Parameters
+
+item: `ModalItem`  
+The item to remove from the modal.
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+Stops listening to interaction events from the modal.
+
+#### `wait()`
+
+```python
+wait() -> bool
+```
+
+Waits for the modal to be submitted.
+
+#### `to_dict()`
+
+```python
+to_dict()
+```
+
+#### `on_error()`
+
+```python
+on_error(error: Exception, interaction: Interaction) -> None
+```
+
+*(coroutine)*
+
+A callback that is called when the modal's callback fails with an error.
+
+The default implementation prints the traceback to stderr.
+
+#### Parameters
+
+error: `Exception`  
+The exception that was raised.
+
+interaction: `discord.Interaction`  
+The interaction that led to the failure.
+
+#### `on_timeout()`
+
+```python
+on_timeout() -> None
+```
+
+*(coroutine)*
+
+A callback that is called when a modal's timeout elapses without being explicitly stopped.
+
+#### `walk_children()`
+
+```python
+walk_children() -> Iterator[ModalItem]
+```
+
+### `DesignerModal`
+
+```python
+class DesignerModal(*children: ModalItem, title: str, custom_id: str | None = None, timeout: float | None = None, store: bool = True) -> None
+```
+
+Represents a UI modal compatible with all modal features.
+
+This object must be inherited to create a UI within Discord.
+
+*Added in 2.7.*
+
+#### Parameters
+
+children: `ModalItem`  
+The initial items that are displayed in the modal..
+
+title: `str`  
+The title of the modal. Must be 45 characters or fewer.
+
+custom_id: `str` | `None`  
+The ID of the modal that gets received during an interaction. Must be 100 characters or fewer.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the UI before no longer accepting input. If `None` then there is no timeout.
+
+store: `bool` | `None`  
+Whether this modal should be stored for callback listening. Setting it to `False` will ignore its callback and prevent item values from being refreshed. Defaults to `True`.
+
+#### `add_item()`
+
+```python
+add_item(item: ModalItem) -> Self
+```
+
+Adds a component to the modal.
+
+#### Parameters
+
+item: `ModalItem`  
+The item to add to the modal
+
+### `Modal`
+
+```python
+class Modal(*children: InputText, title: str, custom_id: str | None = None, timeout: float | None = None, store: bool = True) -> None
+```
+
+Represents a legacy UI modal for InputText components.
+
+This object must be inherited to create a UI within Discord.
+
+*Added in 2.0.*
+
+*Changed in 2.7
+
+Now inherits from `BaseModal`.*
+
+#### Parameters
+
+children: `InputText`  
+The initial items that are displayed in the modal. Only supports `discord.ui.InputText`; for newer modal features, see `DesignerModal`.
+
+title: `str`  
+The title of the modal. Must be 45 characters or fewer.
+
+custom_id: `str` | `None`  
+The ID of the modal that gets received during an interaction. Must be 100 characters or fewer.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the UI before no longer accepting input. If `None` then there is no timeout.
+
+store: `bool` | `None`  
+Whether this modal should be stored for callback listening. Setting it to `False` will ignore its callback and prevent item values from being refreshed. Defaults to `True`.
+
+#### `to_components()`
+
+```python
+to_components() -> list[dict[str, Any]]
+```
+
+#### `add_item()`
+
+```python
+add_item(item: InputText) -> Self
+```
+
+Adds an InputText component to the modal.
+
+#### Parameters
+
+item: `InputText`  
+The item to add to the modal
+
+#### `remove_item()`
+
+```python
+remove_item(item: InputText) -> Self
+```
+
+Removes an InputText from the modal.
+
+#### Parameters
+
+item: `InputText`  
+The item to remove from the modal.
+
+### `ModalStore`
+
+```python
+class ModalStore(state: ConnectionState) -> None
+```
+
+#### `add_modal()`
+
+```python
+add_modal(modal: BaseModal, user_id: int)
+```
+
+#### `remove_modal()`
+
+```python
+remove_modal(modal: BaseModal, user_id: int | None = None)
+```
+
+#### `dispatch()`
+
+```python
+dispatch(user_id: int, custom_id: str, interaction: Interaction)
+```

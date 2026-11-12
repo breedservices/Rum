@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 # This example requires the `message_content` privileged intent for prefixed commands.
 
 import os
+
 import rum
 from rum.ext import commands
 

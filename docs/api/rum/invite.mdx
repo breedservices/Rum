@@ -1,0 +1,532 @@
+# `rum.invite`
+
+## Classes
+
+### `Invite`
+
+```python
+class Invite(*, state: ConnectionState, data: InvitePayload | IncompleteInvitePayload, guild: PartialInviteGuild | Guild | None = None, channel: PartialInviteChannel | GuildChannel | None = None)
+```
+
+Represents a Discord `Guild` or `abc.GuildChannel` invite.
+
+Depending on the way this object was created, some of the attributes can have a value of `None`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two invites are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two invites are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the invite hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the invite URL.
+
+</div>
+
+</div>
+
+The following table illustrates what methods will obtain the attributes:
+
+<table>
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 62%" />
+</colgroup>
+<thead>
+<tr>
+<th><blockquote>
+<p>Attribute</p>
+</blockquote></th>
+<th><blockquote>
+<p>Method</p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2"><code>max_age</code> | <code>abc.GuildChannel.invites</code>, <code>Guild.invites</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>max_uses</code> | <code>abc.GuildChannel.invites</code>, <code>Guild.invites</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>created_at</code> | <code>abc.GuildChannel.invites</code>, <code>Guild.invites</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>temporary</code> | <code>abc.GuildChannel.invites</code>, <code>Guild.invites</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>uses</code> | <code>abc.GuildChannel.invites</code>, <code>Guild.invites</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>approximate_member_count</code> | <code>Client.fetch_invite</code> with <span class="title-ref">with_counts</span> enabled |</td>
+</tr>
+<tr>
+<td colspan="2"><code>approximate_presence_count</code> | <code>Client.fetch_invite</code> with <span class="title-ref">with_counts</span> enabled |</td>
+</tr>
+<tr>
+<td colspan="2"><code>expires_at</code> | <code>Client.fetch_invite</code> with <span class="title-ref">with_expiration</span> enabled |</td>
+</tr>
+</tbody>
+</table>
+
+If it's not in the table above then it is available by all methods.
+
+#### Attributes
+
+max_age: `int`  
+How long before the invite expires in seconds. A value of `0` indicates that it doesn't expire.
+
+code: `str`  
+The URL fragment used for the invite.
+
+guild: `Guild` | `Object` | `PartialInviteGuild` | `None`  
+The guild the invite is for. Can be `None` if it's from a group direct message.
+
+revoked: `bool`  
+Indicates if the invite has been revoked.
+
+created_at: `datetime.datetime`  
+An aware UTC datetime object denoting the time the invite was created.
+
+temporary: `bool`  
+Indicates that the invite grants temporary membership. If `True`, members who joined via this invite will be kicked upon disconnect.
+
+uses: `int`  
+How many times the invite has been used.
+
+max_uses: `int`  
+How many times the invite can be used. A value of `0` indicates that it has unlimited uses.
+
+inviter: `User` | `None`  
+The user who created the invite.
+
+approximate_member_count: `int` | `None`  
+The approximate number of members in the guild.
+
+approximate_presence_count: `int` | `None`  
+The approximate number of members currently active in the guild. This includes idle, dnd, online, and invisible members. Offline members are excluded.
+
+expires_at: `datetime.datetime` | `None`  
+The expiration date of the invite. If the value is `None` when received through <span class="title-ref">Client.fetch_invite</span> with <span class="title-ref">with_expiration</span> enabled, the invite will never expire.
+
+*Added in 2.0.*
+
+channel: `abc.GuildChannel` | `Object` | `PartialInviteChannel`  
+The channel the invite is for.
+
+target_type: `InviteTarget`  
+The type of target for the voice channel invite.
+
+*Added in 2.0.*
+
+target_user: `User` | `None`  
+The user whose stream to display for this invite, if any.
+
+*Added in 2.0.*
+
+target_application: `PartialAppInfo` | `None`  
+The embedded application the invite targets, if any.
+
+*Added in 2.0.*
+
+scheduled_event: `ScheduledEvent` | `None`  
+The scheduled event linked with the invite.
+
+roles: List\[`Role` | `Object`\]  
+The roles that will be assigned to a user that joins via this invite.
+
+When using <span class="title-ref">Client.fetch_invite</span>, these may be partial role objects and have nullish attributes.
+
+*Added in 2.8.*
+
+#### `from_incomplete()`
+
+```python
+from_incomplete(*, state: ConnectionState, data: InvitePayload) -> I
+```
+
+#### `from_gateway()`
+
+```python
+from_gateway(*, state: ConnectionState, data: GatewayInvitePayload) -> I
+```
+
+#### `edit_target_users()`
+
+```python
+edit_target_users(target_users_file: File) -> None
+```
+
+*(coroutine)*
+
+Updates the target users list for this invite.
+
+You must have created this invite or have the `Permissions.manage_guild` permission to do this.
+
+You can use `utils.users_to_csv` to generate a virtual CSV file from a sequence of user IDs.
+
+#### Parameters
+
+target_users_file: `File`  
+A CSV file with a single column of user IDs for all the users able to accept this invite.
+
+#### Raises
+
+HTTPException  
+Updating the target users failed.
+
+Forbidden  
+You do not have permissions to edit this invite.
+
+NotFound  
+The invite is invalid or expired.
+
+#### `fetch_target_users_job_status()`
+
+```python
+fetch_target_users_job_status() -> InviteTargetUsersJobStatus
+```
+
+*(coroutine)*
+
+Retrieves the status of the target users processing job for this invite.
+
+You must have created this invite or have the `Permissions.manage_guild` or `Permissions.view_audit_log` permissions. permission to do this.
+
+#### Returns
+
+`InviteTargetUsersJobStatus`  
+The job status information.
+
+#### Raises
+
+HTTPException  
+Fetching the job status failed.
+
+NotFound  
+The invite is invalid or expired.
+
+Forbidden  
+You do not have permission to view the target users.
+
+#### `delete()`
+
+```python
+delete(*, reason: str | None = None)
+```
+
+*(coroutine)*
+
+Revokes the instant invite.
+
+You must have the `Permissions.manage_channels` permission to do this.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for deleting this invite. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to revoke invites.
+
+NotFound  
+The invite is invalid or expired.
+
+HTTPException  
+Revoking the invite failed.
+
+#### `set_scheduled_event()`
+
+```python
+set_scheduled_event(event: ScheduledEvent) -> None
+```
+
+Links the given scheduled event to this invite.
+
+> [!NOTE]
+> Scheduled events aren't actually associated with invites on the API. Any guild channel invite can have an event attached to it. Using `abc.GuildChannel.create_invite`, `Client.fetch_invite`, or this method, you can link scheduled events.
+
+*Added in 2.0.*
+
+#### Parameters
+
+event: `ScheduledEvent`  
+The scheduled event object to link.
+
+### `InviteTargetUsers`
+
+```python
+class InviteTargetUsers(*, state: ConnectionState, invite_code: str)
+```
+
+Represents the target users CSV file for an invite.
+
+*Added in 2.8.*
+
+#### Attributes
+
+invite_code: str  
+The invite code for which the target users are associated.
+
+#### `read()`
+
+```python
+read() -> bytes
+```
+
+*(coroutine)*
+
+Retrieves this invite's target users CSV file as a `bytes` object.
+
+You must have created this invite or the `Permissions.manage_guild` or `Permissions.view_audit_log` permission to do this.
+
+#### Returns
+
+`bytes`  
+The content of the CSV file.
+
+#### Raises
+
+DiscordException  
+There was no internal connection state.
+
+HTTPException  
+Downloading the file failed.
+
+NotFound  
+This invite does not have any target users set.
+
+Forbidden  
+You do not have permission to view the target users.
+
+#### `save()`
+
+```python
+save(fp: str | bytes | os.PathLike[str] | io.BufferedIOBase, *, seek_begin: bool = True) -> int
+```
+
+*(coroutine)*
+
+Saves this invite's target users CSV file into a file-like object.
+
+You must have created this invite or the `Permissions.manage_guild` or `Permissions.view_audit_log` permission to do this.
+
+#### Parameters
+
+fp: `io.BufferedIOBase` | `os.PathLike`  
+The file-like object to save this file to or the filename to use. If a filename is passed then a file is created with that filename and used instead.
+
+seek_begin: `bool`  
+Whether to seek to the beginning of the file after saving is successfully done.
+
+#### Returns
+
+`int`  
+The number of bytes written.
+
+#### Raises
+
+DiscordException  
+There was no internal connection state.
+
+HTTPException  
+Downloading the file failed.
+
+NotFound  
+This invite does not have any target users set.
+
+Forbidden  
+You do not have permission to view the target users.
+
+#### `as_user_ids()`
+
+```python
+as_user_ids() -> list[int]
+```
+
+*(coroutine)*
+
+Retrieves a list of user IDs that can accept this invite. This internally reads the invite's target users CSV file and parses the user IDs from it.
+
+You must have created this invite or the `Permissions.manage_guild` or `Permissions.view_audit_log` permission to do this.
+
+#### Returns
+
+list\[int\]  
+A list of user IDs that can accept this invite.
+
+### `InviteTargetUsersJobStatus`
+
+```python
+class InviteTargetUsersJobStatus(*, data: InviteTargetUsersJobStatusPayload)
+```
+
+Represents the status of a target users processing job for an invite.
+
+*Added in 2.8.*
+
+#### Attributes
+
+total_users: `int`  
+The total number of users to process.
+
+processed_users: `int`  
+The number of users that have been processed so far.
+
+created_at: `datetime.datetime` | `None`  
+When the job was created. `None` if the creation time is not available.
+
+completed_at: `datetime.datetime` | `None`  
+When the job was completed. `None` if the job is still processing.
+
+error_message: `str` | `None`  
+The error message if the job failed. `None` if no error occurred.
+
+status: `InviteTargetUsersJobStatusCode`  
+The current status of the job.
+
+### `PartialInviteChannel`
+
+```python
+class PartialInviteChannel(data: InviteChannelPayload)
+```
+
+Represents a "partial" invite channel.
+
+This model will be given when the user is not part of the guild the `Invite` resolves to.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two partial channels are the same.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two partial channels are not the same.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the partial channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the partial channel's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The partial channel's name.
+
+id: `int`  
+The partial channel's ID.
+
+type: `ChannelType`  
+The partial channel's type.
+
+### `PartialInviteGuild`
+
+```python
+class PartialInviteGuild(state: ConnectionState, data: InviteGuildPayload, id: int)
+```
+
+Represents a "partial" invite guild.
+
+This model will be given when the user is not part of the guild the `Invite` resolves to.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two partial guilds are the same.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two partial guilds are not the same.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the partial guild's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the partial guild's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The partial guild's name.
+
+id: `int`  
+The partial guild's ID.
+
+verification_level: `VerificationLevel`  
+The partial guild's verification level.
+
+features: List\[`str`\]  
+A list of features the guild has. See `Guild.features` for more information.
+
+description: `str` | `None`  
+The partial guild's description.

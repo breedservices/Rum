@@ -3590,7 +3590,20 @@ class HTTPClient:
 
     async def get_bot_gateway(
         self, *, encoding: str = "json", zlib: bool = True
-    ) -> tuple[int, str]:
+    ) -> tuple[int, str, int]:
+        """Get the gateway URL and the sharding information for this bot.
+
+        Returns
+        -------
+        :class:`int`
+            The number of shards this bot should run.
+        :class:`str`
+            The gateway URL.
+        :class:`int`
+            The number of shards that may identify at the same time, taken from
+            ``session_start_limit.max_concurrency``. Defaults to ``1`` when
+            Discord does not send it.
+        """
         try:
             data = await self.request(Route("GET", "/gateway/bot"))
         except HTTPException as exc:
@@ -3600,7 +3613,13 @@ class HTTPClient:
             value = "{0}?encoding={1}&v={2}&compress=zstd-stream"
         else:
             value = "{0}?encoding={1}&v={2}"
-        return data["shards"], value.format(data["url"], encoding, API_VERSION)
+        session_start_limit = data.get("session_start_limit") or {}
+        max_concurrency = max(1, session_start_limit.get("max_concurrency") or 1)
+        return (
+            data["shards"],
+            value.format(data["url"], encoding, API_VERSION),
+            max_concurrency,
+        )
 
     def get_user(self, user_id: Snowflake) -> Response[user.User]:
         return self.request(Route("GET", "/users/{user_id}", user_id=user_id))

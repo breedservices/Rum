@@ -37,7 +37,6 @@ DEALINGS IN THE SOFTWARE.
 # better organization and doing so is not required for using ext.pages.
 
 import asyncio
-import os
 
 import rum
 from rum.commands import SlashCommandGroup
@@ -355,7 +354,7 @@ class PageTest(commands.Cog):
         await paginator.send(ctx)
 
     @commands.command()
-    async def pagetest_target(self, ctx: commands.Context):
+    async def pagetest_target_prefix(self, ctx: commands.Context):
         """Demonstrates sending the paginator to a different target than where it was invoked (prefix version)."""
         paginator = pages.Paginator(pages=self.get_pages())
         await paginator.send(ctx, target=ctx.author, target_message="Paginator sent!")

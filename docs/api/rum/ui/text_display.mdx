@@ -1,0 +1,41 @@
+# `rum.ui.text_display`
+
+## Classes
+
+### `TextDisplay`
+
+```python
+class TextDisplay(content: str, id: int | None = None)
+```
+
+Represents a UI text display. A message can have up to 4000 characters across all `TextDisplay` objects combined.
+
+*Added in 2.7.*
+
+#### Parameters
+
+content: `str`  
+The text display's content, up to 4000 characters.
+
+id: `int` | `None`  
+The text display's ID.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> TextDisplayComponentPayload
+```
+
+#### `copy_text()`
+
+```python
+copy_text() -> str
+```
+
+Returns the content of this text display. Equivalent to the <span class="title-ref">Copy Text</span> option on Discord clients.
+
+#### `from_component()`
+
+```python
+from_component(component: TextDisplayComponent) -> T
+```

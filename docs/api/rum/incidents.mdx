@@ -1,0 +1,31 @@
+# `rum.incidents`
+
+## Classes
+
+### `IncidentsData`
+
+```python
+class IncidentsData(data: IncidentsDataPayload)
+```
+
+Represents the incidents data object for a guild.
+
+#### Attributes
+
+invites_disabled_until: `datetime.datetime` | `None`  
+When invites will be enabled again as a `datetime.datetime`, or `None`.
+
+dms_disabled_until: `datetime.datetime` | `None`  
+When direct messages will be enabled again as a `datetime.datetime`, or `None`.
+
+dm_spam_detected_at: `datetime.datetime` | `None`  
+When DM spam was detected, or `None`.
+
+raid_detected_at: `datetime.datetime` | `None`  
+When a raid was detected, or `None`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> IncidentsDataPayload
+```

@@ -1,0 +1,397 @@
+# `rum.permissions`
+
+## Classes
+
+### `PermissionOverwrite`
+
+```python
+class PermissionOverwrite(**kwargs: bool | None)
+```
+
+A type that is used to represent a channel specific permission.
+
+Unlike a regular `Permissions`, the default value of a permission is equivalent to `None` and not `False`. Setting a value to `False` is **explicitly** denying that permission, while setting a value to `True` is **explicitly** allowing that permission.
+
+The values supported by this are the same as `Permissions` with the added possibility of it being set to `None`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two overwrites are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two overwrites are not equal.
+
+</div>
+
+<div class="describe">
+
+iter(x)
+
+Returns an iterator of `(perm, value)` pairs. This allows it to be, for example, constructed as a dict or a list of pairs. Note that aliases are not shown.
+
+</div>
+
+</div>
+
+#### Parameters
+
+\*\*kwargs  
+Set the value of permissions by their name.
+
+#### `pair()`
+
+```python
+pair() -> tuple[Permissions, Permissions]
+```
+
+Returns the (allow, deny) pair from this overwrite.
+
+#### `from_pair()`
+
+```python
+from_pair(allow: Permissions, deny: Permissions) -> PO
+```
+
+Creates an overwrite from an allow/deny pair of `Permissions`.
+
+#### `is_empty()`
+
+```python
+is_empty() -> bool
+```
+
+Checks if the permission overwrite is currently empty.
+
+An empty permission overwrite is one that has no overwrites set to `True` or `False`.
+
+#### Returns
+
+`bool`  
+Indicates if the overwrite is empty.
+
+#### `update()`
+
+```python
+update(**kwargs: bool | None) -> None
+```
+
+Bulk updates this permission overwrite object.
+
+Allows you to set multiple attributes by using keyword arguments. The names must be equivalent to the properties listed. Extraneous key/value pairs will be silently ignored.
+
+#### Parameters
+
+\*\*kwargs  
+A list of key/value pairs to bulk update with.
+
+### `Permissions`
+
+```python
+class Permissions(permissions: int = 0, **kwargs: bool)
+```
+
+Wraps up the Discord permission value.
+
+The properties provided are two way. You can set and retrieve individual bits using the properties as if they were regular bools. This allows you to edit permissions.
+
+*Changed in 1.3 You can now use keyword arguments to initialize `Permissions` similar to `update`.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two permissions are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two permissions are not equal.
+
+</div>
+
+<div class="describe">
+
+x \<= y
+
+Checks if a permission is a subset of another permission.
+
+</div>
+
+<div class="describe">
+
+x \>= y
+
+Checks if a permission is a superset of another permission.
+
+</div>
+
+<div class="describe">
+
+x \< y
+
+Checks if a permission is a strict subset of another permission.
+
+</div>
+
+<div class="describe">
+
+x \> y
+
+</div>
+
+<div class="describe">
+
+x + y
+
+Adds two permissions together. Equivalent to `x | y`.
+
+</div>
+
+<div class="describe">
+
+x - y
+
+Subtracts two permissions from each other.
+
+</div>
+
+<div class="describe">
+
+x | y
+
+Returns the union of two permissions. Equivalent to `x + y`.
+
+</div>
+
+<div class="describe">
+
+x & y
+
+Returns the intersection of two permissions.
+
+</div>
+
+<div class="describe">
+
+~x
+
+Returns the inverse of a permission.
+
+> Checks if a permission is a strict superset of another permission.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the permission's hash.
+
+</div>
+
+<div class="describe">
+
+iter(x)
+
+Returns an iterator of `(perm, value)` pairs. This allows it to be, for example, constructed as a dict or a list of pairs. Note that aliases are not shown.
+
+</div>
+
+</div>
+
+#### Attributes
+
+value: `int`  
+The raw value. This value is a bit array field of a 53-bit integer representing the currently available permissions. You should query permissions via the properties rather than using this raw value.
+
+#### `is_subset()`
+
+```python
+is_subset(other: Permissions) -> bool
+```
+
+Returns `True` if self has the same or fewer permissions as other.
+
+#### `is_superset()`
+
+```python
+is_superset(other: Permissions) -> bool
+```
+
+Returns `True` if self has the same or more permissions as other.
+
+#### `is_strict_subset()`
+
+```python
+is_strict_subset(other: Permissions) -> bool
+```
+
+Returns `True` if the permissions on other are a strict subset of those on self.
+
+#### `is_strict_superset()`
+
+```python
+is_strict_superset(other: Permissions) -> bool
+```
+
+Returns `True` if the permissions on other are a strict superset of those on self.
+
+#### `none()`
+
+```python
+none() -> P
+```
+
+A factory method that creates a `Permissions` with all permissions set to `False`.
+
+#### `all()`
+
+```python
+all() -> P
+```
+
+A factory method that creates a `Permissions` with all permissions set to `True`.
+
+#### `all_channel()`
+
+```python
+all_channel() -> P
+```
+
+A `Permissions` with all channel-specific permissions set to `True` and the guild-specific ones set to `False`. The guild-specific permissions are currently:
+
+- `manage_emojis`
+- `view_audit_log`
+- `view_guild_insights`
+- `view_creator_monetization_analytics`
+- `manage_guild`
+- `change_nickname`
+- `manage_nicknames`
+- `kick_members`
+- `ban_members`
+- `administrator`
+
+*Changed in 1.7 Added `stream`, `priority_speaker` and `use_slash_commands` permissions.*
+
+*Changed in 2.0 Added `create_public_threads`, `create_private_threads`, `manage_threads`, `use_external_stickers`, `send_messages_in_threads` and `request_to_speak` permissions.*
+
+#### `general()`
+
+```python
+general() -> P
+```
+
+A factory method that creates a `Permissions` with all "General" permissions from the official Discord UI set to `True`.
+
+*Changed in 1.7 Permission `read_messages` is now included in the general permissions, but permissions `administrator`, `create_instant_invite`, `kick_members`, `ban_members`, `change_nickname` and `manage_nicknames` are no longer part of the general permissions.*
+
+*Changed in 2.7 Added `view_creator_monetization_analytics` permission.*
+
+#### `membership()`
+
+```python
+membership() -> P
+```
+
+A factory method that creates a `Permissions` with all "Membership" permissions from the official Discord UI set to `True`.
+
+*Added in 1.7.*
+
+#### `text()`
+
+```python
+text() -> P
+```
+
+A factory method that creates a `Permissions` with all "Text" permissions from the official Discord UI set to `True`.
+
+*Changed in 1.7 Permission `read_messages` is no longer part of the text permissions. Added `use_slash_commands` permission.*
+
+*Changed in 2.0 Added `create_public_threads`, `create_private_threads`, `manage_threads`, `send_messages_in_threads` and `use_external_stickers` permissions.*
+
+#### `voice()`
+
+```python
+voice() -> P
+```
+
+A factory method that creates a `Permissions` with all "Voice" permissions from the official Discord UI set to `True`.
+
+#### `stage()`
+
+```python
+stage() -> P
+```
+
+A factory method that creates a `Permissions` with all "Stage Channel" permissions from the official Discord UI set to `True`.
+
+*Added in 1.7.*
+
+#### `stage_moderator()`
+
+```python
+stage_moderator() -> P
+```
+
+A factory method that creates a `Permissions` with all "Stage Moderator" permissions from the official Discord UI set to `True`.
+
+*Added in 1.7.*
+
+#### `advanced()`
+
+```python
+advanced() -> P
+```
+
+A factory method that creates a `Permissions` with all "Advanced" permissions from the official Discord UI set to `True`.
+
+*Added in 1.7.*
+
+#### `update()`
+
+```python
+update(**kwargs: bool) -> None
+```
+
+Bulk updates this permission object.
+
+Allows you to set multiple attributes by using keyword arguments. The names must be equivalent to the properties listed. Extraneous key/value pairs will be silently ignored.
+
+#### Parameters
+
+\*\*kwargs  
+A list of key/value pairs to bulk update permissions with.
+
+#### `handle_overwrite()`
+
+```python
+handle_overwrite(allow: int, deny: int) -> None
+```
+
+### `permission_alias`
+
+```python
+class permission_alias(func: Callable[[Any], int])
+```
+
+## Functions
+
+### `make_permission_alias()`
+
+```python
+make_permission_alias(alias: str) -> Callable[[Callable[[Any], int]], permission_alias]
+```

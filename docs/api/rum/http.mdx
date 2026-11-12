@@ -1,0 +1,1324 @@
+# `rum.http`
+
+## Classes
+
+### `BanGuard`
+
+```python
+class BanGuard(*, limit: int = 10000, window: float = 600.0) -> None
+```
+
+Counts the responses Discord counts towards an IP ban.
+
+Discord bans an IP that sends 10,000 invalid requests within ten minutes. The guard counts the responses Discord counts, holds the client back before the limit is reached, and stops the client outright once the token was rejected.
+
+#### Parameters
+
+limit: `int`  
+How many counted responses are allowed in the window.
+
+window: `float`  
+The length of the window in seconds.
+
+#### `record()`
+
+```python
+record(status: int) -> None
+```
+
+Records the status of a response.
+
+#### `reset()`
+
+```python
+reset() -> None
+```
+
+Forgets the counted responses and the rejected token.
+
+#### `delay()`
+
+```python
+delay() -> float
+```
+
+Returns how long the next request has to wait.
+
+#### `wait()`
+
+```python
+wait() -> None
+```
+
+Waits out the delay, if there is one.
+
+### `HTTPClient`
+
+```python
+class HTTPClient(connector: Any | None = None, *, proxy: str | None = None, proxy_auth: Any | None = None, loop: asyncio.AbstractEventLoop | None = None, unsync_clock: bool = True, timeout: float = 30.0) -> None
+```
+
+Represents an HTTP client sending HTTP requests to the Discord API.
+
+#### `recreate()`
+
+```python
+recreate() -> None
+```
+
+#### `ws_connect()`
+
+```python
+ws_connect(url: str, *, compress: int = 0) -> Any
+```
+
+#### `request()`
+
+```python
+request(route: Route, *, files: Sequence[File] | None = None, form: Iterable[dict[str, Any]] | None = None, **kwargs: Any) -> Any
+```
+
+#### `get_from_cdn()`
+
+```python
+get_from_cdn(url: str) -> bytes
+```
+
+#### `stream_from_cdn()`
+
+```python
+stream_from_cdn(url: str, chunksize: int) -> AsyncGenerator[bytes]
+```
+
+#### `close()`
+
+```python
+close() -> None
+```
+
+#### `static_login()`
+
+```python
+static_login(token: str) -> user.User
+```
+
+#### `logout()`
+
+```python
+logout() -> Response[None]
+```
+
+#### `start_group()`
+
+```python
+start_group(user_id: Snowflake, recipients: list[int]) -> Response[channel.GroupDMChannel]
+```
+
+#### `leave_group()`
+
+```python
+leave_group(channel_id) -> Response[None]
+```
+
+#### `start_private_message()`
+
+```python
+start_private_message(user_id: Snowflake) -> Response[channel.DMChannel]
+```
+
+#### `send_message()`
+
+```python
+send_message(channel_id: Snowflake, content: str | None, *, tts: bool = False, embed: embed.Embed | None = None, embeds: list[embed.Embed] | None = None, nonce: int | str | None = None, enforce_nonce: bool | None = None, allowed_mentions: message.AllowedMentions | None = None, message_reference: message.MessageReference | None = None, stickers: list[sticker.StickerItem] | None = None, components: list[components.Component] | None = None, flags: int | None = None, poll: poll.Poll | None = None, shared_client_theme: shared_client_theme.SharedClientTheme | None = None) -> Response[message.Message]
+```
+
+#### `send_typing()`
+
+```python
+send_typing(channel_id: Snowflake) -> Response[None]
+```
+
+#### `send_multipart_helper()`
+
+```python
+send_multipart_helper(route: Route, *, files: Sequence[File], content: str | None = None, tts: bool = False, embed: embed.Embed | None = None, embeds: Iterable[embed.Embed | None] | None = None, nonce: int | str | None = None, enforce_nonce: bool | None = None, allowed_mentions: message.AllowedMentions | None = None, message_reference: message.MessageReference | None = None, stickers: list[sticker.StickerItem] | None = None, components: list[components.Component] | None = None, flags: int | None = None, poll: poll.Poll | None = None, shared_client_theme: shared_client_theme.SharedClientTheme | None = None) -> Response[message.Message]
+```
+
+#### `send_files()`
+
+```python
+send_files(channel_id: Snowflake, *, files: Sequence[File], content: str | None = None, tts: bool = False, embed: embed.Embed | None = None, embeds: list[embed.Embed] | None = None, nonce: int | str | None = None, enforce_nonce: bool | None = None, allowed_mentions: message.AllowedMentions | None = None, message_reference: message.MessageReference | None = None, stickers: list[sticker.StickerItem] | None = None, components: list[components.Component] | None = None, flags: int | None = None, poll: poll.Poll | None = None, shared_client_theme: shared_client_theme.SharedClientTheme | None = None) -> Response[message.Message]
+```
+
+#### `edit_multipart_helper()`
+
+```python
+edit_multipart_helper(route: Route, files: Sequence[File], **payload) -> Response[message.Message]
+```
+
+#### `edit_files()`
+
+```python
+edit_files(channel_id: Snowflake, message_id: Snowflake, files: Sequence[File], **fields) -> Response[message.Message]
+```
+
+#### `delete_message()`
+
+```python
+delete_message(channel_id: Snowflake, message_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `delete_messages()`
+
+```python
+delete_messages(channel_id: Snowflake, message_ids: SnowflakeList, *, reason: str | None = None) -> Response[None]
+```
+
+#### `edit_message()`
+
+```python
+edit_message(channel_id: Snowflake, message_id: Snowflake, **fields: Any) -> Response[message.Message]
+```
+
+#### `add_reaction()`
+
+```python
+add_reaction(channel_id: Snowflake, message_id: Snowflake, emoji: str) -> Response[None]
+```
+
+#### `remove_reaction()`
+
+```python
+remove_reaction(channel_id: Snowflake, message_id: Snowflake, emoji: str, member_id: Snowflake) -> Response[None]
+```
+
+#### `remove_own_reaction()`
+
+```python
+remove_own_reaction(channel_id: Snowflake, message_id: Snowflake, emoji: str) -> Response[None]
+```
+
+#### `get_reaction_users()`
+
+```python
+get_reaction_users(channel_id: Snowflake, message_id: Snowflake, emoji: str, limit: int, after: Snowflake | None = None, type: int | None = None) -> Response[list[user.User]]
+```
+
+#### `clear_reactions()`
+
+```python
+clear_reactions(channel_id: Snowflake, message_id: Snowflake) -> Response[None]
+```
+
+#### `clear_single_reaction()`
+
+```python
+clear_single_reaction(channel_id: Snowflake, message_id: Snowflake, emoji: str) -> Response[None]
+```
+
+#### `get_message()`
+
+```python
+get_message(channel_id: Snowflake, message_id: Snowflake) -> Response[message.Message]
+```
+
+#### `get_channel()`
+
+```python
+get_channel(channel_id: Snowflake) -> Response[channel.Channel]
+```
+
+#### `logs_from()`
+
+```python
+logs_from(channel_id: Snowflake, limit: int, before: Snowflake | None = None, after: Snowflake | None = None, around: Snowflake | None = None) -> Response[list[message.Message]]
+```
+
+#### `publish_message()`
+
+```python
+publish_message(channel_id: Snowflake, message_id: Snowflake) -> Response[message.Message]
+```
+
+#### `pin_message()`
+
+```python
+pin_message(channel_id: Snowflake, message_id: Snowflake, reason: str | None = None) -> Response[None]
+```
+
+#### `unpin_message()`
+
+```python
+unpin_message(channel_id: Snowflake, message_id: Snowflake, reason: str | None = None) -> Response[None]
+```
+
+#### `pins_from()`
+
+```python
+pins_from(channel_id: Snowflake, limit: int | None = None, before: str | None = None) -> Response[message.MessagePinPagination]
+```
+
+#### `legacy_pins_from()`
+
+```python
+legacy_pins_from(channel_id: Snowflake) -> Response[list[message.Message]]
+```
+
+#### `kick()`
+
+```python
+kick(user_id: Snowflake, guild_id: Snowflake, reason: str | None = None) -> Response[None]
+```
+
+#### `ban()`
+
+```python
+ban(user_id: Snowflake, guild_id: Snowflake, delete_message_seconds: int = None, reason: str | None = None) -> Response[None]
+```
+
+#### `bulk_ban()`
+
+```python
+bulk_ban(user_ids: list[Snowflake], guild_id: Snowflake, delete_message_seconds: int = None, reason: str | None = None) -> Response[guild.GuildBulkBan]
+```
+
+#### `unban()`
+
+```python
+unban(user_id: Snowflake, guild_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `guild_voice_state()`
+
+```python
+guild_voice_state(user_id: Snowflake, guild_id: Snowflake, *, mute: bool | None = None, deafen: bool | None = None, reason: str | None = None) -> Response[member.Member]
+```
+
+#### `get_guild_voice_regions()`
+
+```python
+get_guild_voice_regions(guild_id: Snowflake) -> Response[list[VoiceRegionPayload]]
+```
+
+#### `get_voice_regions()`
+
+```python
+get_voice_regions() -> Response[list[VoiceRegionPayload]]
+```
+
+#### `edit_profile()`
+
+```python
+edit_profile(payload: dict[str, Any]) -> Response[user.User]
+```
+
+#### `edit_my_voice_state()`
+
+```python
+edit_my_voice_state(guild_id: Snowflake, payload: dict[str, Any]) -> Response[None]
+```
+
+#### `edit_voice_state()`
+
+```python
+edit_voice_state(guild_id: Snowflake, user_id: Snowflake, payload: dict[str, Any]) -> Response[None]
+```
+
+#### `edit_member()`
+
+```python
+edit_member(guild_id: Snowflake, user_id: Snowflake, *, reason: str | None = None, **fields: Any) -> Response[member.MemberWithUser]
+```
+
+#### `edit_channel()`
+
+```python
+edit_channel(channel_id: Snowflake, *, reason: str | None = None, **options: Any) -> Response[channel.Channel]
+```
+
+#### `bulk_channel_update()`
+
+```python
+bulk_channel_update(guild_id: Snowflake, data: list[guild.ChannelPositionUpdate], *, reason: str | None = None) -> Response[None]
+```
+
+#### `create_channel()`
+
+```python
+create_channel(guild_id: Snowflake, channel_type: channel.ChannelType, *, reason: str | None = None, **options: Any) -> Response[channel.GuildChannel]
+```
+
+#### `delete_channel()`
+
+```python
+delete_channel(channel_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `start_thread_with_message()`
+
+```python
+start_thread_with_message(channel_id: Snowflake, message_id: Snowflake, *, name: str, auto_archive_duration: threads.ThreadArchiveDuration, rate_limit_per_user: int, reason: str | None = None) -> Response[threads.Thread]
+```
+
+#### `start_thread_without_message()`
+
+```python
+start_thread_without_message(channel_id: Snowflake, *, name: str, auto_archive_duration: threads.ThreadArchiveDuration, type: threads.ThreadType, rate_limit_per_user: int, invitable: bool, reason: str | None = None) -> Response[threads.Thread]
+```
+
+#### `start_forum_thread()`
+
+```python
+start_forum_thread(channel_id: Snowflake, content: str | None, *, name: str, auto_archive_duration: threads.ThreadArchiveDuration, rate_limit_per_user: int, invitable: bool = True, applied_tags: SnowflakeList | None = None, reason: str | None = None, files: Sequence[File] | None = None, embed: embed.Embed | None = None, embeds: list[embed.Embed] | None = None, nonce: int | str | None = None, allowed_mentions: message.AllowedMentions | None = None, stickers: list[sticker.StickerItem] | None = None, components: list[components.Component] | None = None, flags: int | None = None) -> Response[threads.Thread]
+```
+
+#### `join_thread()`
+
+```python
+join_thread(channel_id: Snowflake) -> Response[None]
+```
+
+#### `add_user_to_thread()`
+
+```python
+add_user_to_thread(channel_id: Snowflake, user_id: Snowflake) -> Response[None]
+```
+
+#### `leave_thread()`
+
+```python
+leave_thread(channel_id: Snowflake) -> Response[None]
+```
+
+#### `remove_user_from_thread()`
+
+```python
+remove_user_from_thread(channel_id: Snowflake, user_id: Snowflake) -> Response[None]
+```
+
+#### `get_public_archived_threads()`
+
+```python
+get_public_archived_threads(channel_id: Snowflake, before: Snowflake | None = None, limit: int = 50) -> Response[threads.ThreadPaginationPayload]
+```
+
+#### `get_private_archived_threads()`
+
+```python
+get_private_archived_threads(channel_id: Snowflake, before: Snowflake | None = None, limit: int = 50) -> Response[threads.ThreadPaginationPayload]
+```
+
+#### `get_joined_private_archived_threads()`
+
+```python
+get_joined_private_archived_threads(channel_id: Snowflake, before: Snowflake | None = None, limit: int = 50) -> Response[threads.ThreadPaginationPayload]
+```
+
+#### `get_active_threads()`
+
+```python
+get_active_threads(guild_id: Snowflake) -> Response[threads.ThreadPaginationPayload]
+```
+
+#### `get_thread_members()`
+
+```python
+get_thread_members(channel_id: Snowflake) -> Response[list[threads.ThreadMember]]
+```
+
+#### `create_webhook()`
+
+```python
+create_webhook(channel_id: Snowflake, *, name: str, avatar: bytes | None = None, reason: str | None = None) -> Response[webhook.Webhook]
+```
+
+#### `channel_webhooks()`
+
+```python
+channel_webhooks(channel_id: Snowflake) -> Response[list[webhook.Webhook]]
+```
+
+#### `guild_webhooks()`
+
+```python
+guild_webhooks(guild_id: Snowflake) -> Response[list[webhook.Webhook]]
+```
+
+#### `get_webhook()`
+
+```python
+get_webhook(webhook_id: Snowflake) -> Response[webhook.Webhook]
+```
+
+#### `follow_webhook()`
+
+```python
+follow_webhook(channel_id: Snowflake, webhook_channel_id: Snowflake, reason: str | None = None) -> Response[None]
+```
+
+#### `get_guilds()`
+
+```python
+get_guilds(limit: int, before: Snowflake | None = None, after: Snowflake | None = None, with_counts: bool = True) -> Response[list[guild.Guild]]
+```
+
+#### `leave_guild()`
+
+```python
+leave_guild(guild_id: Snowflake) -> Response[None]
+```
+
+#### `get_guild()`
+
+```python
+get_guild(guild_id: Snowflake, *, with_counts=True) -> Response[guild.Guild]
+```
+
+#### `edit_guild()`
+
+```python
+edit_guild(guild_id: Snowflake, *, reason: str | None = None, **fields: Any) -> Response[guild.Guild]
+```
+
+#### `get_template()`
+
+```python
+get_template(code: str) -> Response[template.Template]
+```
+
+#### `guild_templates()`
+
+```python
+guild_templates(guild_id: Snowflake) -> Response[list[template.Template]]
+```
+
+#### `create_template()`
+
+```python
+create_template(guild_id: Snowflake, payload: template.CreateTemplate) -> Response[template.Template]
+```
+
+#### `sync_template()`
+
+```python
+sync_template(guild_id: Snowflake, code: str) -> Response[template.Template]
+```
+
+#### `edit_template()`
+
+```python
+edit_template(guild_id: Snowflake, code: str, payload) -> Response[template.Template]
+```
+
+#### `delete_template()`
+
+```python
+delete_template(guild_id: Snowflake, code: str) -> Response[None]
+```
+
+#### `get_bans()`
+
+```python
+get_bans(guild_id: Snowflake, limit: int | None = None, before: Snowflake | None = None, after: Snowflake | None = None) -> Response[list[guild.Ban]]
+```
+
+#### `get_ban()`
+
+```python
+get_ban(user_id: Snowflake, guild_id: Snowflake) -> Response[guild.Ban]
+```
+
+#### `get_vanity_code()`
+
+```python
+get_vanity_code(guild_id: Snowflake) -> Response[invite.VanityInvite]
+```
+
+#### `get_all_guild_channels()`
+
+```python
+get_all_guild_channels(guild_id: Snowflake) -> Response[list[guild.GuildChannel]]
+```
+
+#### `get_members()`
+
+```python
+get_members(guild_id: Snowflake, limit: int, after: Snowflake | None) -> Response[list[member.MemberWithUser]]
+```
+
+#### `search_members()`
+
+```python
+search_members(guild_id: Snowflake, query: str, limit: int) -> Response[list[member.MemberWithUser]]
+```
+
+#### `get_member()`
+
+```python
+get_member(guild_id: Snowflake, member_id: Snowflake) -> Response[member.MemberWithUser]
+```
+
+#### `prune_members()`
+
+```python
+prune_members(guild_id: Snowflake, days: int, compute_prune_count: bool, roles: list[str], *, reason: str | None = None) -> Response[guild.GuildPrune]
+```
+
+#### `estimate_pruned_members()`
+
+```python
+estimate_pruned_members(guild_id: Snowflake, days: int, roles: list[str]) -> Response[guild.GuildPrune]
+```
+
+#### `get_sticker()`
+
+```python
+get_sticker(sticker_id: Snowflake) -> Response[sticker.Sticker]
+```
+
+#### `list_premium_sticker_packs()`
+
+```python
+list_premium_sticker_packs() -> Response[sticker.ListPremiumStickerPacks]
+```
+
+#### `get_all_guild_stickers()`
+
+```python
+get_all_guild_stickers(guild_id: Snowflake) -> Response[list[sticker.GuildSticker]]
+```
+
+#### `get_guild_sticker()`
+
+```python
+get_guild_sticker(guild_id: Snowflake, sticker_id: Snowflake) -> Response[sticker.GuildSticker]
+```
+
+#### `create_guild_sticker()`
+
+```python
+create_guild_sticker(guild_id: Snowflake, payload: sticker.CreateGuildSticker, file: File, reason: str) -> Response[sticker.GuildSticker]
+```
+
+#### `modify_guild_sticker()`
+
+```python
+modify_guild_sticker(guild_id: Snowflake, sticker_id: Snowflake, payload: sticker.EditGuildSticker, reason: str | None) -> Response[sticker.GuildSticker]
+```
+
+#### `delete_guild_sticker()`
+
+```python
+delete_guild_sticker(guild_id: Snowflake, sticker_id: Snowflake, reason: str | None) -> Response[None]
+```
+
+#### `get_all_custom_emojis()`
+
+```python
+get_all_custom_emojis(guild_id: Snowflake) -> Response[list[emoji.Emoji]]
+```
+
+#### `get_custom_emoji()`
+
+```python
+get_custom_emoji(guild_id: Snowflake, emoji_id: Snowflake) -> Response[emoji.Emoji]
+```
+
+#### `create_custom_emoji()`
+
+```python
+create_custom_emoji(guild_id: Snowflake, name: str, image: bytes, *, roles: SnowflakeList | None = None, reason: str | None = None) -> Response[emoji.Emoji]
+```
+
+#### `delete_custom_emoji()`
+
+```python
+delete_custom_emoji(guild_id: Snowflake, emoji_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `edit_custom_emoji()`
+
+```python
+edit_custom_emoji(guild_id: Snowflake, emoji_id: Snowflake, *, payload: dict[str, Any], reason: str | None = None) -> Response[emoji.Emoji]
+```
+
+#### `get_all_application_emojis()`
+
+```python
+get_all_application_emojis(application_id: Snowflake) -> Response[list[emoji.Emoji]]
+```
+
+#### `get_application_emoji()`
+
+```python
+get_application_emoji(application_id: Snowflake, emoji_id: Snowflake) -> Response[emoji.Emoji]
+```
+
+#### `create_application_emoji()`
+
+```python
+create_application_emoji(application_id: Snowflake, name: str, image: bytes) -> Response[emoji.Emoji]
+```
+
+#### `delete_application_emoji()`
+
+```python
+delete_application_emoji(application_id: Snowflake, emoji_id: Snowflake) -> Response[None]
+```
+
+#### `edit_application_emoji()`
+
+```python
+edit_application_emoji(application_id: Snowflake, emoji_id: Snowflake, *, payload: dict[str, Any]) -> Response[emoji.Emoji]
+```
+
+#### `get_all_integrations()`
+
+```python
+get_all_integrations(guild_id: Snowflake) -> Response[list[integration.Integration]]
+```
+
+#### `create_integration()`
+
+```python
+create_integration(guild_id: Snowflake, type: integration.IntegrationType, id: int) -> Response[None]
+```
+
+#### `edit_integration()`
+
+```python
+edit_integration(guild_id: Snowflake, integration_id: Snowflake, **payload: Any) -> Response[None]
+```
+
+#### `sync_integration()`
+
+```python
+sync_integration(guild_id: Snowflake, integration_id: Snowflake) -> Response[None]
+```
+
+#### `delete_integration()`
+
+```python
+delete_integration(guild_id: Snowflake, integration_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `get_audit_logs()`
+
+```python
+get_audit_logs(guild_id: Snowflake, limit: int = 100, before: Snowflake | None = None, after: Snowflake | None = None, user_id: Snowflake | None = None, action_type: AuditLogAction | None = None) -> Response[audit_log.AuditLog]
+```
+
+#### `get_widget()`
+
+```python
+get_widget(guild_id: Snowflake) -> Response[widget.Widget]
+```
+
+#### `edit_widget()`
+
+```python
+edit_widget(guild_id: Snowflake, payload) -> Response[widget.WidgetSettings]
+```
+
+#### `create_invite()`
+
+```python
+create_invite(channel_id: Snowflake, *, reason: str | None = None, max_age: int = 0, max_uses: int = 0, temporary: bool = False, unique: bool = True, target_type: invite.InviteTargetType | None = None, target_user_id: Snowflake | None = None, target_application_id: Snowflake | None = None, roles: list[Snowflake] | None = None, target_users_file: File | None = None) -> Response[invite.Invite]
+```
+
+#### `get_invite()`
+
+```python
+get_invite(invite_id: str, *, with_counts: bool = True, with_expiration: bool = True, guild_scheduled_event_id: int | None = None) -> Response[invite.Invite]
+```
+
+#### `get_invite_target_users()`
+
+```python
+get_invite_target_users(invite_id: str) -> Response[bytes]
+```
+
+#### `update_invite_target_users()`
+
+```python
+update_invite_target_users(invite_id: str, *, target_users_file: File) -> Response[invite.Invite]
+```
+
+#### `get_invite_target_users_job_status()`
+
+```python
+get_invite_target_users_job_status(invite_id: str) -> Response[InviteTargetUsersJobStatusPayload]
+```
+
+#### `invites_from()`
+
+```python
+invites_from(guild_id: Snowflake) -> Response[list[invite.Invite]]
+```
+
+#### `invites_from_channel()`
+
+```python
+invites_from_channel(channel_id: Snowflake) -> Response[list[invite.Invite]]
+```
+
+#### `delete_invite()`
+
+```python
+delete_invite(invite_id: str, *, reason: str | None = None) -> Response[None]
+```
+
+#### `get_roles()`
+
+```python
+get_roles(guild_id: Snowflake) -> Response[list[role.Role]]
+```
+
+#### `get_roles_member_counts()`
+
+```python
+get_roles_member_counts(guild_id: Snowflake) -> Response[dict[str, int]]
+```
+
+#### `get_role()`
+
+```python
+get_role(guild_id: Snowflake, role_id: Snowflake) -> Response[role.Role]
+```
+
+#### `edit_role()`
+
+```python
+edit_role(guild_id: Snowflake, role_id: Snowflake, *, reason: str | None = None, **fields: Any) -> Response[role.Role]
+```
+
+#### `delete_role()`
+
+```python
+delete_role(guild_id: Snowflake, role_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `replace_roles()`
+
+```python
+replace_roles(user_id: Snowflake, guild_id: Snowflake, role_ids: list[int], *, reason: str | None = None) -> Response[member.MemberWithUser]
+```
+
+#### `create_role()`
+
+```python
+create_role(guild_id: Snowflake, *, reason: str | None = None, **fields: Any) -> Response[role.Role]
+```
+
+#### `move_role_position()`
+
+```python
+move_role_position(guild_id: Snowflake, positions: list[guild.RolePositionUpdate], *, reason: str | None = None) -> Response[list[role.Role]]
+```
+
+#### `add_role()`
+
+```python
+add_role(guild_id: Snowflake, user_id: Snowflake, role_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `remove_role()`
+
+```python
+remove_role(guild_id: Snowflake, user_id: Snowflake, role_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `edit_channel_permissions()`
+
+```python
+edit_channel_permissions(channel_id: Snowflake, target: Snowflake, allow: int | str, deny: int | str, type: channel.OverwriteType, *, reason: str | None = None) -> Response[None]
+```
+
+#### `delete_channel_permissions()`
+
+```python
+delete_channel_permissions(channel_id: Snowflake, target: channel.OverwriteType, *, reason: str | None = None) -> Response[None]
+```
+
+#### `get_welcome_screen()`
+
+```python
+get_welcome_screen(guild_id: Snowflake) -> Response[welcome_screen.WelcomeScreen]
+```
+
+#### `edit_welcome_screen()`
+
+```python
+edit_welcome_screen(guild_id: Snowflake, payload: Any, *, reason: str | None = None) -> Response[welcome_screen.WelcomeScreen]
+```
+
+#### `move_member()`
+
+```python
+move_member(user_id: Snowflake, guild_id: Snowflake, channel_id: Snowflake, *, reason: str | None = None) -> Response[member.MemberWithUser]
+```
+
+#### `set_voice_channel_status()`
+
+```python
+set_voice_channel_status(channel_id: Snowflake, status: str | None, *, reason: str | None = None) -> Response[None]
+```
+
+#### `get_stage_instance()`
+
+```python
+get_stage_instance(channel_id: Snowflake) -> Response[channel.StageInstance]
+```
+
+#### `create_stage_instance()`
+
+```python
+create_stage_instance(*, reason: str | None, **payload: Any) -> Response[channel.StageInstance]
+```
+
+#### `edit_stage_instance()`
+
+```python
+edit_stage_instance(channel_id: Snowflake, *, reason: str | None = None, **payload: Any) -> Response[None]
+```
+
+#### `delete_stage_instance()`
+
+```python
+delete_stage_instance(channel_id: Snowflake, *, reason: str | None = None) -> Response[None]
+```
+
+#### `get_scheduled_events()`
+
+```python
+get_scheduled_events(guild_id: Snowflake, with_user_count: bool = True) -> Response[list[scheduled_events.ScheduledEvent]]
+```
+
+#### `get_scheduled_event()`
+
+```python
+get_scheduled_event(guild_id: Snowflake, event_id: Snowflake, with_user_count: bool = True) -> Response[scheduled_events.ScheduledEvent]
+```
+
+#### `create_scheduled_event()`
+
+```python
+create_scheduled_event(guild_id: Snowflake, reason: str | None = None, **payload: Any) -> Response[scheduled_events.ScheduledEvent]
+```
+
+#### `delete_scheduled_event()`
+
+```python
+delete_scheduled_event(guild_id: Snowflake, event_id: Snowflake) -> Response[None]
+```
+
+#### `edit_scheduled_event()`
+
+```python
+edit_scheduled_event(guild_id: Snowflake, event_id: Snowflake, reason: str | None = None, **payload: Any) -> Response[scheduled_events.ScheduledEvent]
+```
+
+#### `get_scheduled_event_users()`
+
+```python
+get_scheduled_event_users(guild_id: Snowflake, event_id: Snowflake, limit: int, with_member: bool = False, before: Snowflake = None, after: Snowflake = None) -> Response[list[scheduled_events.ScheduledEventSubscriber]]
+```
+
+#### `get_global_commands()`
+
+```python
+get_global_commands(application_id: Snowflake, *, with_localizations: bool = True, locale: str = None) -> Response[list[interactions.ApplicationCommand]]
+```
+
+#### `get_global_command()`
+
+```python
+get_global_command(application_id: Snowflake, command_id: Snowflake, locale: str = None) -> Response[interactions.ApplicationCommand]
+```
+
+#### `upsert_global_command()`
+
+```python
+upsert_global_command(application_id: Snowflake, payload) -> Response[interactions.ApplicationCommand]
+```
+
+#### `edit_global_command()`
+
+```python
+edit_global_command(application_id: Snowflake, command_id: Snowflake, payload: interactions.EditApplicationCommand) -> Response[interactions.ApplicationCommand]
+```
+
+#### `delete_global_command()`
+
+```python
+delete_global_command(application_id: Snowflake, command_id: Snowflake) -> Response[None]
+```
+
+#### `bulk_upsert_global_commands()`
+
+```python
+bulk_upsert_global_commands(application_id: Snowflake, payload) -> Response[list[interactions.ApplicationCommand]]
+```
+
+#### `get_guild_commands()`
+
+```python
+get_guild_commands(application_id: Snowflake, guild_id: Snowflake) -> Response[list[interactions.ApplicationCommand]]
+```
+
+#### `get_guild_command()`
+
+```python
+get_guild_command(application_id: Snowflake, guild_id: Snowflake, command_id: Snowflake) -> Response[interactions.ApplicationCommand]
+```
+
+#### `upsert_guild_command()`
+
+```python
+upsert_guild_command(application_id: Snowflake, guild_id: Snowflake, payload: interactions.EditApplicationCommand) -> Response[interactions.ApplicationCommand]
+```
+
+#### `edit_guild_command()`
+
+```python
+edit_guild_command(application_id: Snowflake, guild_id: Snowflake, command_id: Snowflake, payload: interactions.EditApplicationCommand) -> Response[interactions.ApplicationCommand]
+```
+
+#### `delete_guild_command()`
+
+```python
+delete_guild_command(application_id: Snowflake, guild_id: Snowflake, command_id: Snowflake) -> Response[None]
+```
+
+#### `bulk_upsert_guild_commands()`
+
+```python
+bulk_upsert_guild_commands(application_id: Snowflake, guild_id: Snowflake, payload: list[interactions.EditApplicationCommand]) -> Response[list[interactions.ApplicationCommand]]
+```
+
+#### `get_auto_moderation_rules()`
+
+```python
+get_auto_moderation_rules(guild_id: Snowflake) -> Response[list[automod.AutoModRule]]
+```
+
+#### `get_auto_moderation_rule()`
+
+```python
+get_auto_moderation_rule(guild_id: Snowflake, rule_id: Snowflake) -> Response[automod.AutoModRule]
+```
+
+#### `create_auto_moderation_rule()`
+
+```python
+create_auto_moderation_rule(guild_id: Snowflake, payload: automod.CreateAutoModRule, reason: str | None = None) -> Response[automod.AutoModRule]
+```
+
+#### `edit_auto_moderation_rule()`
+
+```python
+edit_auto_moderation_rule(guild_id: Snowflake, rule_id: Snowflake, payload: automod.EditAutoModRule, reason: str | None = None) -> Response[automod.AutoModRule]
+```
+
+#### `delete_auto_moderation_rule()`
+
+```python
+delete_auto_moderation_rule(guild_id: Snowflake, rule_id: Snowflake, reason: str | None = None) -> Response[None]
+```
+
+#### `create_interaction_response()`
+
+```python
+create_interaction_response(interaction_id: Snowflake, token: str, *, type: InteractionResponseType, data: interactions.InteractionApplicationCommandCallbackData | None = None) -> Response[None]
+```
+
+#### `get_original_interaction_response()`
+
+```python
+get_original_interaction_response(application_id: Snowflake, token: str) -> Response[message.Message]
+```
+
+#### `edit_original_interaction_response()`
+
+```python
+edit_original_interaction_response(application_id: Snowflake, token: str, file: File | None = None, content: str | None = None, embeds: list[embed.Embed] | None = None, allowed_mentions: message.AllowedMentions | None = None) -> Response[message.Message]
+```
+
+#### `delete_original_interaction_response()`
+
+```python
+delete_original_interaction_response(application_id: Snowflake, token: str) -> Response[None]
+```
+
+#### `create_followup_message()`
+
+```python
+create_followup_message(application_id: Snowflake, token: str, files: list[File] | None = None, content: str | None = None, tts: bool = False, embeds: list[embed.Embed] | None = None, allowed_mentions: message.AllowedMentions | None = None) -> Response[message.Message]
+```
+
+#### `edit_followup_message()`
+
+```python
+edit_followup_message(application_id: Snowflake, token: str, message_id: Snowflake, file: File | None = None, content: str | None = None, embeds: list[embed.Embed] | None = None, allowed_mentions: message.AllowedMentions | None = None) -> Response[message.Message]
+```
+
+#### `delete_followup_message()`
+
+```python
+delete_followup_message(application_id: Snowflake, token: str, message_id: Snowflake) -> Response[None]
+```
+
+#### `get_guild_application_command_permissions()`
+
+```python
+get_guild_application_command_permissions(application_id: Snowflake, guild_id: Snowflake) -> Response[list[interactions.GuildApplicationCommandPermissions]]
+```
+
+#### `get_application_command_permissions()`
+
+```python
+get_application_command_permissions(application_id: Snowflake, guild_id: Snowflake, command_id: Snowflake) -> Response[interactions.GuildApplicationCommandPermissions]
+```
+
+#### `edit_application_command_permissions()`
+
+```python
+edit_application_command_permissions(application_id: Snowflake, guild_id: Snowflake, command_id: Snowflake, payload: interactions.BaseGuildApplicationCommandPermissions) -> Response[None]
+```
+
+#### `bulk_edit_guild_application_command_permissions()`
+
+```python
+bulk_edit_guild_application_command_permissions(application_id: Snowflake, guild_id: Snowflake, payload: list[interactions.PartialGuildApplicationCommandPermissions]) -> Response[None]
+```
+
+#### `get_application_role_connection_metadata_records()`
+
+```python
+get_application_role_connection_metadata_records(application_id: Snowflake) -> Response[list[application_role_connection.ApplicationRoleConnectionMetadata]]
+```
+
+#### `update_application_role_connection_metadata_records()`
+
+```python
+update_application_role_connection_metadata_records(application_id: Snowflake, payload: list[application_role_connection.ApplicationRoleConnectionMetadata]) -> Response[list[application_role_connection.ApplicationRoleConnectionMetadata]]
+```
+
+#### `list_skus()`
+
+```python
+list_skus(application_id: Snowflake) -> Response[list[monetization.SKU]]
+```
+
+#### `list_entitlements()`
+
+```python
+list_entitlements(application_id: Snowflake, *, user_id: Snowflake | None = None, sku_ids: list[Snowflake] | None = None, before: Snowflake | None = None, after: Snowflake | None = None, limit: int | None = None, guild_id: Snowflake | None = None, exclude_ended: bool | None = None) -> Response[list[monetization.Entitlement]]
+```
+
+#### `consume_entitlement()`
+
+```python
+consume_entitlement(application_id: Snowflake, entitlement_id: Snowflake) -> Response[None]
+```
+
+#### `create_test_entitlement()`
+
+```python
+create_test_entitlement(application_id: Snowflake, payload: monetization.CreateTestEntitlementPayload) -> Response[monetization.Entitlement]
+```
+
+#### `delete_test_entitlement()`
+
+```python
+delete_test_entitlement(application_id: Snowflake, entitlement_id: Snowflake) -> Response[None]
+```
+
+#### `list_sku_subscriptions()`
+
+```python
+list_sku_subscriptions(sku_id: Snowflake, *, before: Snowflake | None = None, after: Snowflake | None = None, limit: int = 50, user_id: Snowflake | None = None) -> Response[list[monetization.Subscription]]
+```
+
+#### `get_subscription()`
+
+```python
+get_subscription(sku_id: Snowflake, subscription_id: Snowflake) -> Response[monetization.Subscription]
+```
+
+#### `get_onboarding()`
+
+```python
+get_onboarding(guild_id: Snowflake) -> Response[onboarding.Onboarding]
+```
+
+#### `edit_onboarding()`
+
+```python
+edit_onboarding(guild_id: Snowflake, payload: Any, *, reason: str | None = None) -> Response[onboarding.Onboarding]
+```
+
+#### `modify_guild_incident_actions()`
+
+```python
+modify_guild_incident_actions(guild_id: Snowflake, payload: guild.ModifyIncidents, *, reason: str | None = None) -> Response[guild.IncidentsData]
+```
+
+#### `expire_poll()`
+
+```python
+expire_poll(channel_id: Snowflake, message_id: Snowflake) -> Response[message.Message]
+```
+
+#### `get_answer_voters()`
+
+```python
+get_answer_voters(channel_id: Snowflake, message_id: Snowflake, answer_id: int, limit: int, after: Snowflake | None = None) -> Response[list[user.User]]
+```
+
+#### `application_info()`
+
+```python
+application_info() -> Response[appinfo.AppInfo]
+```
+
+#### `edit_current_application_info()`
+
+```python
+edit_current_application_info(payload: dict[str, Any]) -> Response[appinfo.AppInfo]
+```
+
+#### `get_application()`
+
+```python
+get_application(application_id: Snowflake, /) -> Response[appinfo.PartialAppInfo]
+```
+
+#### `get_gateway()`
+
+```python
+get_gateway(*, encoding: str = 'json', zlib: bool = True) -> str
+```
+
+#### `get_bot_gateway()`
+
+```python
+get_bot_gateway(*, encoding: str = 'json', zlib: bool = True) -> tuple[int, str, int]
+```
+
+Get the gateway URL and the sharding information for this bot.
+
+#### Returns
+
+`int`  
+The number of shards this bot should run.
+
+`str`  
+The gateway URL.
+
+`int`  
+The number of shards that may identify at the same time, taken from `session_start_limit.max_concurrency`. Defaults to `1` when Discord does not send it.
+
+#### `get_user()`
+
+```python
+get_user(user_id: Snowflake) -> Response[user.User]
+```
+
+#### `delete_sound()`
+
+```python
+delete_sound(sound: SoundboardSound, *, reason: str | None) -> Response[None]
+```
+
+#### `get_default_sounds()`
+
+```python
+get_default_sounds() -> Response[list[SoundboardSoundPayload]]
+```
+
+#### `create_guild_sound()`
+
+```python
+create_guild_sound(guild_id: Snowflake, reason: str | None, **payload) -> Response[SoundboardSoundPayload]
+```
+
+#### `get_all_guild_sounds()`
+
+```python
+get_all_guild_sounds(guild_id: Snowflake) -> Response[list[SoundboardSoundPayload]]
+```
+
+#### `get_guild_sound()`
+
+```python
+get_guild_sound(guild_id: Snowflake, sound_id: Snowflake) -> Response[SoundboardSoundPayload]
+```
+
+#### `edit_guild_sound()`
+
+```python
+edit_guild_sound(guild_id: Snowflake, sound_id: Snowflake, *, reason: str | None, **payload) -> Response[SoundboardSoundPayload]
+```
+
+#### `send_soundboard_sound()`
+
+```python
+send_soundboard_sound(channel_id: int, sound: PartialSoundboardSound) -> Response[None]
+```
+
+#### `get_guild_member_permissions()`
+
+```python
+get_guild_member_permissions(guild_id: int, user_id: int) -> Response[guild.GetPermissionsResponseData]
+```
+
+#### `get_guild_role_permissions()`
+
+```python
+get_guild_role_permissions(guild_id: int, role_id: int) -> Response[guild.GetPermissionsResponseData]
+```
+
+#### `get_channel_member_permissions()`
+
+```python
+get_channel_member_permissions(channel_id: int, user_id: int) -> Response[guild.GetPermissionsResponseData]
+```
+
+#### `get_channel_role_permissions()`
+
+```python
+get_channel_role_permissions(channel_id: int, role_id: int) -> Response[guild.GetPermissionsResponseData]
+```
+
+### `MaybeUnlock`
+
+```python
+class MaybeUnlock(lock: asyncio.Lock, loop: asyncio.AbstractEventLoop | None = None) -> None
+```
+
+#### `defer()`
+
+```python
+defer(*, delay: float | None = None) -> None
+```
+
+#### `reclaim()`
+
+```python
+reclaim() -> None
+```
+
+### `Route`
+
+```python
+class Route(method: str, path: str, **parameters: Any) -> None
+```
+
+## Functions
+
+### `parse_response()`
+
+```python
+parse_response(response: Any) -> dict[str, Any] | str | bytes | None
+```

@@ -1,0 +1,660 @@
+# `rum.member`
+
+## Classes
+
+### `Member`
+
+```python
+class Member(*, data: MemberWithUserPayload, guild: Guild, state: ConnectionState)
+```
+
+Represents a Discord member to a `Guild`.
+
+This implements a lot of the functionality of `User`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two members are equal. Note that this works with `User` instances too.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two members are not equal. Note that this works with `User` instances too.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the member's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the member's name with the discriminator or global_name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+joined_at: `datetime.datetime` | `None`  
+An aware datetime object that specifies the date and time in UTC that the member joined the guild. If the member left and rejoined the guild, this will be the latest date. In certain cases, this can be `None`.
+
+activities: Tuple\[`BaseActivity` | `Spotify`\]  
+The activities that the user is currently doing.
+
+> [!NOTE]
+> Due to a Discord API limitation, a user's Spotify activity may not appear if they are listening to a song with a title longer than 128 characters.
+
+guild: `Guild`  
+The guild that the member belongs to.
+
+nick: `str` | `None`  
+The guild specific nickname of the user.
+
+pending: `bool`  
+Whether the member is pending member verification.
+
+*Added in 1.6.*
+
+premium_since: `datetime.datetime` | `None`  
+An aware datetime object that specifies the date and time in UTC when the member used their "Nitro boost" on the guild, if available. This could be `None`.
+
+communication_disabled_until: `datetime.datetime` | `None`  
+An aware datetime object that specifies the date and time in UTC when the member will be removed from timeout.
+
+*Added in 2.0.*
+
+flags: `MemberFlags`  
+Extra attributes of the member.
+
+*Added in 2.6.*
+
+#### `is_on_mobile()`
+
+```python
+is_on_mobile() -> bool
+```
+
+A helper function that determines if a member is active on a mobile device.
+
+#### `mentioned_in()`
+
+```python
+mentioned_in(message: Message) -> bool
+```
+
+Checks if the member is mentioned in the specified message.
+
+#### Parameters
+
+message: `Message`  
+The message to check if you're mentioned in.
+
+#### Returns
+
+`bool`  
+Indicates if the member is mentioned in the message.
+
+#### `ban()`
+
+```python
+ban(*, delete_message_seconds: int | None = None, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Bans this member. Equivalent to `Guild.ban`.
+
+#### `unban()`
+
+```python
+unban(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Unbans this member. Equivalent to `Guild.unban`.
+
+#### `kick()`
+
+```python
+kick(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Kicks this member. Equivalent to `Guild.kick`.
+
+#### `edit()`
+
+```python
+edit(*, nick: str | None = ..., mute: bool = ..., deafen: bool = ..., suppress: bool = ..., roles: list[rum.abc.Snowflake] = ..., voice_channel: VocalGuildChannel | None = ..., reason: str | None = None, communication_disabled_until: datetime.datetime | None = ..., bypass_verification: bool | None = ..., banner: bytes | None = ..., avatar: bytes | None = ..., bio: str | None = ...) -> Member | None
+```
+
+*(coroutine)*
+
+Edits the member's data.
+
+Depending on the parameter passed, this requires different permissions listed below:
+
+<table style="width:97%;">
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 54%" />
+</colgroup>
+<tbody>
+<tr>
+<td><blockquote>
+<p>Parameter</p>
+</blockquote></td>
+<td><blockquote>
+<p>Permission</p>
+</blockquote></td>
+</tr>
+<tr>
+<td>nick</td>
+<td><code>Permissions.manage_nicknames</code> |</td>
+</tr>
+<tr>
+<td>mute</td>
+<td><code>Permissions.mute_members</code> |</td>
+</tr>
+<tr>
+<td>deafen</td>
+<td><code>Permissions.deafen_members</code> |</td>
+</tr>
+<tr>
+<td>roles</td>
+<td><code>Permissions.manage_roles</code> |</td>
+</tr>
+<tr>
+<td>voice_channel</td>
+<td><code>Permissions.move_members</code> |</td>
+</tr>
+<tr>
+<td>communication_disabled_until</td>
+<td><code>Permissions.moderate_members</code> |</td>
+</tr>
+<tr>
+<td>bypass_verification</td>
+<td>See note below</td>
+</tr>
+</tbody>
+</table>
+
+> [!NOTE]
+> <span class="title-ref">bypass_verification</span> may be edited under three scenarios:
+>
+> - Client has `Permissions.manage_guild`
+> - Client has `Permissions.manage_roles`
+> - Client has ALL THREE of `Permissions.moderate_members`, `Permissions.kick_members`, and `Permissions.ban_members`
+
+> [!NOTE]
+> The following parameters are only available when editing the bot's own member:
+>
+> - `avatar`
+> - `banner`
+> - `bio`
+
+All parameters are optional.
+
+*Changed in 1.1 Can now pass `None` to `voice_channel` to kick a member from voice.*
+
+*Changed in 2.0 The newly member is now optionally returned, if applicable.*
+
+#### Parameters
+
+nick: `str` | `None`  
+The member's new nickname. Use `None` to remove the nickname.
+
+mute: `bool`  
+Indicates if the member should be guild muted or un-muted.
+
+deafen: `bool`  
+Indicates if the member should be guild deafened or un-deafened.
+
+suppress: `bool`  
+Indicates if the member should be suppressed in stage channels.
+
+*Added in 1.7.*
+
+roles: List\[`Role`\]  
+The member's new list of roles. This *replaces* the roles.
+
+voice_channel: `VoiceChannel` | `StageChannel` | `None`  
+The voice channel to move the member to. Pass `None` to kick them from voice.
+
+reason: `str` | `None`  
+The reason for editing this member. Shows up on the audit log.
+
+communication_disabled_until: `datetime.datetime` | `None`  
+Temporarily puts the member in timeout until this time. If the value is `None`, then the user is removed from timeout.
+
+*Added in 2.0.*
+
+bypass_verification: `bool` | `None`  
+Indicates if the member should bypass the guild's verification requirements.
+
+*Added in 2.6.*
+
+banner: `bytes` | `None`  
+A `bytes-like object` representing the banner. Could be `None` to denote removal of the banner.
+
+This is only available when editing the bot's own member (i.e. `Guild.me`).
+
+*Added in 2.7.*
+
+avatar: `bytes` | `None`  
+A `bytes-like object` representing the avatar. Could be `None` to denote removal of the avatar.
+
+This is only available when editing the bot's own member (i.e. `Guild.me`).
+
+*Added in 2.7.*
+
+bio: `str` | `None`  
+The new bio for the member. Could be `None` to denote removal of the bio.
+
+This is only available when editing the bot's own member (i.e. `Guild.me`).
+
+*Added in 2.7.*
+
+#### Returns
+
+`.Member` | `None`  
+The newly updated member, if applicable. This is only returned when certain fields are updated.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to the action requested.
+
+HTTPException  
+The operation failed.
+
+InvalidArgument  
+You tried to edit the avatar, banner, or bio of a member that is not the bot.
+
+#### `timeout()`
+
+```python
+timeout(until: datetime.datetime | None, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Applies a timeout to a member in the guild until a set datetime.
+
+You must have the `Permissions.moderate_members` permission to timeout a member.
+
+#### Parameters
+
+until: `datetime.datetime`  
+The date and time to timeout the member for. If this is `None` then the member is removed from timeout.
+
+reason: `str` | `None`  
+The reason for doing this action. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to timeout members.
+
+HTTPException  
+An error occurred doing the request.
+
+#### `timeout_for()`
+
+```python
+timeout_for(duration: datetime.timedelta, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Applies a timeout to a member in the guild for a set duration. A shortcut method for `.timeout`, and equivalent to `timeout(until=datetime.utcnow() + duration, reason=reason)`.
+
+You must have the `Permissions.moderate_members` permission to timeout a member.
+
+#### Parameters
+
+duration: `datetime.timedelta`  
+The duration to timeout the member for.
+
+reason: `str` | `None`  
+The reason for doing this action. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to timeout members.
+
+HTTPException  
+An error occurred doing the request.
+
+#### `remove_timeout()`
+
+```python
+remove_timeout(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Removes the timeout from a member.
+
+You must have the `Permissions.moderate_members` permission to remove the timeout.
+
+This is equivalent to calling `.timeout` and passing `None` to the `until` parameter.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for doing this action. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to remove the timeout.
+
+HTTPException  
+An error occurred doing the request.
+
+#### `request_to_speak()`
+
+```python
+request_to_speak() -> None
+```
+
+*(coroutine)*
+
+Request to speak in the connected channel.
+
+Only applies to stage channels.
+
+> [!NOTE]
+> Requesting members that are not the client is equivalent to `.edit` providing `suppress` as `False`.
+
+*Added in 1.7.*
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to the action requested.
+
+HTTPException  
+The operation failed.
+
+#### `move_to()`
+
+```python
+move_to(channel: VocalGuildChannel | None, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Moves a member to a new voice channel (they must be connected first).
+
+You must have the `Permissions.move_members` permission to use this.
+
+This raises the same exceptions as `edit`.
+
+*Changed in 1.1 Can now pass `None` to kick a member from voice.*
+
+#### Parameters
+
+channel: `VoiceChannel` | `StageChannel` | `None`  
+The new voice channel to move the member to. Pass `None` to kick them from voice.
+
+reason: `str` | `None`  
+The reason for doing this action. Shows up on the audit log.
+
+#### `add_roles()`
+
+```python
+add_roles(*roles: Snowflake, reason: str | None = None, atomic: bool = True) -> None
+```
+
+*(coroutine)*
+
+Gives the member a number of `Role`s.
+
+You must have the `Permissions.manage_roles` permission to use this, and the added `Role`s must appear lower in the list of roles than the highest role of the member.
+
+#### Parameters
+
+\*roles: `abc.Snowflake`  
+An argument list of `abc.Snowflake` representing a `Role` to give to the member.
+
+reason: `str` | `None`  
+The reason for adding these roles. Shows up on the audit log.
+
+atomic: `bool`  
+Whether to atomically add roles. This will ensure that multiple operations will always be applied regardless of the current state of the cache.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to add these roles.
+
+HTTPException  
+Adding roles failed.
+
+#### `remove_roles()`
+
+```python
+remove_roles(*roles: Snowflake, reason: str | None = None, atomic: bool = True) -> None
+```
+
+*(coroutine)*
+
+Removes `Role`s from this member.
+
+You must have the `Permissions.manage_roles` permission to use this, and the removed `Role`s must appear lower in the list of roles than the highest role of the member.
+
+#### Parameters
+
+\*roles: `abc.Snowflake`  
+An argument list of `abc.Snowflake` representing a `Role` to remove from the member.
+
+reason: `str` | `None`  
+The reason for removing these roles. Shows up on the audit log.
+
+atomic: `bool`  
+Whether to atomically remove roles. This will ensure that multiple operations will always be applied regardless of the current state of the cache.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to remove these roles.
+
+HTTPException  
+Removing the roles failed.
+
+#### `get_role()`
+
+```python
+get_role(role_id: int, /) -> Role | None
+```
+
+Returns a role with the given ID from roles which the member has.
+
+*Added in 2.0.*
+
+#### Parameters
+
+role_id: `int`  
+The ID to search for.
+
+#### Returns
+
+`Role` | `None`  
+The role or `None` if not found in the member's roles.
+
+#### `fetch_permissions()`
+
+```python
+fetch_permissions() -> Permissions
+```
+
+Fetches the member's permissions from Discord, combining their roles with `@everyone`.
+
+This can be useful if you do not have a populated role cache for whatever reason.
+
+#### Returns
+
+`Permissions`  
+The member's permissions in the guild.
+
+#### Raises
+
+~discord.Forbidden  
+You do not have proper permissions to get the information.
+
+~discord.HTTPException  
+An error occurred while fetching the information.
+
+#### `create_dm()`
+
+```python
+create_dm() -> DMChannel
+```
+
+*(coroutine)*
+
+Creates a `DMChannel` with this user.
+
+This should be rarely called, as this is done transparently for most people.
+
+#### Returns
+
+`.DMChannel`  
+The channel that was created.
+
+#### `create_test_entitlement()`
+
+```python
+create_test_entitlement(sku: rum.abc.Snowflake) -> Entitlement
+```
+
+*(coroutine)*
+
+Creates a test entitlement for the user.
+
+#### Parameters
+
+sku: `Snowflake`  
+The SKU to create a test entitlement for.
+
+#### Returns
+
+`Entitlement`  
+The created entitlement.
+
+#### `entitlements()`
+
+```python
+entitlements(skus: list[Snowflake] | None = None, before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, limit: int | None = 100, exclude_ended: bool = False) -> EntitlementIterator
+```
+
+Returns an `.AsyncIterator` that enables fetching the user's entitlements.
+
+This is identical to `Client.entitlements` with the `user` parameter.
+
+*Added in 2.6.*
+
+#### Parameters
+
+skus: list\[`.abc.Snowflake`\] | None  
+Limit the fetched entitlements to entitlements that are for these SKUs.
+
+before: `.abc.Snowflake` | `datetime.datetime` | None  
+Retrieves guilds before this date or object. If a datetime is provided, it is recommended to use a UTC-aware datetime. If the datetime is naive, it is assumed to be local time.
+
+after: `.abc.Snowflake` | `datetime.datetime` | None  
+Retrieve guilds after this date or object. If a datetime is provided, it is recommended to use a UTC-aware datetime. If the datetime is naive, it is assumed to be local time.
+
+limit: `int` | `None`  
+The number of entitlements to retrieve. If `None`, retrieves every entitlement, which may be slow. Defaults to `100`.
+
+exclude_ended: `bool`  
+Whether to limit the fetched entitlements to those that have not ended. Defaults to `False`.
+
+#### Yields
+
+`.Entitlement`  
+The application's entitlements.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the entitlements failed.
+
+### `VoiceState`
+
+```python
+class VoiceState(*, data: VoiceStatePayload | GuildVoiceStatePayload, channel: VocalGuildChannel | None = None)
+```
+
+Represents a Discord user's voice state.
+
+#### Attributes
+
+deaf: `bool`  
+Indicates if the user is currently deafened by the guild.
+
+mute: `bool`  
+Indicates if the user is currently muted by the guild.
+
+self_mute: `bool`  
+Indicates if the user is currently muted by their own accord.
+
+self_deaf: `bool`  
+Indicates if the user is currently deafened by their own accord.
+
+self_stream: `bool`  
+Indicates if the user is currently streaming via 'Go Live' feature.
+
+*Added in 1.3.*
+
+self_video: `bool`  
+Indicates if the user is currently broadcasting video.
+
+suppress: `bool`  
+Indicates if the user is suppressed from speaking.
+
+Only applies to stage channels.
+
+*Added in 1.7.*
+
+requested_to_speak_at: `datetime.datetime` | `None`  
+An aware datetime object that specifies the date and time in UTC that the member requested to speak. It will be `None` if they are not requesting to speak anymore or have been accepted to speak.
+
+Only applicable to stage channels.
+
+*Added in 1.7.*
+
+afk: `bool`  
+Indicates if the user is currently in the AFK channel in the guild.
+
+channel: `VoiceChannel` | `StageChannel` | `None`  
+The voice channel that the user is currently connected to. `None` if the user is not currently in a voice channel.
+
+## Functions
+
+### `flatten_user()`
+
+```python
+flatten_user(cls)
+```

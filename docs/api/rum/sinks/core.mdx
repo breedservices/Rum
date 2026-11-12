@@ -1,0 +1,171 @@
+# `rum.sinks.core`
+
+## Classes
+
+### `AudioData`
+
+```python
+class AudioData(file)
+```
+
+Handles data that's been completely decrypted and decoded and is ready to be saved to file.
+
+*Added in 2.0.*
+
+#### `write()`
+
+```python
+write(data)
+```
+
+Writes audio data.
+
+#### Raises
+
+SinkException  
+The AudioData is already finished writing.
+
+ValueError  
+The underlying file is closed.
+
+#### `cleanup()`
+
+```python
+cleanup()
+```
+
+Finishes and cleans up the audio data.
+
+#### Raises
+
+ClientException  
+The AudioData is already finished writing.
+
+#### `on_format()`
+
+```python
+on_format(encoding)
+```
+
+Called when audio data is formatted.
+
+#### Raises
+
+ClientException  
+The AudioData is still writing.
+
+### `Filters`
+
+```python
+class Filters(**kwargs)
+```
+
+Filters for `.Sink`
+
+*Added in 2.0.*
+
+#### Parameters
+
+container  
+Container of all Filters.
+
+#### `container()`
+
+```python
+container(func)
+```
+
+#### `init()`
+
+```python
+init()
+```
+
+#### `wait_and_stop()`
+
+```python
+wait_and_stop()
+```
+
+### `RawData`
+
+```python
+class RawData(data, client)
+```
+
+Handles raw data from Discord so that it can be decrypted and decoded to be used.
+
+*Added in 2.0.*
+
+### `Sink`
+
+```python
+class Sink(*, filters=None)
+```
+
+A sink "stores" recorded audio data.
+
+Can be subclassed for extra customizablilty.
+
+> [!WARNING]
+> It is recommended you use the officially provided sink classes, such as `discord.sinks.WaveSink`.
+
+just replace the following like so: :
+
+    vc.start_recording(
+        MySubClassedSink(),
+        finished_callback,
+        ctx.channel,
+    )
+
+*Added in 2.0.*
+
+#### Raises
+
+ClientException  
+An invalid encoding type was specified.
+
+ClientException  
+Audio may only be formatted after recording is finished.
+
+#### `init()`
+
+```python
+init(vc: VoiceClient)
+```
+
+#### `write()`
+
+```python
+write(data, user)
+```
+
+#### `cleanup()`
+
+```python
+cleanup()
+```
+
+#### `format_audio()`
+
+```python
+format_audio(audio)
+```
+
+Formats recorded audio. Subclasses should override as needed.
+
+#### `get_all_audio()`
+
+```python
+get_all_audio()
+```
+
+Gets all audio files.
+
+#### `get_user_audio()`
+
+```python
+get_user_audio(user: snowflake.Snowflake)
+```
+
+Gets the audio file(s) of one specific user.

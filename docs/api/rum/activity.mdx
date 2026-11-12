@@ -1,0 +1,362 @@
+# `rum.activity`
+
+## Classes
+
+### `Activity`
+
+```python
+class Activity(**kwargs)
+```
+
+Represents an activity in Discord.
+
+This could be an activity such as streaming, playing, listening or watching.
+
+For memory optimisation purposes, some activities are offered in slimmed down versions:
+
+- `Game`
+- `Streaming`
+
+#### Attributes
+
+application_id: `int` | `None`  
+The application ID of the game.
+
+name: `str` | `None`  
+The name of the activity.
+
+url: `str` | `None`  
+A stream URL that the activity could be doing.
+
+type: `ActivityType`  
+The type of activity currently being done.
+
+state: `str` | `None`  
+The user's current party status or text used for a custom status.
+
+details: `str` | `None`  
+The detail of the user's current activity.
+
+timestamps: Dict\[`str`, `int`\]  
+A dictionary of timestamps. It contains the following optional keys:
+
+- `start`: Corresponds to when the user started doing the activity in milliseconds since Unix epoch.
+- `end`: Corresponds to when the user will finish doing the activity in milliseconds since Unix epoch.
+
+assets: Dict\[`str`, `str`\]  
+A dictionary representing the images and their hover text of an activity. It contains the following optional keys:
+
+- `large_image`: A string representing the ID for the large image asset.
+- `large_text`: A string representing the text when hovering over the large image asset.
+- `small_image`: A string representing the ID for the small image asset.
+- `small_text`: A string representing the text when hovering over the small image asset.
+
+party: Dict\[`str`, `str` | List\[`int`\]\]  
+A dictionary representing the activity party. It contains the following optional keys:
+
+- `id`: A string representing the party ID.
+- `size`: A list of up to two integer elements denoting (current_size, maximum_size).
+
+buttons: List\[Dict\[`str`, `str`\]\] | List\[`str`\]  
+A list of dictionaries representing custom buttons shown in a rich presence. Each dictionary contains the following keys:
+
+- `label`: A string representing the text shown on the button.
+- `url`: A string representing the URL opened upon clicking the button.
+
+> [!NOTE]
+> Bots cannot access a user's activity button URLs. Therefore, the type of this attribute will be List\[`str`\] when received through the gateway.
+
+*Added in 2.0.*
+
+emoji: `PartialEmoji` | `None`  
+The emoji that belongs to this activity.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `BaseActivity`
+
+```python
+class BaseActivity(**kwargs)
+```
+
+The base activity that all user-settable activities inherit from. A user-settable activity is one that can be used in `Client.change_presence`.
+
+The following types currently count as user-settable:
+
+- `Activity`
+- `Game`
+- `Streaming`
+- `CustomActivity`
+
+Note that although these types are considered user-settable by the library, Discord typically ignores certain combinations of activity depending on what is currently set. This behaviour may change in the future so there are no guarantees on whether Discord will actually let you set these types.
+
+*Added in 1.3.*
+
+#### `to_dict()`
+
+```python
+to_dict() -> ActivityPayload
+```
+
+### `CustomActivity`
+
+```python
+class CustomActivity(name: str | None, *, emoji: PartialEmoji | None = None, **extra: Any)
+```
+
+Represents a Custom activity from Discord.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two activities are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two activities are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the activity's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the custom status text.
+
+</div>
+
+</div>
+
+*Added in 1.3.*
+
+#### Attributes
+
+name: `str` | `None`  
+The custom activity's name.
+
+emoji: `PartialEmoji` | `None`  
+The emoji to pass to the activity, if any.
+
+state: `str` | `None`  
+The text used for the custom activity.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `Game`
+
+```python
+class Game(name: str, **extra)
+```
+
+A slimmed down version of `Activity` that represents a Discord game.
+
+This is typically displayed via **Playing** on the official Discord client.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two games are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two games are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the game's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the game's name.
+
+</div>
+
+</div>
+
+#### Parameters
+
+name: `str`  
+The game's name.
+
+#### Attributes
+
+name: `str`  
+The game's name.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `Spotify`
+
+```python
+class Spotify(**data)
+```
+
+Represents a Spotify listening activity from Discord. This is a special case of `Activity` that makes it easier to work with the Spotify integration.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two activities are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two activities are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the activity's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the string 'Spotify'.
+
+</div>
+
+</div>
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `Streaming`
+
+```python
+class Streaming(*, name: str | None, url: str, **extra: Any)
+```
+
+A slimmed down version of `Activity` that represents a Discord streaming status.
+
+This is typically displayed via **Streaming** on the official Discord client.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two streams are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two streams are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the stream's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the stream's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+platform: `str` | `None`  
+Where the user is streaming from (ie. YouTube, Twitch).
+
+*Added in 1.3.*
+
+name: `str` | `None`  
+The stream's name.
+
+details: `str` | `None`  
+An alias for `name`
+
+game: `str` | `None`  
+The game being streamed.
+
+*Added in 1.3.*
+
+url: `str`  
+The stream's URL.
+
+assets: Dict\[`str`, `str`\]  
+A dictionary comprised of similar keys than those in `Activity.assets`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+## Functions
+
+### `create_activity()`
+
+```python
+create_activity(data: ActivityPayload | None) -> ActivityTypes | None
+```

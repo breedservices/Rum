@@ -1,0 +1,45 @@
+# `rum.application_role_connection`
+
+## Classes
+
+### `ApplicationRoleConnectionMetadata`
+
+```python
+class ApplicationRoleConnectionMetadata(*, type: ApplicationRoleConnectionMetadataType, key: str, name: str, description: str, name_localizations: dict[str, str] = ..., description_localizations: dict[str, str] = ...)
+```
+
+Represents role connection metadata for a Discord application.
+
+*Added in 2.4.*
+
+#### Parameters
+
+type: `ApplicationRoleConnectionMetadataType`  
+The type of metadata value.
+
+key: `str`  
+The key for this metadata field. May only be the `a-z`, `0-9`, or `_` characters, with a maximum of 50 characters.
+
+name: `str`  
+The name for this metadata field. Maximum 100 characters.
+
+description: `str`  
+The description for this metadata field. Maximum 200 characters.
+
+name_localizations: Dict\[`str`, `str`\] | `None`  
+The name localizations for this metadata field. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+description_localizations: Dict\[`str`, `str`\] | `None`  
+The description localizations for this metadata field. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+#### `from_dict()`
+
+```python
+from_dict(data: ApplicationRoleConnectionMetadataPayload) -> ApplicationRoleConnectionMetadata
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> ApplicationRoleConnectionMetadataPayload
+```

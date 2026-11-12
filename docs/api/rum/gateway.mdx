@@ -1,0 +1,223 @@
+# `rum.gateway`
+
+## Classes
+
+### `DiscordWebSocket`
+
+```python
+class DiscordWebSocket(socket: Any, *, loop: asyncio.AbstractEventLoop) -> None
+```
+
+Implements a WebSocket for Discord's gateway v6.
+
+#### `is_ratelimited()`
+
+```python
+is_ratelimited() -> bool
+```
+
+#### `debug_log_receive()`
+
+```python
+debug_log_receive(data: dict[str, Any], /) -> None
+```
+
+#### `log_receive()`
+
+```python
+log_receive(_: dict[str, Any], /) -> None
+```
+
+#### `from_client()`
+
+```python
+from_client(client: Client, *, initial: bool = False, gateway: str | None = None, shard_id: int | None = None, session: str | None = None, sequence: int | None = None, resume: bool = False) -> Self
+```
+
+Creates a main websocket for Discord from a `Client`.
+
+#### `wait_for()`
+
+```python
+wait_for(event: str, predicate: Callable[[dict[str, Any]], bool], result: Callable[[dict[str, Any]], Any] | None = None) -> asyncio.Future[Any]
+```
+
+#### `identify()`
+
+```python
+identify() -> None
+```
+
+Sends the IDENTIFY packet.
+
+#### `resume()`
+
+```python
+resume() -> None
+```
+
+Sends the RESUME packet.
+
+#### `received_message()`
+
+```python
+received_message(msg: Any, /)
+```
+
+#### `poll_event()`
+
+```python
+poll_event() -> None
+```
+
+#### `debug_send()`
+
+```python
+debug_send(data: str, /) -> None
+```
+
+#### `send()`
+
+```python
+send(data: str, /) -> None
+```
+
+#### `send_as_json()`
+
+```python
+send_as_json(data: Any) -> None
+```
+
+#### `send_heartbeat()`
+
+```python
+send_heartbeat(data: Any) -> None
+```
+
+#### `change_presence()`
+
+```python
+change_presence(*, activity: BaseActivity | None = None, status: str | None = None, since: float = 0.0) -> None
+```
+
+#### `request_chunks()`
+
+```python
+request_chunks(guild_id: int, query: str | None = None, *, limit: int, user_ids: list[int] | None = None, presences: bool = False, nonce: str | None = None) -> None
+```
+
+#### `voice_state()`
+
+```python
+voice_state(guild_id: int, channel_id: int, self_mute: bool = False, self_deaf: bool = False) -> None
+```
+
+#### `request_soundboard_sounds()`
+
+```python
+request_soundboard_sounds(guild_ids)
+```
+
+#### `request_channel_info()`
+
+```python
+request_channel_info(guild_id: int, fields: list[RequestChannelInfoField])
+```
+
+#### `close()`
+
+```python
+close(code: int = 4000) -> None
+```
+
+### `EventListener`
+
+```python
+class EventListener(predicate: Callable[[dict[str, Any]], bool], event: str, result: Callable[[dict[str, Any]], Any] | None, future: asyncio.Future[Any])
+```
+
+EventListener(predicate, event, result, future)
+
+### `GatewayRatelimiter`
+
+```python
+class GatewayRatelimiter(count: int = 110, per: float = 60.0)
+```
+
+#### `is_ratelimited()`
+
+```python
+is_ratelimited() -> bool
+```
+
+#### `get_delay()`
+
+```python
+get_delay() -> float
+```
+
+#### `block()`
+
+```python
+block() -> None
+```
+
+### `KeepAliveHandler`
+
+```python
+class KeepAliveHandler(*args: Any, ws: DiscordWebSocket, shard_id: int | None = None, interval: float | None = None, **kwargs: Any) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `run()`
+
+```python
+run() -> None
+```
+
+Method representing the thread's activity.
+
+You may override this method in a subclass. The standard run() method invokes the callable object passed to the object's constructor as the target argument, if any, with sequential and keyword arguments taken from the args and kwargs arguments, respectively.
+
+#### `get_payload()`
+
+```python
+get_payload() -> dict[str, Any]
+```
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+#### `tick()`
+
+```python
+tick() -> None
+```
+
+#### `ack()`
+
+```python
+ack() -> None
+```
+
+### `ReconnectWebSocket`
+
+```python
+class ReconnectWebSocket(shard_id, *, resume=True)
+```
+
+Signals to safely reconnect the WebSocket.
+
+### `WebSocketClosure`
+
+```python
+class WebSocketClosure(...)
+```
+
+Signals websocket closure.

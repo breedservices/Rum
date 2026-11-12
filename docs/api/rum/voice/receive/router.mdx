@@ -1,0 +1,121 @@
+# `rum.voice.receive.router`
+
+## Classes
+
+### `PacketRouter`
+
+```python
+class PacketRouter(sink: Sink, reader: AudioReader) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `feed_rtp()`
+
+```python
+feed_rtp(packet: RTPPacket) -> None
+```
+
+#### `feed_rtcp()`
+
+```python
+feed_rtcp(packet: RTCPPacket) -> None
+```
+
+#### `get_decoder()`
+
+```python
+get_decoder(ssrc: int) -> PacketDecoder | None
+```
+
+#### `set_sink()`
+
+```python
+set_sink(sink: Sink) -> None
+```
+
+#### `set_user_id()`
+
+```python
+set_user_id(ssrc: int, user_id: int) -> None
+```
+
+#### `destroy_decoder()`
+
+```python
+destroy_decoder(ssrc: int) -> None
+```
+
+#### `destroy_all_decoders()`
+
+```python
+destroy_all_decoders() -> None
+```
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+#### `run()`
+
+```python
+run() -> None
+```
+
+Method representing the thread's activity.
+
+You may override this method in a subclass. The standard run() method invokes the callable object passed to the object's constructor as the target argument, if any, with sequential and keyword arguments taken from the args and kwargs arguments, respectively.
+
+### `SinkEventRouter`
+
+```python
+class SinkEventRouter(sink: Sink, reader: AudioReader) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `dispatch()`
+
+```python
+dispatch(event: str, /, *args: Any, **kwargs: Any) -> None
+```
+
+#### `set_sink()`
+
+```python
+set_sink(sink: Sink) -> None
+```
+
+#### `register_events()`
+
+```python
+register_events() -> None
+```
+
+#### `unregister_events()`
+
+```python
+unregister_events() -> None
+```
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+#### `run()`
+
+```python
+run() -> None
+```
+
+Method representing the thread's activity.
+
+You may override this method in a subclass. The standard run() method invokes the callable object passed to the object's constructor as the target argument, if any, with sequential and keyword arguments taken from the args and kwargs arguments, respectively.

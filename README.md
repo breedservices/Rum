@@ -12,12 +12,23 @@ rum is an async Python API wrapper for the Discord API, based on Pycord. It keep
 
 ## Documentation
 
-There is no dedicated rum documentation site right now. You can rely on:
+The documentation lives in [`docs/`](./docs) and renders directly on GitHub, so there
+is no site to build:
 
-- The [`examples/`](./examples) directory in this repository
-- [Pycord's documentation](https://docs.pycord.dev) for general API usage (most concepts and APIs are the same)
-- Or read the actual source code
-- Get an LLM to generate documentation
+- [Guides](./docs/index.mdx) — installing, quickstart, intents, cogs, FAQ and the
+  `ext` command framework
+- [API reference](./docs/api/index.mdx) — one page per module, generated from the
+  docstrings
+- [`examples/`](./examples) — runnable bots, including cache providers and cache rules
+
+The API reference is generated. After changing a docstring, regenerate it:
+
+```sh
+uv run --with pypandoc-binary python docs/generate_reference.py
+```
+
+[Pycord's documentation](https://docs.pycord.dev) is still useful for concepts that
+carry over unchanged.
 
 ## Installation
 
@@ -72,6 +83,8 @@ See the examples for working implementations:
   pure disk cache that stores every entry in its own JSON file
 - [`examples/ram_usage.py`](./examples/ram_usage.py) — a bot that keeps its caches
   in a SQLite database and reports how much memory it is using
+- [`examples/cache_rules.py`](./examples/cache_rules.py) — per-kind cache rules, so
+  one guild's members can be cached while presences are not, with TTLs and size caps
 
 All examples read the bot token from the `BOT_TOKEN` environment variable, or
 from the `.env` file in the repository root:

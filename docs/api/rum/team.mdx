@@ -1,0 +1,107 @@
+# `rum.team`
+
+## Classes
+
+### `Team`
+
+```python
+class Team(state: ConnectionState, data: TeamPayload)
+```
+
+Represents an application team for a bot provided by Discord.
+
+#### Attributes
+
+id: `int`  
+The team ID.
+
+name: `str`  
+The team name.
+
+owner_id: `int`  
+The team's owner ID.
+
+members: List\[`TeamMember`\]  
+A list of the members in the team.
+
+*Added in 1.3.*
+
+### `TeamMember`
+
+```python
+class TeamMember(team: Team, state: ConnectionState, data: TeamMemberPayload)
+```
+
+Represents a team member in a team.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two team members are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two team members are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the team member's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the team member's name with discriminator or global_name.
+
+</div>
+
+</div>
+
+*Added in 1.3.*
+
+#### Attributes
+
+name: `str`  
+The team member's username.
+
+id: `int`  
+The team member's unique ID.
+
+discriminator: `str`  
+The team member's discriminator. This is given when the username has conflicts.
+
+> [!NOTE]
+> If the user has migrated to the new username system, this will always be "0".
+
+global_name: `str`  
+The team member's global name.
+
+*Added in 2.5.*
+
+avatar: `str` | `None`  
+The avatar hash the team member has. Could be `None`.
+
+bot: `bool`  
+Specifies if the user is a bot account.
+
+team: `Team`  
+The team that the member is from.
+
+membership_state: `TeamMembershipState`  
+The membership state of the member (e.g. invited or accepted)
+
+role: `TeamRole`  
+The role of the team member (e.g. admin, developer, read_only).

@@ -1,0 +1,51 @@
+# `rum.object`
+
+## Classes
+
+### `Object`
+
+```python
+class Object(id: SupportsIntCast, type: type[Snowflake] = ...)
+```
+
+Represents a generic Discord object.
+
+The purpose of this class is to allow you to create 'miniature' versions of data classes if you want to pass in just an ID. Most functions that take in a specific data class with an ID can also take in this class as a substitute instead. Note that even though this is the case, not all objects (if any) actually inherit from this class.
+
+There are also some cases where some WebSocket events are received in `strange order <21>` and when such events happened you would receive this class rather than the actual data class. These cases are extremely rare.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two objects are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two objects are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the object's hash.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The ID of the object.
+
+type: type\[`abc.Snowflake`\]  
+The model this object's ID is based off.

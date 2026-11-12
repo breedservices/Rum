@@ -1,0 +1,513 @@
+# `rum.embeds`
+
+## Classes
+
+### `Embed`
+
+```python
+class Embed(*, colour: int | Colour | None = None, color: int | Colour | None = None, title: Any | None = None, type: EmbedType = 'rich', url: Any | None = None, description: Any | None = None, timestamp: datetime.datetime | None = None, fields: list[EmbedField] | None = None, author: EmbedAuthor | None = None, footer: EmbedFooter | None = None, image: str | EmbedMedia | None = None, thumbnail: str | EmbedMedia | None = None)
+```
+
+Represents a Discord embed.
+
+<div class="container operations">
+
+<div class="describe">
+
+len(x)
+
+Returns the total size of the embed. Useful for checking if it's within the 6000 character limit.
+
+</div>
+
+<div class="describe">
+
+bool(b)
+
+Returns whether the embed has any data set.
+
+*Added in 2.0.*
+
+</div>
+
+</div>
+
+For ease of use, all parameters that expect a `str` are implicitly cast to `str` for you.
+
+#### Attributes
+
+title: `str`  
+The title of the embed. This can be set during initialisation. Must be 256 characters or fewer.
+
+type: `str`  
+The type of embed. Usually "rich". This can be set during initialisation. Possible strings for embed types can be found on discord's [api docs](https://docs.discord.com/developers/resources/message#embed-object-embed-types)
+
+description: `str`  
+The description of the embed. This can be set during initialisation. Must be 4096 characters or fewer.
+
+url: `str`  
+The URL of the embed. This can be set during initialisation.
+
+timestamp: `datetime.datetime`  
+The timestamp of the embed content. This is an aware datetime. If a naive datetime is passed, it is converted to an aware datetime with the local timezone.
+
+colour: `Colour` | `int`  
+The colour code of the embed. Aliased to `color` as well. This can be set during initialisation.
+
+#### `from_dict()`
+
+```python
+from_dict(data: Mapping[str, Any]) -> E
+```
+
+Converts a `dict` to a `Embed` provided it is in the format that Discord expects it to be in.
+
+You can find out about this format in the [official Discord documentation](https://docs.discord.com/developers/resources/message#embed-object).
+
+#### Parameters
+
+data: `dict`  
+The dictionary to convert into an embed.
+
+#### Returns
+
+`Embed`  
+The converted embed object.
+
+#### `copy()`
+
+```python
+copy() -> E
+```
+
+Creates a shallow copy of the `Embed` object.
+
+#### Returns
+
+`Embed`  
+The copied embed object.
+
+#### `set_footer()`
+
+```python
+set_footer(*, text: Any | None = None, icon_url: Any | None = None) -> E
+```
+
+Sets the footer for the embed content.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+#### Parameters
+
+text: `str`  
+The footer text. Must be 2048 characters or fewer.
+
+icon_url: `str`  
+The URL of the footer icon. Only HTTP(S) is supported.
+
+#### `remove_footer()`
+
+```python
+remove_footer() -> E
+```
+
+Clears embed's footer information.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+*Added in 2.0.*
+
+#### `set_image()`
+
+```python
+set_image(*, url: Any | None) -> E
+```
+
+Sets the image for the embed content.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+*Changed in 1.4 Passing <span class="title-ref">None</span> removes the image.*
+
+#### Parameters
+
+url: `str`  
+The source URL for the image. Only HTTP(S) is supported.
+
+#### `remove_image()`
+
+```python
+remove_image() -> E
+```
+
+Removes the embed's image.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+*Added in 2.0.*
+
+#### `set_thumbnail()`
+
+```python
+set_thumbnail(*, url: Any | None) -> E
+```
+
+Sets the thumbnail for the embed content.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+*Changed in 1.4 Passing <span class="title-ref">None</span> removes the thumbnail.*
+
+#### Parameters
+
+url: `str`  
+The source URL for the thumbnail. Only HTTP(S) is supported.
+
+#### `remove_thumbnail()`
+
+```python
+remove_thumbnail() -> E
+```
+
+Removes the embed's thumbnail.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+*Added in 2.0.*
+
+#### `set_author()`
+
+```python
+set_author(*, name: Any, url: Any | None = None, icon_url: Any | None = None) -> E
+```
+
+Sets the author for the embed content.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+#### Parameters
+
+name: `str`  
+The name of the author. Must be 256 characters or fewer.
+
+url: `str`  
+The URL for the author.
+
+icon_url: `str`  
+The URL of the author icon. Only HTTP(S) is supported.
+
+#### `remove_author()`
+
+```python
+remove_author() -> E
+```
+
+Clears embed's author information.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+*Added in 1.4.*
+
+#### `append_field()`
+
+```python
+append_field(field: EmbedField) -> None
+```
+
+Appends an `EmbedField` object to the embed.
+
+*Added in 2.0.*
+
+#### Parameters
+
+field: `EmbedField`  
+The field to add.
+
+#### `add_field()`
+
+```python
+add_field(*, name: str, value: str, inline: bool = True) -> E
+```
+
+Adds a field to the embed object.
+
+This function returns the class instance to allow for fluent-style chaining. There must be 25 fields or fewer.
+
+#### Parameters
+
+name: `str`  
+The name of the field. Must be 256 characters or fewer.
+
+value: `str`  
+The value of the field. Must be 1024 characters or fewer.
+
+inline: `bool`  
+Whether the field should be displayed inline.
+
+#### `insert_field_at()`
+
+```python
+insert_field_at(index: int, *, name: Any, value: Any, inline: bool = True) -> E
+```
+
+Inserts a field before a specified index to the embed.
+
+This function returns the class instance to allow for fluent-style chaining. There must be 25 fields or fewer.
+
+*Added in 1.2.*
+
+#### Parameters
+
+index: `int`  
+The index of where to insert the field.
+
+name: `str`  
+The name of the field. Must be 256 characters or fewer.
+
+value: `str`  
+The value of the field. Must be 1024 characters or fewer.
+
+inline: `bool`  
+Whether the field should be displayed inline.
+
+#### `clear_fields()`
+
+```python
+clear_fields() -> None
+```
+
+Removes all fields from this embed.
+
+#### `remove_field()`
+
+```python
+remove_field(index: int) -> None
+```
+
+Removes a field at a specified index.
+
+If the index is invalid or out of bounds then the error is silently swallowed.
+
+> [!NOTE]
+> When deleting a field by index, the index of the other fields shift to fill the gap just like a regular list.
+
+#### Parameters
+
+index: `int`  
+The index of the field to remove.
+
+#### `set_field_at()`
+
+```python
+set_field_at(index: int, *, name: Any, value: Any, inline: bool = True) -> E
+```
+
+Modifies a field to the embed object.
+
+The index must point to a valid pre-existing field. There must be 25 fields or fewer.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+#### Parameters
+
+index: `int`  
+The index of the field to modify.
+
+name: `str`  
+The name of the field. Must be 256 characters or fewer.
+
+value: `str`  
+The value of the field. Must be 1024 characters or fewer.
+
+inline: `bool`  
+Whether the field should be displayed inline.
+
+#### Raises
+
+IndexError  
+An invalid index was provided.
+
+#### `to_dict()`
+
+```python
+to_dict() -> EmbedData
+```
+
+Converts this embed object into a dict.
+
+#### Returns
+
+Dict\[`str`, `str` | `int` | `bool`\]  
+A dictionary of `str` embed keys bound to the respective value.
+
+### `EmbedAuthor`
+
+```python
+class EmbedAuthor(name: str, url: str | None = None, icon_url: str | None = None) -> None
+```
+
+Represents the author on the `Embed` object.
+
+*Added in 2.5.*
+
+#### Attributes
+
+name: `str`  
+The name of the author.
+
+url: `str`  
+The URL of the hyperlink created in the author's name.
+
+icon_url: `str`  
+The URL of the author icon image.
+
+proxy_icon_url: `str`  
+The proxied URL of the author icon image. This can't be set directly, it is set by Discord.
+
+#### `from_dict()`
+
+```python
+from_dict(data: dict[str, str | None]) -> EmbedAuthor
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, str]
+```
+
+### `EmbedField`
+
+```python
+class EmbedField(name: str, value: str, inline: bool | None = False)
+```
+
+Represents a field on the `Embed` object.
+
+*Added in 2.0.*
+
+#### Attributes
+
+name: `str`  
+The name of the field.
+
+value: `str`  
+The value of the field.
+
+inline: `bool`  
+Whether the field should be displayed inline.
+
+#### `from_dict()`
+
+```python
+from_dict(data: dict[str, str | bool]) -> EmbedField
+```
+
+Converts a `dict` to a `EmbedField` provided it is in the format that Discord expects it to be in.
+
+You can find out about this format in the [official Discord documentation](https://docs.discord.com/developers/resources/message#embed-object-embed-field-structure).
+
+#### Parameters
+
+data: `dict`  
+The dictionary to convert into an EmbedField object.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, str | bool | None]
+```
+
+Converts this EmbedField object into a dict.
+
+#### Returns
+
+Dict\[`str`, `str` | `bool`\]  
+A dictionary of `str` embed field keys bound to the respective value.
+
+### `EmbedFooter`
+
+```python
+class EmbedFooter(text: str, icon_url: str | None = None) -> None
+```
+
+Represents the footer on the `Embed` object.
+
+*Added in 2.5.*
+
+#### Attributes
+
+text: `str`  
+The text inside the footer.
+
+icon_url: `str`  
+The URL of the footer icon image.
+
+proxy_icon_url: `str`  
+The proxied URL of the footer icon image. This can't be set directly, it is set by Discord.
+
+#### `from_dict()`
+
+```python
+from_dict(data: dict[str, str | None]) -> EmbedFooter
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `EmbedMedia`
+
+```python
+class EmbedMedia(url: str)
+```
+
+Represents a media on the `Embed` object. This includes thumbnails, images, and videos.
+
+*Added in 2.5.*
+
+#### Attributes
+
+url: `str`  
+The source URL of the media.
+
+proxy_url: `str`  
+The proxied URL of the media.
+
+height: `int`  
+The height of the media.
+
+width: `int`  
+The width of the media.
+
+#### `from_dict()`
+
+```python
+from_dict(data: dict[str, str | int]) -> EmbedMedia
+```
+
+### `EmbedProvider`
+
+```python
+class EmbedProvider()
+```
+
+Represents a provider on the `Embed` object.
+
+*Added in 2.5.*
+
+#### Attributes
+
+name: `str`  
+The name of the provider.
+
+url: `str`  
+The URL of the provider.
+
+#### `from_dict()`
+
+```python
+from_dict(data: dict[str, str | None]) -> EmbedProvider
+```

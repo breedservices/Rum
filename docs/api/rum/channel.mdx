@@ -1,0 +1,2388 @@
+# `rum.channel`
+
+## Classes
+
+### `CategoryChannel`
+
+```python
+class CategoryChannel(*, state: ConnectionState, guild: Guild, data: CategoryChannelPayload)
+```
+
+Represents a Discord channel category.
+
+These are useful to group channels to logical compartments.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the category's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the category's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The category name.
+
+guild: `Guild`  
+The guild the category belongs to.
+
+id: `int`  
+The category channel ID.
+
+position: `int` | `None`  
+The position in the category list. This is a number that starts at 0. e.g. the top category is position 0. Can be `None` if the channel was received in an interaction.
+
+flags: `ChannelFlags`  
+Extra features of the channel.
+
+*Added in 2.0.*
+
+#### `clone()`
+
+```python
+clone(*, name: str | None = None, reason: str | None = None) -> GCH
+```
+
+*(coroutine)*
+
+Clones this channel. This creates a channel with the same properties as this channel.
+
+You must have the `discord.Permissions.manage_channels` permission to do this.
+
+*Added in 1.1.*
+
+#### Parameters
+
+name: `str` | `None`  
+The name of the new channel. If not provided, defaults to this channel name.
+
+reason: `str` | `None`  
+The reason for cloning this channel. Shows up on the audit log.
+
+#### Returns
+
+`.abc.GuildChannel`  
+The channel that was created.
+
+#### Raises
+
+~discord.Forbidden  
+You do not have the proper permissions to create this channel.
+
+~discord.HTTPException  
+Creating the channel failed.
+
+#### `edit()`
+
+```python
+edit(*, reason=None, **options)
+```
+
+*(coroutine)*
+
+Edits the channel.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+*Changed in 1.3 The `overwrites` keyword-only parameter was added.*
+
+*Changed in 2.0 Edits are no longer in-place, the newly edited channel is returned instead.*
+
+#### Parameters
+
+name: `str`  
+The new category's name.
+
+position: `int`  
+The new category's position.
+
+reason: `str` | `None`  
+The reason for editing this category. Shows up on the audit log.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to channel permissions. Useful for creating secret channels.
+
+#### Returns
+
+`.CategoryChannel` | `None`  
+The newly edited category channel. If the edit was only positional then `None` is returned instead.
+
+#### Raises
+
+InvalidArgument  
+If position is less than 0 or greater than the number of categories.
+
+Forbidden  
+You do not have permissions to edit the category.
+
+HTTPException  
+Editing the category failed.
+
+#### `move()`
+
+```python
+move(**kwargs) -> None
+```
+
+*(coroutine)*
+
+A rich interface to help move a channel relative to other channels.
+
+If exact position movement is required, `edit` should be used instead.
+
+You must have the `discord.Permissions.manage_channels` permission to do this.
+
+> [!NOTE]
+> Voice channels will always be sorted below text channels. This is a Discord limitation.
+
+*Added in 1.7.*
+
+#### Parameters
+
+beginning: `bool`  
+Whether to move the channel to the beginning of the channel list (or category if given). This is mutually exclusive with `end`, `before`, and `after`.
+
+end: `bool`  
+Whether to move the channel to the end of the channel list (or category if given). This is mutually exclusive with `beginning`, `before`, and `after`.
+
+before: `discord.abc.Snowflake`  
+The channel that should be before our current channel. This is mutually exclusive with `beginning`, `end`, and `after`.
+
+after: `discord.abc.Snowflake`  
+The channel that should be after our current channel. This is mutually exclusive with `beginning`, `end`, and `before`.
+
+offset: `int`  
+The number of channels to offset the move by. For example, an offset of `2` with `beginning=True` would move it 2 after the beginning. A positive number moves it below while a negative number moves it above. Note that this number is relative and computed after the `beginning`, `end`, `before`, and `after` parameters.
+
+category: `discord.abc.Snowflake` | `None`  
+The category to move this channel under. If `None` is given then it moves it out of the category. This parameter is ignored if moving a category channel.
+
+sync_permissions: `bool`  
+Whether to sync the permissions with the category (if given).
+
+reason: `str`  
+The reason for the move.
+
+#### Raises
+
+InvalidArgument  
+An invalid position was given or a bad mix of arguments was passed.
+
+Forbidden  
+You do not have permissions to move the channel.
+
+HTTPException  
+Moving the channel failed.
+
+#### `create_text_channel()`
+
+```python
+create_text_channel(name: str, **options: Any) -> TextChannel
+```
+
+*(coroutine)*
+
+A shortcut method to `Guild.create_text_channel` to create a `TextChannel` in the category.
+
+#### Returns
+
+`TextChannel`  
+The channel that was just created.
+
+#### `create_voice_channel()`
+
+```python
+create_voice_channel(name: str, **options: Any) -> VoiceChannel
+```
+
+*(coroutine)*
+
+A shortcut method to `Guild.create_voice_channel` to create a `VoiceChannel` in the category.
+
+#### Returns
+
+`VoiceChannel`  
+The channel that was just created.
+
+#### `create_stage_channel()`
+
+```python
+create_stage_channel(name: str, **options: Any) -> StageChannel
+```
+
+*(coroutine)*
+
+A shortcut method to `Guild.create_stage_channel` to create a `StageChannel` in the category.
+
+*Added in 1.7.*
+
+#### Returns
+
+`StageChannel`  
+The channel that was just created.
+
+#### `create_forum_channel()`
+
+```python
+create_forum_channel(name: str, **options: Any) -> ForumChannel
+```
+
+*(coroutine)*
+
+A shortcut method to `Guild.create_forum_channel` to create a `ForumChannel` in the category.
+
+*Added in 2.0.*
+
+#### Returns
+
+`ForumChannel`  
+The channel that was just created.
+
+#### `is_nsfw()`
+
+```python
+is_nsfw() -> bool
+```
+
+### `DMChannel`
+
+```python
+class DMChannel(*, me: ClientUser, state: ConnectionState, data: DMChannelPayload)
+```
+
+Represents a Discord direct message channel.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns a string representation of the channel
+
+</div>
+
+</div>
+
+#### Attributes
+
+recipient: `User` | `None`  
+The user you are participating with in the direct message channel. If this channel is received through the gateway, the recipient information may not be always available.
+
+me: `ClientUser`  
+The user presenting yourself.
+
+id: `int`  
+The direct message channel ID.
+
+#### `permissions_for()`
+
+```python
+permissions_for(obj: Any = None, /) -> Permissions
+```
+
+Handles permission resolution for a `User`.
+
+This function is there for compatibility with other channel types.
+
+Actual direct messages do not really have the concept of permissions.
+
+This returns all the Text related permissions set to `True` except:
+
+- `Permissions.send_tts_messages`: You cannot send TTS messages in a DM.
+- `Permissions.manage_messages`: You cannot delete others messages in a DM.
+
+#### Parameters
+
+obj: `User`  
+The user to check permissions for. This parameter is ignored but kept for compatibility with other `permissions_for` methods.
+
+#### Returns
+
+`Permissions`  
+The resolved permissions.
+
+#### `get_partial_message()`
+
+```python
+get_partial_message(message_id: int, /) -> PartialMessage
+```
+
+Creates a `PartialMessage` from the message ID.
+
+This is useful if you want to work with a message and only have its ID without doing an unnecessary API call.
+
+*Added in 1.6.*
+
+#### Parameters
+
+message_id: `int`  
+The message ID to create a partial message for.
+
+#### Returns
+
+`PartialMessage`  
+The partial message.
+
+### `ForumChannel`
+
+```python
+class ForumChannel(*, state: ConnectionState, guild: Guild, data: ForumChannelPayload)
+```
+
+Represents a Discord forum channel.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the channel's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The channel name.
+
+guild: `Guild`  
+The guild the channel belongs to.
+
+id: `int`  
+The channel ID.
+
+category_id: `int` | `None`  
+The category channel ID this channel belongs to, if applicable.
+
+topic: `str` | `None`  
+The channel's topic. `None` if it doesn't exist.
+
+> [!NOTE]
+> `guidelines` exists as an alternative to this attribute.
+
+position: `int` | `None`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0. Can be `None` if the channel was received in an interaction.
+
+last_message_id: `int` | `None`  
+The last message ID of the message sent to this channel. It may *not* point to an existing or valid message.
+
+slowmode_delay: `int`  
+The number of seconds a member must wait between sending messages in this channel. A value of <span class="title-ref">0</span> denotes that it is disabled. Bots and users with `Permissions.manage_channels` or `Permissions.manage_messages` bypass slowmode.
+
+nsfw: `bool`  
+If the channel is marked as "not safe for work".
+
+> [!NOTE]
+> To check if the channel or the guild of that channel are marked as NSFW, consider `is_nsfw` instead.
+
+default_auto_archive_duration: `int`  
+The default auto archive duration in minutes for threads created in this channel.
+
+*Added in 2.0.*
+
+flags: `ChannelFlags`  
+Extra features of the channel.
+
+*Added in 2.0.*
+
+available_tags: List\[`ForumTag`\]  
+The set of tags that can be used in a forum channel.
+
+*Added in 2.3.*
+
+default_sort_order: `SortOrder` | `None`  
+The default sort order type used to order posts in this channel.
+
+*Added in 2.3.*
+
+default_thread_slowmode_delay: `int` | `None`  
+The initial slowmode delay to set on newly created threads in this channel.
+
+*Added in 2.3.*
+
+default_reaction_emoji: `str` | `discord.GuildEmoji` | `None`  
+The default forum reaction emoji.
+
+*Added in 2.5.*
+
+#### `get_tag()`
+
+```python
+get_tag(id: int, /) -> ForumTag | None
+```
+
+Returns the `ForumTag` from this forum channel with the given ID, if any.
+
+*Added in 2.3.*
+
+#### `edit()`
+
+```python
+edit(*, reason=None, **options)
+```
+
+*(coroutine)*
+
+Edits the channel.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+#### Parameters
+
+name: `str`  
+The new channel name.
+
+topic: `str`  
+The new channel's topic.
+
+position: `int`  
+The new channel's position.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+sync_permissions: `bool`  
+Whether to sync permissions with the channel's new or pre-existing category. Defaults to `False`.
+
+category: `CategoryChannel` | `None`  
+The new category for this channel. Can be `None` to remove the category.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of <span class="title-ref">0</span> disables slowmode. The maximum value possible is <span class="title-ref">21600</span>.
+
+reason: `str` | `None`  
+The reason for editing this channel. Shows up on the audit log.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to channel permissions. Useful for creating secret channels.
+
+default_auto_archive_duration: `int`  
+The new default auto archive duration in minutes for threads created in this channel. Must be one of `60`, `1440`, `4320`, or `10080`. `ThreadArchiveDuration` can be used alternatively.
+
+default_thread_slowmode_delay: `int`  
+The new default slowmode delay in seconds for threads created in this channel.
+
+*Added in 2.3.*
+
+default_sort_order: `SortOrder` | `None`  
+The default sort order type to use to order posts in this channel.
+
+*Added in 2.3.*
+
+default_reaction_emoji: `discord.GuildEmoji` | `int` | `str` | `None`  
+The default reaction emoji. Can be a unicode emoji or a custom emoji in the forms: `GuildEmoji`, snowflake ID, string representation (eg. '\<a:emoji_name:emoji_id\>').
+
+*Added in 2.5.*
+
+available_tags: List\[`ForumTag`\]  
+The set of tags that can be used in this channel. Must be less than <span class="title-ref">20</span>.
+
+*Added in 2.3.*
+
+require_tag: `bool`  
+Whether a tag should be required to be specified when creating a thread in this channel.
+
+*Added in 2.3.*
+
+#### Returns
+
+`.ForumChannel` | `None`  
+The newly edited forum channel. If the edit was only positional then `None` is returned instead.
+
+#### Raises
+
+InvalidArgument  
+If position is less than 0 or greater than the number of channels, or if the permission overwrite information is not in proper form.
+
+Forbidden  
+You do not have permissions to edit the channel.
+
+HTTPException  
+Editing the channel failed.
+
+#### `create_thread()`
+
+```python
+create_thread(name: str, content: str | None = None, *, embed: Embed | None = None, embeds: list[Embed] | None = None, file: File | None = None, files: list[File] | None = None, stickers: Sequence[GuildSticker | StickerItem] | None = None, delete_message_after: float | None = None, nonce: int | str | None = None, allowed_mentions: AllowedMentions | None = None, view: BaseView | None = None, applied_tags: list[ForumTag] | None = None, suppress: bool = False, silent: bool = False, auto_archive_duration: ThreadArchiveDuration = ..., slowmode_delay: int = ..., reason: str | None = None) -> Thread
+```
+
+*(coroutine)*
+
+Creates a thread in this forum channel.
+
+To create a public thread, you must have `discord.Permissions.create_public_threads`. For a private thread, `discord.Permissions.create_private_threads` is needed instead.
+
+*Added in 2.0.*
+
+#### Parameters
+
+name: `str`  
+The name of the thread.
+
+content: `str`  
+The content of the message to send.
+
+embed: `discord.Embed`  
+The rich embed for the content.
+
+embeds: List\[`discord.Embed`\]  
+A list of embeds to upload. Must be a maximum of 10.
+
+file: `discord.File`  
+The file to upload.
+
+files: List\[`discord.File`\]  
+A list of files to upload. Must be a maximum of 10.
+
+stickers: Sequence\[`discord.GuildSticker` | `discord.StickerItem`\]  
+A list of stickers to upload. Must be a maximum of 3.
+
+delete_message_after: `int`  
+The time to wait before deleting the thread.
+
+nonce: `str` | `int`  
+The nonce to use for sending this message. If the message was successfully sent, then the message will have a nonce with this value.
+
+allowed_mentions: `discord.AllowedMentions`  
+Controls the mentions being processed in this message. If this is passed, then the object is merged with `discord.Client.allowed_mentions`. The merging behaviour only overrides attributes that have been explicitly passed to the object, otherwise it uses the attributes set in `discord.Client.allowed_mentions`. If no object is passed at all then the defaults given by `discord.Client.allowed_mentions` are used instead.
+
+view: `discord.ui.BaseView`  
+A Discord UI View to add to the message.
+
+applied_tags: List\[`discord.ForumTag`\]  
+A list of tags to apply to the new thread.
+
+auto_archive_duration: `int`  
+The duration in minutes before a thread is automatically archived for inactivity. If not provided, the channel's default auto archive duration is used.
+
+slowmode_delay: `int`  
+The number of seconds a member must wait between sending messages in the new thread. A value of <span class="title-ref">0</span> denotes that it is disabled. Bots and users with `Permissions.manage_channels` or `Permissions.manage_messages` bypass slowmode. If not provided, the forum channel's default slowmode is used.
+
+reason: `str`  
+The reason for creating a new thread. Shows up on the audit log.
+
+#### Returns
+
+`Thread`  
+The created thread
+
+#### Raises
+
+Forbidden  
+You do not have permissions to create a thread.
+
+HTTPException  
+Starting the thread failed.
+
+### `ForumTag`
+
+```python
+class ForumTag(*, name: str, emoji: EmojiInputType | None = None, moderated: bool = False) -> None
+```
+
+Represents a forum tag that can be added to a thread inside a `ForumChannel` . .. versionadded:: 2.3
+
+> <div class="container operations">
+>
+> <div class="describe">
+>
+> x == y
+>
+> Checks if two forum tags are equal.
+>
+> </div>
+>
+> <div class="describe">
+>
+> x != y
+>
+> Checks if two forum tags are not equal.
+>
+> </div>
+>
+> <div class="describe">
+>
+> hash(x)
+>
+> Returns the forum tag's hash.
+>
+> </div>
+>
+> <div class="describe">
+>
+> str(x)
+>
+> Returns the forum tag's name.
+>
+> </div>
+>
+> </div>
+>
+> #### Attributes
+>
+> id: `int`  
+> The tag ID. Note that if the object was created manually then this will be `0`.
+>
+> name: `str`  
+> The name of the tag. Can only be up to 20 characters.
+>
+> moderated: `bool`  
+> Whether this tag can only be added or removed by a moderator with the `Permissions.manage_threads` permission.
+>
+> emoji: `PartialEmoji` | `None`  
+> The emoji that is used to represent this tag. Defaults to `None`. Note that if the emoji is a custom emoji, it will *not* have name information.
+
+#### `from_data()`
+
+```python
+from_data(*, state: ConnectionState, data: ForumTagPayload) -> ForumTag
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `GroupChannel`
+
+```python
+class GroupChannel(*, me: ClientUser, state: ConnectionState, data: GroupChannelPayload)
+```
+
+Represents a Discord group channel.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns a string representation of the channel
+
+</div>
+
+</div>
+
+#### Attributes
+
+recipients: List\[`User`\]  
+The users you are participating with in the group channel.
+
+me: `ClientUser`  
+The user presenting yourself.
+
+id: `int`  
+The group channel ID.
+
+owner: `User` | `None`  
+The user that owns the group channel.
+
+owner_id: `int`  
+The owner ID that owns the group channel.
+
+*Added in 2.0.*
+
+name: `str` | `None`  
+The group channel's name if provided.
+
+#### `permissions_for()`
+
+```python
+permissions_for(obj: Snowflake, /) -> Permissions
+```
+
+Handles permission resolution for a `User`.
+
+This function is there for compatibility with other channel types.
+
+Actual direct messages do not really have the concept of permissions.
+
+This returns all the Text related permissions set to `True` except:
+
+- `Permissions.send_tts_messages`: You cannot send TTS messages in a DM.
+- `Permissions.manage_messages`: You cannot delete others messages in a DM.
+
+This also checks the kick_members permission if the user is the owner.
+
+#### Parameters
+
+obj: `discord.abc.Snowflake`  
+The user to check permissions for.
+
+#### Returns
+
+`Permissions`  
+The resolved permissions for the user.
+
+#### `leave()`
+
+```python
+leave() -> None
+```
+
+*(coroutine)*
+
+Leave the group.
+
+If you are the only one in the group, this deletes it as well.
+
+#### Raises
+
+HTTPException  
+Leaving the group failed.
+
+### `MediaChannel`
+
+```python
+class MediaChannel(*, state: ConnectionState, guild: Guild, data: ForumChannelPayload)
+```
+
+Represents a Discord media channel. Subclass of `ForumChannel`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the channel's name.
+
+</div>
+
+*Added in 2.7.*
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The channel name.
+
+guild: `Guild`  
+The guild the channel belongs to.
+
+id: `int`  
+The channel ID.
+
+category_id: `int` | `None`  
+The category channel ID this channel belongs to, if applicable.
+
+topic: `str` | `None`  
+The channel's topic. `None` if it doesn't exist.
+
+> [!NOTE]
+> `guidelines` exists as an alternative to this attribute.
+
+position: `int` | `None`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0. Can be `None` if the channel was received in an interaction.
+
+last_message_id: `int` | `None`  
+The last message ID of the message sent to this channel. It may *not* point to an existing or valid message.
+
+slowmode_delay: `int`  
+The number of seconds a member must wait between sending messages in this channel. A value of <span class="title-ref">0</span> denotes that it is disabled. Bots and users with `Permissions.manage_channels` or `Permissions.manage_messages` bypass slowmode.
+
+nsfw: `bool`  
+If the channel is marked as "not safe for work".
+
+> [!NOTE]
+> To check if the channel or the guild of that channel are marked as NSFW, consider `is_nsfw` instead.
+
+default_auto_archive_duration: `int`  
+The default auto archive duration in minutes for threads created in this channel.
+
+flags: `ChannelFlags`  
+Extra features of the channel.
+
+available_tags: List\[`ForumTag`\]  
+The set of tags that can be used in a forum channel.
+
+default_sort_order: `SortOrder` | `None`  
+The default sort order type used to order posts in this channel.
+
+default_thread_slowmode_delay: `int` | `None`  
+The initial slowmode delay to set on newly created threads in this channel.
+
+default_reaction_emoji: `str` | `discord.GuildEmoji` | `None`  
+The default forum reaction emoji.
+
+#### `edit()`
+
+```python
+edit(*, reason=None, **options)
+```
+
+*(coroutine)*
+
+Edits the channel.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+#### Parameters
+
+name: `str`  
+The new channel name.
+
+topic: `str`  
+The new channel's topic.
+
+position: `int`  
+The new channel's position.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+sync_permissions: `bool`  
+Whether to sync permissions with the channel's new or pre-existing category. Defaults to `False`.
+
+category: `CategoryChannel` | `None`  
+The new category for this channel. Can be `None` to remove the category.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of <span class="title-ref">0</span> disables slowmode. The maximum value possible is <span class="title-ref">21600</span>.
+
+reason: `str` | `None`  
+The reason for editing this channel. Shows up on the audit log.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to channel permissions. Useful for creating secret channels.
+
+default_auto_archive_duration: `int`  
+The new default auto archive duration in minutes for threads created in this channel. Must be one of `60`, `1440`, `4320`, or `10080`.
+
+default_thread_slowmode_delay: `int`  
+The new default slowmode delay in seconds for threads created in this channel.
+
+default_sort_order: `SortOrder` | `None`  
+The default sort order type to use to order posts in this channel.
+
+default_reaction_emoji: `discord.GuildEmoji` | `int` | `str` | `None`  
+The default reaction emoji. Can be a unicode emoji or a custom emoji in the forms: `GuildEmoji`, snowflake ID, string representation (e.g., '\<a:emoji_name:emoji_id\>').
+
+available_tags: List\[`ForumTag`\]  
+The set of tags that can be used in this channel. Must be less than <span class="title-ref">20</span>.
+
+require_tag: `bool`  
+Whether a tag should be required to be specified when creating a thread in this channel.
+
+hide_media_download_options: `bool`  
+Whether media download options should be hidden in this media channel.
+
+#### Returns
+
+`.MediaChannel` | `None`  
+The newly edited media channel. If the edit was only positional then `None` is returned instead.
+
+#### Raises
+
+InvalidArgument  
+If position is less than 0 or greater than the number of channels, or if the permission overwrite information is not in proper form.
+
+Forbidden  
+You do not have permissions to edit the channel.
+
+HTTPException  
+Editing the channel failed.
+
+### `PartialMessageable`
+
+```python
+class PartialMessageable(state: ConnectionState, id: int, type: ChannelType | None = None)
+```
+
+Represents a partial messageable to aid with working messageable channels when only a channel ID are present.
+
+The only way to construct this class is through `Client.get_partial_messageable`.
+
+Note that this class is trimmed down and has no rich attributes.
+
+*Added in 2.0.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two partial messageables are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two partial messageables are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the partial messageable's hash.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The channel ID associated with this partial messageable.
+
+type: `ChannelType` | `None`  
+The channel type associated with this partial messageable, if given.
+
+#### `get_partial_message()`
+
+```python
+get_partial_message(message_id: int, /) -> PartialMessage
+```
+
+Creates a `PartialMessage` from the message ID.
+
+This is useful if you want to work with a message and only have its ID without doing an unnecessary API call.
+
+#### Parameters
+
+message_id: `int`  
+The message ID to create a partial message for.
+
+#### Returns
+
+`PartialMessage`  
+The partial message.
+
+### `StageChannel`
+
+```python
+class StageChannel(*, state: ConnectionState, guild: Guild, data: StageChannelPayload)
+```
+
+Represents a Discord guild stage channel.
+
+*Added in 1.7.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the channel's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The channel name.
+
+guild: `Guild`  
+The guild the channel belongs to.
+
+id: `int`  
+The channel ID.
+
+topic: `str` | `None`  
+The channel's topic. `None` if it isn't set.
+
+category_id: `int` | `None`  
+The category channel ID this channel belongs to, if applicable.
+
+position: `int` | `None`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0. Can be `None` if the channel was received in an interaction.
+
+bitrate: `int`  
+The channel's preferred audio bitrate in bits per second.
+
+user_limit: `int`  
+The channel's limit for number of members that can be in a stage channel.
+
+rtc_region: `VoiceRegion` | `None`  
+The region for the stage channel's voice communication. A value of `None` indicates automatic voice region detection.
+
+video_quality_mode: `VideoQualityMode`  
+The camera video quality for the stage channel's participants.
+
+*Added in 2.0.*
+
+flags: `ChannelFlags`  
+Extra features of the channel.
+
+*Added in 2.0.*
+
+last_message_id: `int` | `None`  
+The ID of the last message sent to this channel. It may not always point to an existing or valid message. .. versionadded:: 2.5
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. The maximum value possible is <span class="title-ref">21600</span>.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+*Added in 2.7.*
+
+#### `is_nsfw()`
+
+```python
+is_nsfw() -> bool
+```
+
+Checks if the channel is NSFW.
+
+#### `get_partial_message()`
+
+```python
+get_partial_message(message_id: int, /) -> PartialMessage
+```
+
+Creates a `PartialMessage` from the message ID.
+
+This is useful if you want to work with a message and only have its ID without doing an unnecessary API call.
+
+*Added in 1.6.*
+
+#### Parameters
+
+message_id: `int`  
+The message ID to create a partial message for.
+
+#### Returns
+
+`PartialMessage`  
+The partial message.
+
+#### `delete_messages()`
+
+```python
+delete_messages(messages: Iterable[Snowflake], *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes a list of messages. This is similar to `Message.delete` except it bulk deletes multiple messages.
+
+As a special case, if the number of messages is 0, then nothing is done. If the number of messages is 1 then single message delete is done. If it's more than two, then bulk delete is used.
+
+You cannot bulk delete more than 100 messages or messages that are older than 14 days old.
+
+You must have the `Permissions.manage_messages` permission to use this.
+
+#### Parameters
+
+messages: Iterable\[`abc.Snowflake`\]  
+An iterable of messages denoting which ones to bulk delete.
+
+reason: `str` | `None`  
+The reason for deleting the messages. Shows up on the audit log.
+
+#### Raises
+
+ClientException  
+The number of messages to delete was more than 100.
+
+Forbidden  
+You do not have proper permissions to delete the messages.
+
+NotFound  
+If single delete, then the message was already deleted.
+
+HTTPException  
+Deleting the messages failed.
+
+#### `purge()`
+
+```python
+purge(*, limit: int | None = 100, check: Callable[[Message], bool] = ..., before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, around: SnowflakeTime | None = None, oldest_first: bool | None = False, bulk: bool = True, reason: str | None = None) -> list[Message]
+```
+
+*(coroutine)*
+
+Purges a list of messages that meet the criteria given by the predicate `check`. If a `check` is not provided then all messages are deleted without discrimination.
+
+You must have the `Permissions.manage_messages` permission to delete messages even if they are your own. The `Permissions.read_message_history` permission is also needed to retrieve message history.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of messages to search through. This is not the number of messages that will be deleted, though it can be.
+
+check: Callable\[\[`Message`\], `bool`\]  
+The function used to check if a message should be deleted. It must take a `Message` as its sole parameter.
+
+before: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `before` in `history`.
+
+after: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `after` in `history`.
+
+around: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `around` in `history`.
+
+oldest_first: `bool` | `None`  
+Same as `oldest_first` in `history`.
+
+bulk: `bool`  
+If `True`, use bulk delete. Setting this to `False` is useful for mass-deleting a bot's own messages without `Permissions.manage_messages`. When `True`, will fall back to single delete if messages are older than two weeks.
+
+reason: `str` | `None`  
+The reason for deleting the messages. Shows up on the audit log.
+
+#### Returns
+
+List\[`.Message`\]  
+The list of messages that were deleted.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to do the actions required.
+
+HTTPException  
+Purging the messages failed.
+
+#### Examples
+
+Deleting bot's messages :
+
+    def is_me(m):
+        return m.author == client.user
+
+    deleted = await channel.purge(limit=100, check=is_me)
+    await channel.send(f'Deleted {len(deleted)} message(s)')
+
+#### `webhooks()`
+
+```python
+webhooks() -> list[Webhook]
+```
+
+*(coroutine)*
+
+Gets the list of webhooks from this channel.
+
+Requires `.Permissions.manage_webhooks` permissions.
+
+#### Returns
+
+List\[`Webhook`\]  
+The webhooks for this channel.
+
+#### Raises
+
+Forbidden  
+You don't have permissions to get the webhooks.
+
+#### `create_webhook()`
+
+```python
+create_webhook(*, name: str, avatar: bytes | None = None, reason: str | None = None) -> Webhook
+```
+
+*(coroutine)*
+
+Creates a webhook for this channel.
+
+Requires `.Permissions.manage_webhooks` permissions.
+
+*Changed in 1.1 Added the `reason` keyword-only parameter.*
+
+#### Parameters
+
+name: `str`  
+The webhook's name.
+
+avatar: `bytes` | `None`  
+A `bytes-like object` representing the webhook's default avatar. This operates similarly to `ClientUser.edit`.
+
+reason: `str` | `None`  
+The reason for creating this webhook. Shows up in the audit logs.
+
+#### Returns
+
+`Webhook`  
+The created webhook.
+
+#### Raises
+
+HTTPException  
+Creating the webhook failed.
+
+Forbidden  
+You do not have permissions to create a webhook.
+
+#### `clone()`
+
+```python
+clone(*, name: str | None = None, reason: str | None = None) -> GCH
+```
+
+*(coroutine)*
+
+Clones this channel. This creates a channel with the same properties as this channel.
+
+You must have the `discord.Permissions.manage_channels` permission to do this.
+
+*Added in 1.1.*
+
+#### Parameters
+
+name: `str` | `None`  
+The name of the new channel. If not provided, defaults to this channel name.
+
+reason: `str` | `None`  
+The reason for cloning this channel. Shows up on the audit log.
+
+#### Returns
+
+`.abc.GuildChannel`  
+The channel that was created.
+
+#### Raises
+
+~discord.Forbidden  
+You do not have the proper permissions to create this channel.
+
+~discord.HTTPException  
+Creating the channel failed.
+
+#### `create_instance()`
+
+```python
+create_instance(*, topic: str, privacy_level: StagePrivacyLevel = ..., reason: str | None = None, send_notification: bool = False) -> StageInstance
+```
+
+*(coroutine)*
+
+Create a stage instance.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+*Added in 2.0.*
+
+#### Parameters
+
+topic: `str`  
+The stage instance's topic.
+
+privacy_level: `StagePrivacyLevel`  
+The stage instance's privacy level. Defaults to `StagePrivacyLevel.guild_only`.
+
+reason: `str`  
+The reason the stage instance was created. Shows up on the audit log.
+
+send_notification: `bool`  
+Send a notification to everyone in the server that the stage instance has started. Defaults to `False`. Requires the `mention_everyone` permission.
+
+#### Returns
+
+`StageInstance`  
+The newly created stage instance.
+
+#### Raises
+
+InvalidArgument  
+If the `privacy_level` parameter is not the proper type.
+
+Forbidden  
+You do not have permissions to create a stage instance.
+
+HTTPException  
+Creating a stage instance failed.
+
+#### `fetch_instance()`
+
+```python
+fetch_instance() -> StageInstance
+```
+
+*(coroutine)*
+
+Gets the running `StageInstance`.
+
+*Added in 2.0.*
+
+#### Returns
+
+`StageInstance`  
+The stage instance.
+
+#### Raises
+
+NotFound  
+The stage instance or channel could not be found.
+
+HTTPException  
+Getting the stage instance failed.
+
+#### `edit()`
+
+```python
+edit(*, reason=None, **options)
+```
+
+*(coroutine)*
+
+Edits the channel.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+*Changed in 2.0 The `topic` parameter must now be set via `create_instance`.*
+
+*Changed in 2.0 Edits are no longer in-place, the newly edited channel is returned instead.*
+
+#### Parameters
+
+name: `str`  
+The new channel's name.
+
+position: `int`  
+The new channel's position.
+
+sync_permissions: `bool`  
+Whether to sync permissions with the channel's new or pre-existing category. Defaults to `False`.
+
+category: `CategoryChannel` | `None`  
+The new category for this channel. Can be `None` to remove the category.
+
+reason: `str` | `None`  
+The reason for editing this channel. Shows up on the audit log.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to channel permissions. Useful for creating secret channels.
+
+rtc_region: `str` | `VoiceRegion` | `None`  
+The new region ID for the stage channel's voice communication. A value of `None` indicates automatic voice region detection.
+
+*Changed in 2.9
+
+A `VoiceRegion` member is now accepted.*
+
+video_quality_mode: `VideoQualityMode`  
+The camera video quality for the stage channel's participants.
+
+*Added in 2.0.*
+
+bitrate: `int`  
+The channel's preferred audio bitrate in bits per second.
+
+user_limit: `int`  
+The channel's limit for number of members that can be in a stage channel.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of <span class="title-ref">0</span> disables slowmode. The maximum value possible is <span class="title-ref">21600</span>.
+
+#### Returns
+
+`.StageChannel` | `None`  
+The newly edited stage channel. If the edit was only positional then `None` is returned instead.
+
+#### Raises
+
+InvalidArgument  
+If the permission overwrite information is not in proper form.
+
+Forbidden  
+You do not have permissions to edit the channel.
+
+HTTPException  
+Editing the channel failed.
+
+### `TextChannel`
+
+```python
+class TextChannel(*, state: ConnectionState, guild: Guild, data: TextChannelPayload)
+```
+
+Represents a Discord text channel.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the channel's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The channel name.
+
+guild: `Guild`  
+The guild the channel belongs to.
+
+id: `int`  
+The channel ID.
+
+category_id: `int` | `None`  
+The category channel ID this channel belongs to, if applicable.
+
+topic: `str` | `None`  
+The channel's topic. `None` if it doesn't exist.
+
+position: `int` | `None`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0. Can be `None` if the channel was received in an interaction.
+
+last_message_id: `int` | `None`  
+The last message ID of the message sent to this channel. It may *not* point to an existing or valid message.
+
+slowmode_delay: `int`  
+The number of seconds a member must wait between sending messages in this channel. A value of <span class="title-ref">0</span> denotes that it is disabled. Bots and users with `Permissions.manage_channels` or `Permissions.manage_messages` bypass slowmode.
+
+nsfw: `bool`  
+If the channel is marked as "not safe for work".
+
+> [!NOTE]
+> To check if the channel or the guild of that channel are marked as NSFW, consider `is_nsfw` instead.
+
+default_auto_archive_duration: `int`  
+The default auto archive duration in minutes for threads created in this channel.
+
+*Added in 2.0.*
+
+flags: `ChannelFlags`  
+Extra features of the channel.
+
+*Added in 2.0.*
+
+default_thread_slowmode_delay: `int` | `None`  
+The initial slowmode delay to set on newly created threads in this channel.
+
+*Added in 2.3.*
+
+#### `is_news()`
+
+```python
+is_news() -> bool
+```
+
+Checks if the channel is a news/announcements channel.
+
+#### `edit()`
+
+```python
+edit(*, reason=None, **options)
+```
+
+*(coroutine)*
+
+Edits the channel.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+*Changed in 1.3 The `overwrites` keyword-only parameter was added.*
+
+*Changed in 1.4 The `type` keyword-only parameter was added.*
+
+*Changed in 2.0 Edits are no longer in-place, the newly edited channel is returned instead.*
+
+#### Parameters
+
+name: `str`  
+The new channel name.
+
+topic: `str`  
+The new channel's topic.
+
+position: `int`  
+The new channel's position.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+sync_permissions: `bool`  
+Whether to sync permissions with the channel's new or pre-existing category. Defaults to `False`.
+
+category: `CategoryChannel` | `None`  
+The new category for this channel. Can be `None` to remove the category.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of <span class="title-ref">0</span> disables slowmode. The maximum value possible is <span class="title-ref">21600</span>.
+
+type: `ChannelType`  
+Change the type of this text channel. Currently, only conversion between `ChannelType.text` and `ChannelType.news` is supported. This is only available to guilds that contain `NEWS` in `Guild.features`.
+
+reason: `str` | `None`  
+The reason for editing this channel. Shows up on the audit log.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to channel permissions. Useful for creating secret channels.
+
+default_auto_archive_duration: `int`  
+The new default auto archive duration in minutes for threads created in this channel. Must be one of `60`, `1440`, `4320`, or `10080`.
+
+default_thread_slowmode_delay: `int`  
+The new default slowmode delay in seconds for threads created in this channel.
+
+*Added in 2.3.*
+
+#### Returns
+
+`.TextChannel` | `None`  
+The newly edited text channel. If the edit was only positional then `None` is returned instead.
+
+#### Raises
+
+InvalidArgument  
+If position is less than 0 or greater than the number of channels, or if the permission overwrite information is not in proper form.
+
+Forbidden  
+You do not have permissions to edit the channel.
+
+HTTPException  
+Editing the channel failed.
+
+#### `create_thread()`
+
+```python
+create_thread(*, name: str, message: Snowflake | None = None, auto_archive_duration: ThreadArchiveDuration = ..., type: ChannelType | None = None, slowmode_delay: int | None = None, invitable: bool | None = None, reason: str | None = None) -> Thread
+```
+
+*(coroutine)*
+
+Creates a thread in this text channel.
+
+To create a public thread, you must have `discord.Permissions.create_public_threads`. For a private thread, `discord.Permissions.create_private_threads` is needed instead.
+
+*Added in 2.0.*
+
+#### Parameters
+
+name: `str`  
+The name of the thread.
+
+message: `abc.Snowflake` | `None`  
+A snowflake representing the message to create the thread with. If `None` is passed then a private thread is created. Defaults to `None`.
+
+auto_archive_duration: `int`  
+The duration in minutes before a thread is automatically archived for inactivity. If not provided, the channel's default auto archive duration is used.
+
+type: `ChannelType` | `None`  
+The type of thread to create. If a `message` is passed then this parameter is ignored, as a thread created with a message is always a public thread. By default, this creates a private thread if this is `None`.
+
+slowmode_delay: `int` | `None`  
+Specifies the slowmode rate limit for users in this thread, in seconds. A value of `0` disables slowmode. The maximum value possible is `21600`.
+
+invitable: `bool` | `None`  
+Whether non-moderators can add other non-moderators to this thread. Only available for private threads, where it defaults to True.
+
+reason: `str`  
+The reason for creating a new thread. Shows up on the audit log.
+
+#### Returns
+
+`Thread`  
+The created thread
+
+#### Raises
+
+Forbidden  
+You do not have permissions to create a thread.
+
+HTTPException  
+Starting the thread failed.
+
+### `VocalGuildChannel`
+
+```python
+class VocalGuildChannel(*, state: ConnectionState, guild: Guild, data: VoiceChannelPayload | StageChannelPayload)
+```
+
+An ABC that details the common operations on a channel that can connect to a voice server.
+
+The following implement this ABC:
+
+- `discord.VoiceChannel`
+- `discord.StageChannel`
+
+#### Note
+
+This ABC is not decorated with `typing.runtime_checkable`, so will fail `isinstance`/`issubclass` checks.
+
+#### `permissions_for()`
+
+```python
+permissions_for(obj: Member | Role, /) -> Permissions
+```
+
+Handles permission resolution for the `discord.Member` or `discord.Role`.
+
+This function takes into consideration the following cases:
+
+- Guild owner
+- Guild roles
+- Channel overrides
+- Member overrides
+
+If a `discord.Role` is passed, then it checks the permissions someone with that role would have, which is essentially:
+
+- The default role permissions
+- The permissions of the role used as a parameter
+- The default role permission overwrites
+- The permission overwrites of the role used as a parameter
+
+*Changed in 2.0 The object passed in can now be a role object.*
+
+#### Parameters
+
+obj: `discord.Member` | `discord.Role`  
+The object to resolve permissions for. This could be either a member or a role. If it's a role then member overwrites are not computed.
+
+#### Returns
+
+`discord.Permissions`  
+The resolved permissions for the member or role.
+
+### `VoiceChannel`
+
+```python
+class VoiceChannel(*, state: ConnectionState, guild: Guild, data: VoiceChannelPayload)
+```
+
+Represents a Discord guild voice channel.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two channels are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two channels are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the channel's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+name: `str`  
+The channel name.
+
+guild: `Guild`  
+The guild the channel belongs to.
+
+id: `int`  
+The channel ID.
+
+category_id: `int` | `None`  
+The category channel ID this channel belongs to, if applicable.
+
+position: `int` | `None`  
+The position in the channel list. This is a number that starts at 0. e.g. the top channel is position 0. Can be `None` if the channel was received in an interaction.
+
+bitrate: `int`  
+The channel's preferred audio bitrate in bits per second.
+
+user_limit: `int`  
+The channel's limit for number of members that can be in a voice channel.
+
+rtc_region: `VoiceRegion` | `None`  
+The region for the voice channel's voice communication. A value of `None` indicates automatic voice region detection.
+
+*Added in 1.7.*
+
+video_quality_mode: `VideoQualityMode`  
+The camera video quality for the voice channel's participants.
+
+*Added in 2.0.*
+
+last_message_id: `int` | `None`  
+The ID of the last message sent to this channel. It may not always point to an existing or valid message.
+
+*Added in 2.0.*
+
+slowmode_delay: `int`  
+The number of seconds a member must wait between sending messages in this channel. A value of <span class="title-ref">0</span> denotes that it is disabled. Bots and users with `Permissions.manage_channels` or `Permissions.manage_messages` bypass slowmode.
+
+*Added in 2.5.*
+
+status: `str` | `None`  
+The channel's status, if set.
+
+*Added in 2.5.*
+
+flags: `ChannelFlags`  
+Extra features of the channel.
+
+*Added in 2.0.*
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+*Added in 2.7.*
+
+#### `is_nsfw()`
+
+```python
+is_nsfw() -> bool
+```
+
+Checks if the channel is NSFW.
+
+#### `get_partial_message()`
+
+```python
+get_partial_message(message_id: int, /) -> PartialMessage
+```
+
+Creates a `PartialMessage` from the message ID.
+
+This is useful if you want to work with a message and only have its ID without doing an unnecessary API call.
+
+*Added in 1.6.*
+
+#### Parameters
+
+message_id: `int`  
+The message ID to create a partial message for.
+
+#### Returns
+
+`PartialMessage`  
+The partial message.
+
+#### `delete_messages()`
+
+```python
+delete_messages(messages: Iterable[Snowflake], *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes a list of messages. This is similar to `Message.delete` except it bulk deletes multiple messages.
+
+As a special case, if the number of messages is 0, then nothing is done. If the number of messages is 1 then single message delete is done. If it's more than two, then bulk delete is used.
+
+You cannot bulk delete more than 100 messages or messages that are older than 14 days old.
+
+You must have the `Permissions.manage_messages` permission to use this.
+
+#### Parameters
+
+messages: Iterable\[`abc.Snowflake`\]  
+An iterable of messages denoting which ones to bulk delete.
+
+reason: `str` | `None`  
+The reason for deleting the messages. Shows up on the audit log.
+
+#### Raises
+
+ClientException  
+The number of messages to delete was more than 100.
+
+Forbidden  
+You do not have proper permissions to delete the messages.
+
+NotFound  
+If single delete, then the message was already deleted.
+
+HTTPException  
+Deleting the messages failed.
+
+#### `purge()`
+
+```python
+purge(*, limit: int | None = 100, check: Callable[[Message], bool] = ..., before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, around: SnowflakeTime | None = None, oldest_first: bool | None = False, bulk: bool = True, reason: str | None = None) -> list[Message]
+```
+
+*(coroutine)*
+
+Purges a list of messages that meet the criteria given by the predicate `check`. If a `check` is not provided then all messages are deleted without discrimination.
+
+You must have the `Permissions.manage_messages` permission to delete messages even if they are your own. The `Permissions.read_message_history` permission is also needed to retrieve message history.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of messages to search through. This is not the number of messages that will be deleted, though it can be.
+
+check: Callable\[\[`Message`\], `bool`\]  
+The function used to check if a message should be deleted. It must take a `Message` as its sole parameter.
+
+before: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `before` in `history`.
+
+after: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `after` in `history`.
+
+around: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `around` in `history`.
+
+oldest_first: `bool` | `None`  
+Same as `oldest_first` in `history`.
+
+bulk: `bool`  
+If `True`, use bulk delete. Setting this to `False` is useful for mass-deleting a bot's own messages without `Permissions.manage_messages`. When `True`, will fall back to single delete if messages are older than two weeks.
+
+reason: `str` | `None`  
+The reason for deleting the messages. Shows up on the audit log.
+
+#### Returns
+
+List\[`.Message`\]  
+The list of messages that were deleted.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to do the actions required.
+
+HTTPException  
+Purging the messages failed.
+
+#### Examples
+
+Deleting bot's messages :
+
+    def is_me(m):
+        return m.author == client.user
+
+    deleted = await channel.purge(limit=100, check=is_me)
+    await channel.send(f'Deleted {len(deleted)} message(s)')
+
+#### `webhooks()`
+
+```python
+webhooks() -> list[Webhook]
+```
+
+*(coroutine)*
+
+Gets the list of webhooks from this channel.
+
+Requires `.Permissions.manage_webhooks` permissions.
+
+#### Returns
+
+List\[`Webhook`\]  
+The webhooks for this channel.
+
+#### Raises
+
+Forbidden  
+You don't have permissions to get the webhooks.
+
+#### `create_webhook()`
+
+```python
+create_webhook(*, name: str, avatar: bytes | None = None, reason: str | None = None) -> Webhook
+```
+
+*(coroutine)*
+
+Creates a webhook for this channel.
+
+Requires `.Permissions.manage_webhooks` permissions.
+
+*Changed in 1.1 Added the `reason` keyword-only parameter.*
+
+#### Parameters
+
+name: `str`  
+The webhook's name.
+
+avatar: `bytes` | `None`  
+A `bytes-like object` representing the webhook's default avatar. This operates similarly to `ClientUser.edit`.
+
+reason: `str` | `None`  
+The reason for creating this webhook. Shows up in the audit logs.
+
+#### Returns
+
+`Webhook`  
+The created webhook.
+
+#### Raises
+
+HTTPException  
+Creating the webhook failed.
+
+Forbidden  
+You do not have permissions to create a webhook.
+
+#### `clone()`
+
+```python
+clone(*, name: str | None = None, reason: str | None = None) -> GCH
+```
+
+*(coroutine)*
+
+Clones this channel. This creates a channel with the same properties as this channel.
+
+You must have the `discord.Permissions.manage_channels` permission to do this.
+
+*Added in 1.1.*
+
+#### Parameters
+
+name: `str` | `None`  
+The name of the new channel. If not provided, defaults to this channel name.
+
+reason: `str` | `None`  
+The reason for cloning this channel. Shows up on the audit log.
+
+#### Returns
+
+`.abc.GuildChannel`  
+The channel that was created.
+
+#### Raises
+
+~discord.Forbidden  
+You do not have the proper permissions to create this channel.
+
+~discord.HTTPException  
+Creating the channel failed.
+
+#### `edit()`
+
+```python
+edit(*, reason=None, **options)
+```
+
+*(coroutine)*
+
+Edits the channel.
+
+You must have the `Permissions.manage_channels` permission to use this.
+
+*Changed in 1.3 The `overwrites` keyword-only parameter was added.*
+
+*Changed in 2.0 Edits are no longer in-place, the newly edited channel is returned instead.*
+
+#### Parameters
+
+name: `str`  
+The new channel's name.
+
+bitrate: `int`  
+The new channel's bitrate.
+
+user_limit: `int`  
+The new channel's user limit.
+
+position: `int`  
+The new channel's position.
+
+sync_permissions: `bool`  
+Whether to sync permissions with the channel's new or pre-existing category. Defaults to `False`.
+
+category: `CategoryChannel` | `None`  
+The new category for this channel. Can be `None` to remove the category.
+
+reason: `str` | `None`  
+The reason for editing this channel. Shows up on the audit log.
+
+overwrites: Dict\[`Role` | `Member` | `discord.abc.Snowflake`, `PermissionOverwrite`\]  
+The overwrites to apply to channel permissions. Useful for creating secret channels.
+
+rtc_region: `str` | `VoiceRegion` | `None`  
+The new region ID for the voice channel's voice communication. A value of `None` indicates automatic voice region detection.
+
+*Changed in 2.9
+
+A region ID string is now accepted.*
+
+*Added in 1.7.*
+
+video_quality_mode: `VideoQualityMode`  
+The camera video quality for the voice channel's participants.
+
+*Added in 2.0.*
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this channel, in seconds. A value of <span class="title-ref">0</span> disables slowmode. The maximum value possible is <span class="title-ref">21600</span>.
+
+nsfw: `bool`  
+Whether the channel is marked as NSFW.
+
+*Added in 2.7.*
+
+#### Returns
+
+`.VoiceChannel` | `None`  
+The newly edited voice channel. If the edit was only positional then `None` is returned instead.
+
+#### Raises
+
+InvalidArgument  
+If the permission overwrite information is not in proper form.
+
+Forbidden  
+You do not have permissions to edit the channel.
+
+HTTPException  
+Editing the channel failed.
+
+#### `create_activity_invite()`
+
+```python
+create_activity_invite(activity: EmbeddedActivity | int, **kwargs) -> Invite
+```
+
+*(coroutine)*
+
+A shortcut method that creates an instant activity invite.
+
+You must have the `discord.Permissions.start_embedded_activities` permission to do this.
+
+#### Parameters
+
+activity: `discord.EmbeddedActivity` | `int`  
+The activity to create an invite for which can be an application id as well.
+
+max_age: `int`  
+How long the invite should last in seconds. If it's 0 then the invite doesn't expire. Defaults to `0`.
+
+max_uses: `int`  
+How many uses the invite could be used for. If it's 0 then there are unlimited uses. Defaults to `0`.
+
+temporary: `bool`  
+Denotes that the invite grants temporary membership (i.e. they get kicked after they disconnect). Defaults to `False`.
+
+unique: `bool`  
+Indicates if a unique invite URL should be created. Defaults to True. If this is set to `False` then it will return a previously created invite.
+
+reason: `str` | `None`  
+The reason for creating this invite. Shows up on the audit log.
+
+#### Returns
+
+`discord.Invite`  
+The invite that was created.
+
+#### Raises
+
+TypeError  
+If the activity is not a valid activity or application id.
+
+~discord.HTTPException  
+Invite creation failed.
+
+#### `set_status()`
+
+```python
+set_status(status: str | None, *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Sets the status of the voice channel.
+
+You must have the `Permissions.set_voice_channel_status` permission to use this. If the bot is not connected to the voice channel, this also requires `Permissions.manage_channels`.
+
+#### Parameters
+
+status: `str` | None  
+The new status.
+
+reason: `str` | `None`  
+The reason for setting the status. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to set the status.
+
+HTTPException  
+Setting the status failed.
+
+#### `send_soundboard_sound()`
+
+```python
+send_soundboard_sound(sound: PartialSoundboardSound) -> None
+```
+
+*(coroutine)*
+
+Sends a soundboard sound to the voice channel.
+
+#### Parameters
+
+sound: `PartialSoundboardSound`  
+The soundboard sound to send.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to send the soundboard sound.
+
+HTTPException  
+Sending the soundboard sound failed.
+
+### `VoiceChannelEffectAnimation`
+
+```python
+class VoiceChannelEffectAnimation(id: int, type: VoiceChannelEffectAnimationType)
+```
+
+Represents an animation that can be sent to a voice channel.
+
+*Added in 2.7.*
+
+### `VoiceChannelEffectSendEvent`
+
+```python
+class VoiceChannelEffectSendEvent(data: VoiceChannelEffectSend, state: ConnectionState, sound: SoundboardSound | PartialSoundboardSound | None = None) -> None
+```
+
+Represents the payload for an `on_voice_channel_effect_send`.
+
+*Added in 2.7.*
+
+#### Attributes
+
+animation_type: `VoiceChannelEffectAnimationType`  
+The type of animation that is being sent.
+
+animation_id: `int`  
+The ID of the animation that is being sent.
+
+sound: `SoundboardSound` | `None`  
+The sound that is being sent, could be `None` if the effect is not a sound effect.
+
+guild: `Guild`  
+The guild in which the sound is being sent.
+
+user: `Member`  
+The member that sent the sound.
+
+channel: `VoiceChannel`  
+The voice channel in which the sound is being sent.
+
+data: `dict`  
+The raw data sent by the gateway.
+
+### `VoiceChannelSoundEffect`
+
+```python
+class VoiceChannelSoundEffect(data: SoundboardSoundPayload | VoiceChannelEffectSendEventPayload, state: ConnectionState, http: HTTPClient)
+```
+
+A partial soundboard sound.
+
+*Added in 2.7.*
+
+#### Attributes
+
+id: `int`  
+The sound's ID.
+
+volume: `float`  
+The sound's volume.
+
+emoji: `PartialEmoji` | `None`  
+The sound's emoji. Could be `None` if the sound has no emoji.

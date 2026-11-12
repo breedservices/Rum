@@ -1,0 +1,111 @@
+# `rum.soundboard`
+
+## Classes
+
+### `PartialSoundboardSound`
+
+```python
+class PartialSoundboardSound(data: SoundboardSoundPayload | VoiceChannelEffectSendEventPayload, state: ConnectionState, http: HTTPClient)
+```
+
+A partial soundboard sound.
+
+*Added in 2.7.*
+
+#### Attributes
+
+id: `int`  
+The sound's ID.
+
+volume: `float`  
+The sound's volume.
+
+emoji: `PartialEmoji` | `None`  
+The sound's emoji. Could be `None` if the sound has no emoji.
+
+### `SoundboardSound`
+
+```python
+class SoundboardSound(*, state: ConnectionState, http: HTTPClient, data: SoundboardSoundPayload) -> None
+```
+
+Represents a soundboard sound.
+
+*Added in 2.7.*
+
+#### Attributes
+
+id: `int`  
+The sound's ID.
+
+volume: `float`  
+The sound's volume.
+
+emoji: `PartialEmoji` | `None`  
+The sound's emoji. Could be `None` if the sound has no emoji.
+
+name: `str`  
+The sound's name.
+
+available: `bool`  
+Whether the sound is available. Could be `False` if the sound is not available. This is the case, for example, when the guild loses the boost level required to use the sound.
+
+guild_id: `int` | `None`  
+The ID of the guild to which the sound belongs. Could be `None` if the sound is a default sound.
+
+user: `User` | `None`  
+The sound's owner. Could be `None` if the sound is a default sound.
+
+#### `edit()`
+
+```python
+edit(*, name: str | None = None, volume: float | None = None, emoji: PartialEmoji | str | None = None, reason: str | None = None) -> Coroutine[Any, Any, SoundboardSound]
+```
+
+Edits the sound.
+
+*Added in 2.7.*
+
+#### Parameters
+
+name: `str` | `None`  
+The new name of the sound.
+
+volume: `float` | `None`  
+The new volume of the sound.
+
+emoji: `PartialEmoji` | `str` | `None`  
+The new emoji of the sound.
+
+reason: `str` | `None`  
+The reason for editing the sound. Shows up in the audit log.
+
+#### Returns
+
+`SoundboardSound`  
+The edited sound.
+
+#### Raises
+
+`ValueError`  
+Editing a default sound is not allowed.
+
+#### `delete()`
+
+```python
+delete(*, reason: str | None = None) -> Coroutine[Any, Any, None]
+```
+
+Deletes the sound.
+
+*Added in 2.7.*
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for deleting the sound. Shows up in the audit log.
+
+#### Raises
+
+`ValueError`  
+Deleting a default sound is not allowed.

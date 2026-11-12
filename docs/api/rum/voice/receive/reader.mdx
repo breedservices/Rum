@@ -1,0 +1,159 @@
+# `rum.voice.receive.reader`
+
+## Classes
+
+### `AudioReader`
+
+```python
+class AudioReader(sink: Sink, client: VoiceClient, *, after: AfterCallback | None = None, start: bool = False) -> None
+```
+
+#### `is_listening()`
+
+```python
+is_listening() -> bool
+```
+
+#### `update_secret_key()`
+
+```python
+update_secret_key(secret_key: bytes) -> None
+```
+
+#### `start()`
+
+```python
+start() -> None
+```
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+#### `set_sink()`
+
+```python
+set_sink(sink: Sink) -> Sink
+```
+
+#### `callback()`
+
+```python
+callback(packet_data: bytes) -> None
+```
+
+### `PacketDecryptor`
+
+```python
+class PacketDecryptor(mode: SupportedModes, secret_key: bytes, client: VoiceClient) -> None
+```
+
+#### `decrypt_rtp()`
+
+```python
+decrypt_rtp(packet: RTPPacket) -> bytes
+```
+
+#### `decrypt_rtcp()`
+
+```python
+decrypt_rtcp(packet: bytes) -> bytes
+```
+
+#### `update_secret_key()`
+
+```python
+update_secret_key(secret_key: bytes) -> None
+```
+
+### `SpeakingTimer`
+
+```python
+class SpeakingTimer(reader: AudioReader) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `maybe_dispatch_speaking_start()`
+
+```python
+maybe_dispatch_speaking_start(ssrc: int) -> None
+```
+
+#### `dispatch()`
+
+```python
+dispatch(event: SpeakingEvent, ssrc: int) -> None
+```
+
+#### `notify()`
+
+```python
+notify(ssrc: int | None = None) -> None
+```
+
+#### `drop_ssrc()`
+
+```python
+drop_ssrc(ssrc: int) -> None
+```
+
+#### `get_speaking()`
+
+```python
+get_speaking(ssrc: int) -> bool | None
+```
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+#### `run()`
+
+```python
+run() -> None
+```
+
+Method representing the thread's activity.
+
+You may override this method in a subclass. The standard run() method invokes the callable object passed to the object's constructor as the target argument, if any, with sequential and keyword arguments taken from the args and kwargs arguments, respectively.
+
+### `UDPKeepAlive`
+
+```python
+class UDPKeepAlive(client: VoiceClient) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `run()`
+
+```python
+run() -> None
+```
+
+Method representing the thread's activity.
+
+You may override this method in a subclass. The standard run() method invokes the callable object passed to the object's constructor as the target argument, if any, with sequential and keyword arguments taken from the args and kwargs arguments, respectively.
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+## Functions
+
+### `is_rtcp()`
+
+```python
+is_rtcp(data: bytes) -> bool
+```

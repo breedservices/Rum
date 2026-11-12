@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # channel_select.py
 import os
+
 import rum
 
 # Channel selects (dropdowns) are a new type of select menu/dropdown Discord has added so users can select channels from a dropdown.

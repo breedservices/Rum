@@ -1,0 +1,231 @@
+# `rum.asset`
+
+## Classes
+
+### `Asset`
+
+```python
+class Asset(state, *, url: str, key: str, animated: bool = False)
+```
+
+Represents a CDN asset on Discord.
+
+<div class="container operations">
+
+<div class="describe">
+
+str(x)
+
+Returns the URL of the CDN asset.
+
+</div>
+
+<div class="describe">
+
+len(x)
+
+Returns the length of the CDN asset's URL.
+
+</div>
+
+<div class="describe">
+
+x == y
+
+Checks if the asset is equal to another asset.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if the asset is not equal to another asset.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the asset's url's hash.
+
+This is equivalent to hash(`url`).
+
+</div>
+
+</div>
+
+#### `is_animated()`
+
+```python
+is_animated() -> bool
+```
+
+Returns whether the asset is animated.
+
+#### `replace()`
+
+```python
+replace(*, size: int = ..., format: ValidAssetFormatTypes = ..., static_format: ValidStaticFormatTypes = ...) -> Asset
+```
+
+Returns a new asset with the passed components replaced.
+
+#### Parameters
+
+size: `int`  
+The new size of the asset.
+
+format: `str`  
+The new format to change it to. Must be either 'webp', 'jpeg', 'jpg', 'png', or 'gif' if it's animated.
+
+static_format: `str`  
+The new format to change it to if the asset isn't animated. Must be either 'webp', 'jpeg', 'jpg', or 'png'.
+
+#### Returns
+
+`Asset`  
+The newly updated asset.
+
+#### Raises
+
+InvalidArgument  
+An invalid size or format was passed.
+
+#### `with_size()`
+
+```python
+with_size(size: int, /) -> Asset
+```
+
+Returns a new asset with the specified size.
+
+#### Parameters
+
+size: `int`  
+The new size of the asset.
+
+#### Returns
+
+`Asset`  
+The new updated asset.
+
+#### Raises
+
+InvalidArgument  
+The asset had an invalid size.
+
+#### `with_format()`
+
+```python
+with_format(format: ValidAssetFormatTypes, /) -> Asset
+```
+
+Returns a new asset with the specified format.
+
+#### Parameters
+
+format: `str`  
+The new format of the asset.
+
+#### Returns
+
+`Asset`  
+The new updated asset.
+
+#### Raises
+
+InvalidArgument  
+The asset has an invalid format.
+
+#### `with_static_format()`
+
+```python
+with_static_format(format: ValidStaticFormatTypes, /) -> Asset
+```
+
+Returns a new asset with the specified static format.
+
+This only changes the format if the underlying asset is not animated. Otherwise, the asset is not changed.
+
+#### Parameters
+
+format: `str`  
+The new static format of the asset.
+
+#### Returns
+
+`Asset`  
+The new updated asset.
+
+#### Raises
+
+InvalidArgument  
+The asset had an invalid format.
+
+### `AssetMixin`
+
+```python
+class AssetMixin()
+```
+
+#### `read()`
+
+```python
+read() -> bytes
+```
+
+*(coroutine)*
+
+Retrieves the content of this asset as a `bytes` object.
+
+#### Returns
+
+`bytes`  
+The content of the asset.
+
+#### Raises
+
+DiscordException  
+There was no internal connection state.
+
+HTTPException  
+Downloading the asset failed.
+
+NotFound  
+The asset was deleted.
+
+#### `save()`
+
+```python
+save(fp: str | bytes | os.PathLike | io.BufferedIOBase, *, seek_begin: bool = True) -> int
+```
+
+*(coroutine)*
+
+Saves this asset into a file-like object.
+
+#### Parameters
+
+fp: `io.BufferedIOBase` | `os.PathLike`  
+The file-like object to save this attachment to or the filename to use. If a filename is passed then a file is created with that filename and used instead.
+
+seek_begin: `bool`  
+Whether to seek to the beginning of the file after saving is successfully done.
+
+#### Returns
+
+`int`  
+The number of bytes written.
+
+#### Raises
+
+DiscordException  
+There was no internal connection state.
+
+HTTPException  
+Downloading the asset failed.
+
+NotFound  
+The asset was deleted.

@@ -1,0 +1,271 @@
+# `rum.ui.container`
+
+## Classes
+
+### `Container`
+
+```python
+class Container(*items: ViewItem, colour: int | Colour | None = None, color: int | Colour | None = None, spoiler: bool = False, id: int | None = None)
+```
+
+Represents a UI Container.
+
+The current items supported are as follows:
+
+- `discord.ui.ActionRow`
+- `discord.ui.Section`
+- `discord.ui.TextDisplay`
+- `discord.ui.MediaGallery`
+- `discord.ui.File`
+- `discord.ui.Separator`
+
+*Added in 2.7.*
+
+#### Parameters
+
+\*items: `ViewItem`  
+The initial items in this container.
+
+colour: `Colour` | `int`  
+The accent colour of the container. Aliased to `color` as well.
+
+spoiler: `bool` | `None`  
+Whether this container has the spoiler overlay.
+
+id: `int` | `None`  
+The container's ID.
+
+#### Attributes
+
+items: List\[`ViewItem`\]  
+The list of items in this container.
+
+#### `add_item()`
+
+```python
+add_item(item: ViewItem) -> Self
+```
+
+Adds an item to the container.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to add to the container.
+
+#### Raises
+
+TypeError  
+A `ViewItem` was not passed.
+
+#### `remove_item()`
+
+```python
+remove_item(item: ViewItem | str | int) -> Self
+```
+
+Removes an item from the container. If an int or str is passed, it will remove by Item `id` or `custom_id` respectively.
+
+#### Parameters
+
+item: `ViewItem` | `int` | `str`  
+The item, `id`, or item `custom_id` to remove from the container.
+
+#### `get_item()`
+
+```python
+get_item(id: str | int) -> ViewItem | None
+```
+
+Get an item from this container. Roughly equivalent to <span class="title-ref">utils.get(container.items, ...)</span>. If an `int` is provided, the item will be retrieved by `id`, otherwise by `custom_id`. This method will also search for nested items.
+
+#### Parameters
+
+id: `str` | `int`  
+The id or custom_id of the item to get.
+
+#### Returns
+
+`ViewItem` | `None`  
+The item with the matching `id` or `custom_id` if it exists.
+
+#### `add_row()`
+
+```python
+add_row(*items: ViewItem, id: int | None = None) -> Self
+```
+
+Adds an `ActionRow` to the container.
+
+To append a pre-existing `ActionRow`, use `add_item` instead.
+
+#### Parameters
+
+\*items: `Button` | `Select`  
+The items this action row contains.
+
+id: `int` | `None`  
+The action row's ID.
+
+#### `add_section()`
+
+```python
+add_section(*items: ViewItem, accessory: ViewItem, id: int | None = None) -> Self
+```
+
+Adds a `Section` to the container.
+
+To append a pre-existing `Section`, use the `add_item` method, instead.
+
+#### Parameters
+
+\*items: `ViewItem`  
+The items contained in this section, up to 3. Currently only supports `discord.ui.TextDisplay`.
+
+accessory: `ViewItem` | `None`  
+The section's accessory. This is displayed in the top right of the section. Currently only supports `discord.ui.Button` and `discord.ui.Thumbnail`.
+
+id: `int` | `None`  
+The section's ID.
+
+#### `add_text()`
+
+```python
+add_text(content: str, id: int | None = None) -> Self
+```
+
+Adds a `TextDisplay` to the container.
+
+#### Parameters
+
+content: `str`  
+The content of the TextDisplay
+
+id: `int` | `None`  
+The text displays' ID.
+
+#### `add_gallery()`
+
+```python
+add_gallery(*items: MediaGalleryItem, id: int | None = None) -> Self
+```
+
+Adds a `MediaGallery` to the container.
+
+To append a pre-existing `MediaGallery`, use `add_item` instead.
+
+#### Parameters
+
+\*items: `MediaGalleryItem`  
+The media this gallery contains.
+
+id: `int` | `None`  
+The gallery's ID.
+
+#### `add_file()`
+
+```python
+add_file(url: str, spoiler: bool = False, id: int | None = None) -> Self
+```
+
+Adds a `File` to the container.
+
+#### Parameters
+
+url: `str`  
+The URL of this file's media. This must be an `attachment://` URL that references a `discord.File`.
+
+spoiler: `bool` | `None`  
+Whether the file has the spoiler overlay. Defaults to `False`.
+
+id: `int` | `None`  
+The file's ID.
+
+#### `add_separator()`
+
+```python
+add_separator(*, divider: bool = True, spacing: SeparatorSpacingSize = <SeparatorSpacingSize.small: 1>, id: int | None = None) -> Self
+```
+
+Adds a `Separator` to the container.
+
+#### Parameters
+
+divider: `bool`  
+Whether the separator is a divider. Defaults to `True`.
+
+spacing: `discord.SeparatorSpacingSize`  
+The spacing size of the separator. Defaults to `discord.SeparatorSpacingSize.small`.
+
+id: `int` | `None`  
+The separator's ID.
+
+#### `copy_text()`
+
+```python
+copy_text() -> str
+```
+
+Returns the text of all `discord.ui.TextDisplay` items in this container. Equivalent to the <span class="title-ref">Copy Text</span> option on Discord clients.
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: ContainerComponent) -> None
+```
+
+#### `disable_all_items()`
+
+```python
+disable_all_items(*, exclusions: list[ViewItem] | None = None) -> Self
+```
+
+Disables all buttons and select menus in the container.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.items</span> to not disable from the view.
+
+#### `enable_all_items()`
+
+```python
+enable_all_items(*, exclusions: list[ViewItem] | None = None) -> Self
+```
+
+Enables all buttons and select menus in the container.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.items</span> to not enable from the view.
+
+#### `walk_items()`
+
+```python
+walk_items() -> Iterator[ViewItem]
+```
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> ContainerComponentPayload
+```
+
+#### `from_component()`
+
+```python
+from_component(component: ContainerComponent) -> C
+```

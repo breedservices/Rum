@@ -1,0 +1,86 @@
+# `rum.ui.radio_group`
+
+## Classes
+
+### `RadioGroup`
+
+```python
+class RadioGroup(*, custom_id: str | None = None, options: list[RadioGroupOption] | None = None, required: bool = True, id: int | None = None)
+```
+
+Represents a UI Radio Group component.
+
+*Added in 2.8.*
+
+#### `add_option()`
+
+```python
+add_option(*, label: str, value: str = ..., description: str | None = None, default: bool = False) -> Self
+```
+
+Adds an option to the radio group.
+
+To append a pre-existing `discord.RadioGroupOption` use the `append_option` method instead.
+
+#### Parameters
+
+label: `str`  
+The label of the option. This is displayed to users. Can only be up to 100 characters.
+
+value: `str`  
+The value of the option. This is not displayed to users. If not given, defaults to the label. Can only be up to 100 characters.
+
+description: `str` | `None`  
+An additional description of the option, if any. Can only be up to 100 characters.
+
+default: `bool`  
+Whether this option is selected by default.
+
+#### Raises
+
+ValueError  
+The number of options exceeds 10.
+
+#### `append_option()`
+
+```python
+append_option(option: RadioGroupOption) -> Self
+```
+
+Appends an option to the radio group.
+
+#### Parameters
+
+option: `discord.RadioGroupOption`  
+The option to append to the radio group.
+
+#### Raises
+
+ValueError  
+The number of options exceeds 10.
+
+#### `clear_options()`
+
+```python
+clear_options() -> Self
+```
+
+Remove all options from the radio group.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> RadioGroupComponentPayload
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(data) -> None
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: RadioGroupComponentPayload) -> None
+```

@@ -40,13 +40,14 @@ if TYPE_CHECKING:
     from .ui.view import ViewStore
 
 __all__ = (
-    "MessageCache",
     "CacheKind",
-    "CacheRule",
     "CacheProvider",
+    "CacheRule",
     "DefaultCacheProvider",
     "LRUCache",
+    "MessageCache",
     "NullCache",
+    "RuledCache",
     "trim_fields",
 )
 
@@ -142,6 +143,74 @@ def trim_fields(value: Any, fields: frozenset[str]) -> None:
             pass
 
 
+class RuledCache(MutableMapping):
+    """A container that applies the rule of its kind.
+
+    It wraps any mapping, so the entries can live in a database or in Redis
+    while the rule of the kind still applies.
+
+    Parameters
+    ----------
+    container: :class:`MutableMapping`
+        Where the entries are kept.
+    rule: :class:`CacheRule`
+        The rule of the kind.
+    """
+
+    __slots__ = ("_container", "_rule", "_stamps")
+
+    def __init__(
+        self, container: MutableMapping[Any, Any], rule: CacheRule | None = None
+    ) -> None:
+        self._container = container
+        self._rule = rule or CacheRule()
+        self._stamps: dict[Any, float] = {}
+
+    def __getitem__(self, key: Any) -> Any:
+        value = self._container[key]
+        if self._expired(key):
+            del self._container[key]
+            self._stamps.pop(key, None)
+            raise KeyError(key)
+        return value
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        if self._rule.fields is not None:
+            trim_fields(value, self._rule.fields)
+        self._container[key] = value
+        self._stamps[key] = time.monotonic()
+        if self._rule.max_entries is not None:
+            while len(self._container) > self._rule.max_entries:
+                oldest = next(iter(self._container))
+                del self._container[oldest]
+                self._stamps.pop(oldest, None)
+
+    def __delitem__(self, key: Any) -> None:
+        del self._container[key]
+        self._stamps.pop(key, None)
+
+    def __iter__(self) -> Iterator[Any]:
+        # A read may drop an expired entry from the container, so the keys are
+        # copied before they are read.
+        for key in list(self._container):
+            if not self._expired(key):
+                yield key
+
+    def __len__(self) -> int:
+        return len(self._container)
+
+    def _expired(self, key: Any) -> bool:
+        if self._rule.ttl is None:
+            return False
+        stamp = self._stamps.get(key)
+        if stamp is None:
+            return False
+        return time.monotonic() - stamp > self._rule.ttl
+
+    def __repr__(self) -> str:
+        return f"<RuledCache entries={len(self._container)}>"
+
+
 class LRUCache(MutableMapping):
     """A mapping that drops the least recently used entries beyond a limit.
 
@@ -199,7 +268,14 @@ class LRUCache(MutableMapping):
         self._stamps.pop(key, None)
 
     def __iter__(self) -> Iterator[Any]:
-        return iter(self._data)
+        # Iterating a mapping reads every key, and reading promotes it, so the
+        # keys are copied first. Expired entries are dropped on the way out.
+        for key in list(self._data):
+            if self._expired(key):
+                del self._data[key]
+                self._stamps.pop(key, None)
+                continue
+            yield key
 
     def __len__(self) -> int:
         return len(self._data)
@@ -292,17 +368,38 @@ class DefaultCacheProvider:
         """Returns the rule of a kind."""
         return self.rules.get(kind, CacheRule())
 
-    def _cache(
-        self, kind: CacheKind, max_entries: int | None
+    def cache_for(
+        self,
+        kind: CacheKind,
+        container: MutableMapping[Any, Any] | None = None,
+        *,
+        max_entries: int | None = None,
     ) -> MutableMapping[Any, Any]:
-        """Builds the container of a kind, with its rule applied."""
+        """Builds the container of a kind, with the rule of that kind applied.
+
+        Pass a container to keep the entries somewhere else, a Redis store for
+        example. The rule is applied either way: the fields are trimmed when an
+        entry is written, the entries expire after the time to live and the
+        least recently used ones are dropped past the limit.
+
+        Parameters
+        ----------
+        kind: :class:`CacheKind`
+            The kind of thing the container holds.
+        container: :class:`MutableMapping` | :obj:`None`
+            Where the entries are kept. Defaults to a plain dictionary.
+        max_entries: :class:`int` | :obj:`None`
+            How many entries to keep. The rule of the kind wins over this.
+        """
         rule = self.rule_for(kind)
         if not rule.enabled:
             return NullCache()
         if rule.max_entries is not None:
             max_entries = rule.max_entries
+        if container is not None:
+            return RuledCache(container, rule)
         if max_entries is None:
-            return {}
+            return RuledCache({}, rule)
         return LRUCache(
             max_entries,
             ttl=rule.ttl,
@@ -312,16 +409,16 @@ class DefaultCacheProvider:
     # Global/state caches
 
     def create_user_cache(self) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.USER, self.max_users)
+        return self.cache_for(CacheKind.USER, max_entries=self.max_users)
 
     def create_guild_cache(self) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.GUILD, None)
+        return self.cache_for(CacheKind.GUILD)
 
     def create_emoji_cache(self) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.EMOJI, None)
+        return self.cache_for(CacheKind.EMOJI)
 
     def create_sticker_cache(self) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.STICKER, None)
+        return self.cache_for(CacheKind.STICKER)
 
     def create_poll_cache(self) -> MutableMapping[int, Any]:
         return {}
@@ -341,10 +438,10 @@ class DefaultCacheProvider:
     # Guild-level caches
 
     def create_guild_channel_cache(self, guild: Any) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.CHANNEL, None)
+        return self.cache_for(CacheKind.CHANNEL)
 
     def create_guild_member_cache(self, guild: Any) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.MEMBER, self.max_members)
+        return self.cache_for(CacheKind.MEMBER, max_entries=self.max_members)
 
     def create_guild_thread_cache(self, guild: Any) -> MutableMapping[int, Any]:
         return {}
@@ -352,7 +449,9 @@ class DefaultCacheProvider:
     def create_guild_voice_state_cache(self, guild: Any) -> MutableMapping[int, Any]:
         return {}
 
-    def create_guild_scheduled_event_cache(self, guild: Any) -> MutableMapping[int, Any]:
+    def create_guild_scheduled_event_cache(
+        self, guild: Any
+    ) -> MutableMapping[int, Any]:
         return {}
 
     def create_guild_sound_cache(self, guild: Any) -> MutableMapping[int, Any]:
@@ -362,7 +461,7 @@ class DefaultCacheProvider:
         return {}
 
     def create_guild_role_cache(self, guild: Any) -> MutableMapping[int, Any]:
-        return self._cache(CacheKind.ROLE, None)
+        return self.cache_for(CacheKind.ROLE)
 
     def create_message_cache(self) -> MessageCache | None:
         if self.max_messages is None:

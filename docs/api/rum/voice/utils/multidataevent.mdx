@@ -1,0 +1,47 @@
+# `rum.voice.utils.multidataevent`
+
+## Classes
+
+### `MultiDataEvent`
+
+```python
+class MultiDataEvent()
+```
+
+Something like the inverse of a Condition. A 1-waiting-on-N type of object, with accompanying data object for convenience.
+
+#### `is_ready()`
+
+```python
+is_ready() -> bool
+```
+
+#### `notify()`
+
+```python
+notify() -> None
+```
+
+#### `wait()`
+
+```python
+wait(timeout: float | None = None) -> bool
+```
+
+#### `register()`
+
+```python
+register(item: T) -> None
+```
+
+#### `unregister()`
+
+```python
+unregister(item: T) -> None
+```
+
+#### `clear()`
+
+```python
+clear() -> None
+```

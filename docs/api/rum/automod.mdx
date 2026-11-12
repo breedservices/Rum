@@ -1,0 +1,301 @@
+# `rum.automod`
+
+## Classes
+
+### `AutoModAction`
+
+```python
+class AutoModAction(action_type: AutoModActionType, metadata: AutoModActionMetadata)
+```
+
+Represents an action for a guild's auto moderation rule.
+
+*Added in 2.0.*
+
+#### Attributes
+
+type: `AutoModActionType`  
+The action's type.
+
+metadata: `AutoModActionMetadata`  
+The action's metadata.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: AutoModActionPayload)
+```
+
+### `AutoModActionMetadata`
+
+```python
+class AutoModActionMetadata(channel_id: int = ..., timeout_duration: timedelta = ..., custom_message: str = ...)
+```
+
+Represents an action's metadata.
+
+Depending on the action's type, different attributes will be used.
+
+*Added in 2.0.*
+
+#### Attributes
+
+channel_id: `int`  
+The ID of the channel to send the message to. Only for actions of type `AutoModActionType.send_alert_message`.
+
+timeout_duration: `datetime.timedelta`  
+How long the member that triggered the action should be timed out for. Only for actions of type `AutoModActionType.timeout`.
+
+custom_message: `str`  
+An additional message shown to members when their message is blocked. Maximum 150 characters. Only for actions of type `AutoModActionType.block_message`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: AutoModActionMetadataPayload)
+```
+
+### `AutoModRule`
+
+```python
+class AutoModRule(*, state: ConnectionState, data: AutoModRulePayload)
+```
+
+Represents a guild's auto moderation rule.
+
+*Added in 2.0.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two rules are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two rules are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the rule's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the rule's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The rule's ID.
+
+name: `str`  
+The rule's name.
+
+creator_id: `int`  
+The ID of the user who created this rule.
+
+event_type: `AutoModEventType`  
+Indicates in what context the rule is checked.
+
+trigger_type: `AutoModTriggerType`  
+Indicates what type of information is checked to determine whether the rule is triggered.
+
+trigger_metadata: `AutoModTriggerMetadata`  
+The rule's trigger metadata.
+
+actions: List\[`AutoModAction`\]  
+The actions to perform when the rule is triggered.
+
+enabled: `bool`  
+Whether this rule is enabled.
+
+exempt_role_ids: List\[`int`\]  
+The IDs of the roles that are exempt from this rule.
+
+exempt_channel_ids: List\[`int`\]  
+The IDs of the channels that are exempt from this rule.
+
+#### `delete()`
+
+```python
+delete(reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes this rule.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for deleting this rule. Shows up in the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Guild permission.
+
+HTTPException  
+The operation failed.
+
+#### `edit()`
+
+```python
+edit(*, name: str = ..., event_type: AutoModEventType = ..., trigger_metadata: AutoModTriggerMetadata = ..., actions: list[AutoModAction] = ..., enabled: bool = ..., exempt_roles: list[Snowflake] = ..., exempt_channels: list[Snowflake] = ..., reason: str | None = None) -> AutoModRule | None
+```
+
+*(coroutine)*
+
+Edits this rule.
+
+#### Parameters
+
+name: `str`  
+The rule's new name.
+
+event_type: `AutoModEventType`  
+The new context in which the rule is checked.
+
+trigger_metadata: `AutoModTriggerMetadata`  
+The new trigger metadata.
+
+actions: List\[`AutoModAction`\]  
+The new actions to perform when the rule is triggered.
+
+enabled: `bool`  
+Whether this rule is enabled.
+
+exempt_roles: List\[`abc.Snowflake`\]  
+The roles that will be exempt from this rule.
+
+exempt_channels: List\[`abc.Snowflake`\]  
+The channels that will be exempt from this rule.
+
+reason: `str` | `None`  
+The reason for editing this rule. Shows up in the audit log.
+
+#### Returns
+
+`.AutoModRule` | `None`  
+The newly updated rule, if applicable. This is only returned when fields are updated.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Guild permission.
+
+HTTPException  
+The operation failed.
+
+### `AutoModTriggerMetadata`
+
+```python
+class AutoModTriggerMetadata(keyword_filter: list[str] = ..., regex_patterns: list[str] = ..., presets: list[AutoModKeywordPresetType] = ..., allow_list: list[str] = ..., mention_total_limit: int = ...)
+```
+
+Represents a rule's trigger metadata, defining additional data used to determine when a rule triggers.
+
+Depending on the trigger type, different metadata attributes will be used:
+
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 72%" />
+</colgroup>
+<thead>
+<tr>
+<th><blockquote>
+<p>Attribute</p>
+</blockquote></th>
+<th><blockquote>
+<p>Trigger Types</p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2"><code>keyword_filter</code> | <code>AutoModTriggerType.keyword</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>regex_patterns</code> | <code>AutoModTriggerType.keyword</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>presets</code> | <code>AutoModTriggerType.keyword_preset</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>allow_list</code> | <code>AutoModTriggerType.keyword</code>, <code>AutoModTriggerType.keyword_preset</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>mention_total_limit</code> | <code>AutoModTriggerType.mention_spam</code> |</td>
+</tr>
+</tbody>
+</table>
+
+Each attribute has limits that may change based on the trigger type. See [here](https://docs.discord.com/developers/resources/auto-moderation#auto-moderation-rule-object-trigger-metadata-field-limits) for information on attribute limits.
+
+*Added in 2.0.*
+
+#### Attributes
+
+keyword_filter: List\[`str`\]  
+A list of substrings to filter.
+
+regex_patterns: List\[`str`\]  
+A list of regex patterns to filter using Rust-flavored regex, which is not fully compatible with regex syntax supported by the builtin <span class="title-ref">re</span> module.
+
+*Added in 2.4.*
+
+presets: List\[`AutoModKeywordPresetType`\]  
+A list of preset keyword sets to filter.
+
+allow_list: List\[`str`\]  
+A list of substrings to allow, overriding keyword and regex matches.
+
+*Added in 2.4.*
+
+mention_total_limit: `int`  
+The total number of unique role and user mentions allowed.
+
+*Added in 2.4.*
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: AutoModTriggerMetadataPayload)
+```

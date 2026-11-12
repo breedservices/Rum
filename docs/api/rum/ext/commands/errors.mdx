@@ -1,0 +1,800 @@
+# `rum.ext.commands.errors`
+
+## Classes
+
+### `ArgumentParsingError`
+
+```python
+class ArgumentParsingError(message: str | None = None, *args: Any) -> None
+```
+
+An exception raised when the parser fails to parse a user's input.
+
+This inherits from `UserInputError`.
+
+There are child classes that implement more granular parsing errors for i18n purposes.
+
+### `BadArgument`
+
+```python
+class BadArgument(message: str | None = None, *args: Any) -> None
+```
+
+Exception raised when a parsing or conversion failure is encountered on an argument to pass into a command.
+
+This inherits from `UserInputError`
+
+### `BadBoolArgument`
+
+```python
+class BadBoolArgument(argument: str) -> None
+```
+
+Exception raised when a boolean argument was not convertible.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The boolean argument supplied by the caller that is not in the predefined list
+
+### `BadColourArgument`
+
+```python
+class BadColourArgument(argument: str) -> None
+```
+
+Exception raised when the colour is not valid.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The colour supplied by the caller that was not valid
+
+### `BadColourArgument`
+
+```python
+class BadColourArgument(argument: str) -> None
+```
+
+Exception raised when the colour is not valid.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The colour supplied by the caller that was not valid
+
+### `BadFlagArgument`
+
+```python
+class BadFlagArgument(flag: Flag) -> None
+```
+
+An exception raised when a flag failed to convert a value.
+
+This inherits from `FlagError`
+
+*Added in 2.0.*
+
+#### Attributes
+
+flag: `discord.ext.commands.Flag`  
+The flag that failed to convert.
+
+### `BadInviteArgument`
+
+```python
+class BadInviteArgument(argument: str) -> None
+```
+
+Exception raised when the invite is invalid or expired.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+### `BadLiteralArgument`
+
+```python
+class BadLiteralArgument(param: Parameter, literals: tuple[Any, ...], errors: list[CommandError]) -> None
+```
+
+Exception raised when a `typing.Literal` converter fails for all its associated values.
+
+This inherits from `UserInputError`
+
+*Added in 2.0.*
+
+#### Attributes
+
+param: `inspect.Parameter`  
+The parameter that failed being converted.
+
+literals: Tuple\[Any, `...`\]  
+A tuple of values compared against in conversion, in order of failure.
+
+errors: List\[`CommandError`\]  
+A list of errors that were caught from failing the conversion.
+
+### `BadUnionArgument`
+
+```python
+class BadUnionArgument(param: Parameter, converters: tuple[type, ...], errors: list[CommandError]) -> None
+```
+
+Exception raised when a `typing.Union` converter fails for all its associated types.
+
+This inherits from `UserInputError`
+
+#### Attributes
+
+param: `inspect.Parameter`  
+The parameter that failed being converted.
+
+converters: Tuple\[Type, `...`\]  
+A tuple of converters attempted in conversion, in order of failure.
+
+errors: List\[`CommandError`\]  
+A list of errors that were caught from failing the conversion.
+
+### `BotMissingAnyRole`
+
+```python
+class BotMissingAnyRole(missing_roles: SnowflakeList) -> None
+```
+
+Exception raised when the bot's member lacks any of the roles specified to run a command.
+
+This inherits from `CheckFailure`
+
+*Added in 1.1.*
+
+#### Attributes
+
+missing_roles: List\[`str` | `int`\]  
+The roles that the bot's member is missing. These are the parameters passed to `.commands.has_any_role`.
+
+### `BotMissingPermissions`
+
+```python
+class BotMissingPermissions(missing_permissions: list[str], *args: Any) -> None
+```
+
+Exception raised when the bot's member lacks permissions to run a command.
+
+This inherits from `CheckFailure`
+
+#### Attributes
+
+missing_permissions: List\[`str`\]  
+The required permissions that are missing.
+
+### `BotMissingRole`
+
+```python
+class BotMissingRole(missing_role: Snowflake) -> None
+```
+
+Exception raised when the bot's member lacks a role to run a command.
+
+This inherits from `CheckFailure`
+
+*Added in 1.1.*
+
+#### Attributes
+
+missing_role: `str` | `int`  
+The required role that is missing. This is the parameter passed to `.commands.has_role`.
+
+### `ChannelNotFound`
+
+```python
+class ChannelNotFound(argument: str) -> None
+```
+
+Exception raised when the bot can not find the channel.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The channel supplied by the caller that was not found
+
+### `ChannelNotReadable`
+
+```python
+class ChannelNotReadable(argument: GuildChannel | Thread) -> None
+```
+
+Exception raised when the bot does not have permission to read messages in the channel.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `.abc.GuildChannel` | `.Thread`  
+The channel supplied by the caller that was not readable
+
+### `CheckAnyFailure`
+
+```python
+class CheckAnyFailure(checks: list[Callable[[Context], bool]], errors: list[CheckFailure]) -> None
+```
+
+Exception raised when all predicates in `check_any` fail.
+
+This inherits from `CheckFailure`.
+
+*Added in 1.3.*
+
+#### Attributes
+
+errors: List\[`CheckFailure`\]  
+A list of errors that were caught during execution.
+
+checks: List\[Callable\[\[`Context`\], `bool`\]\]  
+A list of check predicates that failed.
+
+### `CheckFailure`
+
+```python
+class CheckFailure(message: str | None = None, *args: Any) -> None
+```
+
+Exception raised when the predicates in `.Command.checks` have failed.
+
+This inherits from `CommandError`
+
+### `CommandError`
+
+```python
+class CommandError(message: str | None = None, *args: Any) -> None
+```
+
+The base exception type for all command related errors.
+
+This inherits from `discord.DiscordException`.
+
+This exception and exceptions inherited from it are handled in a special way as they are caught and passed into a special event from `.Bot`, `.on_command_error`.
+
+### `CommandInvokeError`
+
+```python
+class CommandInvokeError(e: Exception) -> None
+```
+
+Exception raised when the command being invoked raised an exception.
+
+This inherits from `CommandError`
+
+#### Attributes
+
+original: `Exception`  
+The original exception that was raised. You can also get this via the `__cause__` attribute.
+
+### `CommandNotFound`
+
+```python
+class CommandNotFound(message: str | None = None, *args: Any) -> None
+```
+
+Exception raised when a command is attempted to be invoked but no command under that name is found.
+
+This is not raised for invalid subcommands, rather just the initial main command that is attempted to be invoked.
+
+This inherits from `CommandError`.
+
+### `CommandOnCooldown`
+
+```python
+class CommandOnCooldown(cooldown: Cooldown, retry_after: float, type: BucketType) -> None
+```
+
+Exception raised when the command being invoked is on cooldown.
+
+This inherits from `CommandError`
+
+#### Attributes
+
+cooldown: `.Cooldown`  
+A class with attributes `rate` and `per` similar to the `.cooldown` decorator.
+
+type: `BucketType`  
+The type associated with the cooldown.
+
+retry_after: `float`  
+The amount of seconds to wait before you can retry again.
+
+### `CommandRegistrationError`
+
+```python
+class CommandRegistrationError(name: str, *, alias_conflict: bool = False) -> None
+```
+
+An exception raised when the command can't be added because the name is already taken by a different command.
+
+This inherits from `discord.ClientException`
+
+*Added in 1.4.*
+
+#### Attributes
+
+name: `str`  
+The command name that had the error.
+
+alias_conflict: `bool`  
+Whether the name that conflicts is an alias of the command we try to add.
+
+### `ConversionError`
+
+```python
+class ConversionError(converter: Converter, original: Exception) -> None
+```
+
+Exception raised when a Converter class raises non-CommandError.
+
+This inherits from `CommandError`.
+
+#### Attributes
+
+converter: `discord.ext.commands.Converter`  
+The converter that failed.
+
+original: `Exception`  
+The original exception that was raised. You can also get this via the `__cause__` attribute.
+
+### `DisabledCommand`
+
+```python
+class DisabledCommand(message: str | None = None, *args: Any) -> None
+```
+
+Exception raised when the command being invoked is disabled.
+
+This inherits from `CommandError`
+
+### `EmojiNotFound`
+
+```python
+class EmojiNotFound(argument: str) -> None
+```
+
+Exception raised when the bot can not find the emoji.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The emoji supplied by the caller that was not found
+
+### `ExpectedClosingQuoteError`
+
+```python
+class ExpectedClosingQuoteError(close_quote: str) -> None
+```
+
+An exception raised when a quote character is expected but not found.
+
+This inherits from `ArgumentParsingError`.
+
+#### Attributes
+
+close_quote: `str`  
+The quote character expected.
+
+### `FlagError`
+
+```python
+class FlagError(message: str | None = None, *args: Any) -> None
+```
+
+The base exception type for all flag parsing related errors.
+
+This inherits from `BadArgument`.
+
+*Added in 2.0.*
+
+### `GuildNotFound`
+
+```python
+class GuildNotFound(argument: str) -> None
+```
+
+Exception raised when the guild provided was not found in the bot's cache.
+
+This inherits from `BadArgument`
+
+*Added in 1.7.*
+
+#### Attributes
+
+argument: `str`  
+The guild supplied by the called that was not found
+
+### `GuildStickerNotFound`
+
+```python
+class GuildStickerNotFound(argument: str) -> None
+```
+
+Exception raised when the bot can not find the sticker.
+
+This inherits from `BadArgument`
+
+*Added in 2.0.*
+
+#### Attributes
+
+argument: `str`  
+The sticker supplied by the caller that was not found
+
+### `InvalidEndOfQuotedStringError`
+
+```python
+class InvalidEndOfQuotedStringError(char: str) -> None
+```
+
+An exception raised when a space is expected after the closing quote in a string but a different character is found.
+
+This inherits from `ArgumentParsingError`.
+
+#### Attributes
+
+char: `str`  
+The character found instead of the expected string.
+
+### `MaxConcurrencyReached`
+
+```python
+class MaxConcurrencyReached(number: int, per: BucketType) -> None
+```
+
+Exception raised when the command being invoked has reached its maximum concurrency.
+
+This inherits from `CommandError`.
+
+#### Attributes
+
+number: `int`  
+The maximum number of concurrent invokers allowed.
+
+per: `.BucketType`  
+The bucket type passed to the `.max_concurrency` decorator.
+
+### `MemberNotFound`
+
+```python
+class MemberNotFound(argument: str) -> None
+```
+
+Exception raised when the member provided was not found in the bot's cache.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The member supplied by the caller that was not found
+
+### `MessageNotFound`
+
+```python
+class MessageNotFound(argument: str) -> None
+```
+
+Exception raised when the message provided was not found in the channel.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The message supplied by the caller that was not found
+
+### `MissingAnyRole`
+
+```python
+class MissingAnyRole(missing_roles: SnowflakeList) -> None
+```
+
+Exception raised when the command invoker lacks any of the roles specified to run a command.
+
+This inherits from `CheckFailure`
+
+*Added in 1.1.*
+
+#### Attributes
+
+missing_roles: List\[`str` | `int`\]  
+The roles that the invoker is missing. These are the parameters passed to `.commands.has_any_role`.
+
+### `MissingFlagArgument`
+
+```python
+class MissingFlagArgument(flag: Flag) -> None
+```
+
+An exception raised when a flag did not get a value.
+
+This inherits from `FlagError`
+
+*Added in 2.0.*
+
+#### Attributes
+
+flag: `discord.ext.commands.Flag`  
+The flag that did not get a value.
+
+### `MissingPermissions`
+
+```python
+class MissingPermissions(missing_permissions: list[str], *args: Any) -> None
+```
+
+Exception raised when the command invoker lacks permissions to run a command.
+
+This inherits from `CheckFailure`
+
+#### Attributes
+
+missing_permissions: List\[`str`\]  
+The required permissions that are missing.
+
+### `MissingRequiredArgument`
+
+```python
+class MissingRequiredArgument(param: Parameter) -> None
+```
+
+Exception raised when parsing a command and a parameter that is required is not encountered.
+
+This inherits from `UserInputError`
+
+#### Attributes
+
+param: `inspect.Parameter`  
+The argument that is missing.
+
+### `MissingRequiredFlag`
+
+```python
+class MissingRequiredFlag(flag: Flag) -> None
+```
+
+An exception raised when a required flag was not given.
+
+This inherits from `FlagError`
+
+*Added in 2.0.*
+
+#### Attributes
+
+flag: `discord.ext.commands.Flag`  
+The required flag that was not found.
+
+### `MissingRole`
+
+```python
+class MissingRole(missing_role: Snowflake) -> None
+```
+
+Exception raised when the command invoker lacks a role to run a command.
+
+This inherits from `CheckFailure`
+
+*Added in 1.1.*
+
+#### Attributes
+
+missing_role: `str` | `int`  
+The required role that is missing. This is the parameter passed to `.commands.has_role`.
+
+### `NSFWChannelRequired`
+
+```python
+class NSFWChannelRequired(channel: GuildChannel | Thread) -> None
+```
+
+Exception raised when a channel does not have the required NSFW setting.
+
+This inherits from `CheckFailure`.
+
+*Added in 1.1.*
+
+#### Parameters
+
+channel: `.abc.GuildChannel` | `.Thread`  
+The channel that does not have NSFW enabled.
+
+### `NoPrivateMessage`
+
+```python
+class NoPrivateMessage(message: str | None = None) -> None
+```
+
+Exception raised when an operation does not work in private message contexts.
+
+This inherits from `CheckFailure`
+
+### `NotOwner`
+
+```python
+class NotOwner(message: str | None = None, *args: Any) -> None
+```
+
+Exception raised when the message author is not the owner of the bot.
+
+This inherits from `CheckFailure`
+
+### `ObjectNotFound`
+
+```python
+class ObjectNotFound(argument: str) -> None
+```
+
+Exception raised when the argument provided did not match the format of an ID or a mention.
+
+This inherits from `BadArgument`
+
+*Added in 2.0.*
+
+#### Attributes
+
+argument: `str`  
+The argument supplied by the caller that was not matched
+
+### `PartialEmojiConversionFailure`
+
+```python
+class PartialEmojiConversionFailure(argument: str) -> None
+```
+
+Exception raised when the emoji provided does not match the correct format.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The emoji supplied by the caller that did not match the regex
+
+### `PrivateMessageOnly`
+
+```python
+class PrivateMessageOnly(message: str | None = None) -> None
+```
+
+Exception raised when an operation does not work outside of private message contexts.
+
+This inherits from `CheckFailure`
+
+### `RoleNotFound`
+
+```python
+class RoleNotFound(argument: str) -> None
+```
+
+Exception raised when the bot can not find the role.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The role supplied by the caller that was not found
+
+### `ThreadNotFound`
+
+```python
+class ThreadNotFound(argument: str) -> None
+```
+
+Exception raised when the bot can not find the thread.
+
+This inherits from `BadArgument`
+
+*Added in 2.0.*
+
+#### Attributes
+
+argument: `str`  
+The thread supplied by the caller that was not found
+
+### `TooManyArguments`
+
+```python
+class TooManyArguments(message: str | None = None, *args: Any) -> None
+```
+
+Exception raised when the command was passed too many arguments and its `.Command.ignore_extra` attribute was not set to `True`.
+
+This inherits from `UserInputError`
+
+### `TooManyFlags`
+
+```python
+class TooManyFlags(flag: Flag, values: list[str]) -> None
+```
+
+An exception raised when a flag has received too many values.
+
+This inherits from `FlagError`.
+
+*Added in 2.0.*
+
+#### Attributes
+
+flag: `discord.ext.commands.Flag`  
+The flag that received too many values.
+
+values: List\[`str`\]  
+The values that were passed.
+
+### `UnexpectedQuoteError`
+
+```python
+class UnexpectedQuoteError(quote: str) -> None
+```
+
+An exception raised when the parser encounters a quote mark inside a non-quoted string.
+
+This inherits from `ArgumentParsingError`.
+
+#### Attributes
+
+quote: `str`  
+The quote mark that was found inside the non-quoted string.
+
+### `UserInputError`
+
+```python
+class UserInputError(message: str | None = None, *args: Any) -> None
+```
+
+The base exception type for errors that involve errors regarding user input.
+
+This inherits from `CommandError`.
+
+### `UserNotFound`
+
+```python
+class UserNotFound(argument: str) -> None
+```
+
+Exception raised when the user provided was not found in the bot's cache.
+
+This inherits from `BadArgument`
+
+*Added in 1.5.*
+
+#### Attributes
+
+argument: `str`  
+The user supplied by the caller that was not found

@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # slash_perms.py
 import os
+
 import rum
 
 bot = rum.Bot()

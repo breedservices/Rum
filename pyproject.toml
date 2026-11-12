@@ -65,7 +65,6 @@ dependencies = { file = "requirements/_.txt" }
 readme = { content-type = "text/markdown", file = "README.md" }
 
 [tool.setuptools.dynamic.optional-dependencies]
-docs = { file = "requirements/docs.txt" }
 speed = { file = "requirements/speed.txt" }
 voice = { file = "requirements/voice.txt" }
 

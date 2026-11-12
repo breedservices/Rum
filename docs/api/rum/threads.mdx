@@ -1,0 +1,577 @@
+# `rum.threads`
+
+## Classes
+
+### `Thread`
+
+```python
+class Thread(*, guild: Guild, state: ConnectionState, data: ThreadPayload)
+```
+
+Represents a Discord thread.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two threads are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two threads are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the thread's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the thread's name.
+
+</div>
+
+</div>
+
+*Added in 2.0.*
+
+#### Attributes
+
+name: `str`  
+The thread name.
+
+guild: `Guild`  
+The guild the thread belongs to.
+
+id: `int`  
+The thread ID.
+
+> [!NOTE]
+> This ID is the same as the thread starting message ID.
+
+parent_id: `int`  
+The parent `TextChannel` ID this thread belongs to.
+
+owner_id: `int`  
+The user's ID that created this thread.
+
+last_message_id: `int` | `None`  
+The last message ID of the message sent to this thread. It may *not* point to an existing or valid message.
+
+slowmode_delay: `int`  
+The number of seconds a member must wait between sending messages in this thread. A value of <span class="title-ref">0</span> denotes that it is disabled. Bots and users with `Permissions.manage_channels` or `Permissions.manage_messages` bypass slowmode.
+
+message_count: `int`  
+An approximate number of messages in this thread. This caps at 50.
+
+member_count: `int`  
+An approximate number of members in this thread. This caps at 50.
+
+me: `ThreadMember` | `None`  
+A thread member representing yourself, if you've joined the thread. This could not be available.
+
+archived: `bool`  
+Whether the thread is archived.
+
+locked: `bool`  
+Whether the thread is locked.
+
+invitable: `bool`  
+Whether non-moderators can add other non-moderators to this thread. This is always `True` for public threads.
+
+auto_archive_duration: `int`  
+The duration in minutes until the thread is automatically archived due to inactivity. Usually a value of 60, 1440, 4320 and 10080.
+
+archive_timestamp: `datetime.datetime`  
+An aware timestamp of when the thread's archived status was last updated in UTC.
+
+created_at: `datetime.datetime` | `None`  
+An aware timestamp of when the thread was created. Only available for threads created after 2022-01-09.
+
+flags: `ChannelFlags`  
+Extra features of the thread.
+
+*Added in 2.0.*
+
+total_message_sent: `int`  
+Number of messages ever sent in a thread. It's similar to message_count on message creation, but will not decrement the number when a message is deleted.
+
+*Added in 2.3.*
+
+#### `is_pinned()`
+
+```python
+is_pinned() -> bool
+```
+
+Whether the thread is pinned to the top of its parent forum or media channel.
+
+*Added in 2.3.*
+
+#### `is_private()`
+
+```python
+is_private() -> bool
+```
+
+Whether the thread is a private thread.
+
+A private thread is only viewable by those that have been explicitly invited or have `.Permissions.manage_threads`.
+
+#### `is_news()`
+
+```python
+is_news() -> bool
+```
+
+Whether the thread is a news thread.
+
+A news thread is a thread that has a parent that is a news channel, i.e. `.TextChannel.is_news` is `True`.
+
+#### `is_nsfw()`
+
+```python
+is_nsfw() -> bool
+```
+
+Whether the thread is NSFW or not.
+
+An NSFW thread is a thread that has a parent that is an NSFW channel, i.e. `.TextChannel.is_nsfw` is `True`.
+
+#### `permissions_for()`
+
+```python
+permissions_for(obj: Member | Role, /) -> Permissions
+```
+
+Handles permission resolution for the `discord.Member` or `discord.Role`.
+
+Since threads do not have their own permissions, they inherit them from the parent channel. This is a convenience method for calling `discord.TextChannel.permissions_for` on the parent channel.
+
+#### Parameters
+
+obj: `discord.Member` | `discord.Role`  
+The object to resolve permissions for. This could be either a member or a role. If it's a role then member overwrites are not computed.
+
+#### Returns
+
+`discord.Permissions`  
+The resolved permissions for the member or role.
+
+#### Raises
+
+ClientException  
+The parent channel was not cached and returned `None`
+
+#### `delete_messages()`
+
+```python
+delete_messages(messages: Iterable[Snowflake], *, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes a list of messages. This is similar to `Message.delete` except it bulk deletes multiple messages.
+
+As a special case, if the number of messages is 0, then nothing is done. If the number of messages is 1 then single message delete is done. If it's more than two, then bulk delete is used.
+
+You cannot bulk delete more than 100 messages or messages that are older than 14 days old.
+
+You must have the `Permissions.manage_messages` permission to use this.
+
+Usable only by bot accounts.
+
+#### Parameters
+
+messages: Iterable\[`abc.Snowflake`\]  
+An iterable of messages denoting which ones to bulk delete.
+
+reason: `str` | `None`  
+The reason for deleting the messages. Shows up on the audit log.
+
+#### Raises
+
+ClientException  
+The number of messages to delete was more than 100.
+
+Forbidden  
+You do not have proper permissions to delete the messages, or you're not using a bot account.
+
+NotFound  
+If single delete, then the message was already deleted.
+
+HTTPException  
+Deleting the messages failed.
+
+#### `purge()`
+
+```python
+purge(*, limit: int | None = 100, check: Callable[[Message], bool] = ..., before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, around: SnowflakeTime | None = None, oldest_first: bool | None = False, bulk: bool = True, reason: str | None = None) -> list[Message]
+```
+
+*(coroutine)*
+
+Purges a list of messages that meet the criteria given by the predicate `check`. If a `check` is not provided then all messages are deleted without discrimination.
+
+You must have the `Permissions.manage_messages` permission to delete messages even if they are your own (unless you are a user account). The `Permissions.read_message_history` permission is also needed to retrieve message history.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of messages to search through. This is not the number of messages that will be deleted, though it can be.
+
+check: Callable\[\[`Message`\], `bool`\]  
+The function used to check if a message should be deleted. It must take a `Message` as its sole parameter.
+
+before: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `before` in `history`.
+
+after: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `after` in `history`.
+
+around: `abc.Snowflake` | `datetime.datetime` | `None`  
+Same as `around` in `history`.
+
+oldest_first: `bool` | `None`  
+Same as `oldest_first` in `history`.
+
+bulk: `bool`  
+If `True`, use bulk delete. Setting this to `False` is useful for mass-deleting a bot's own messages without `Permissions.manage_messages`. When `True`, will fall back to single delete if messages are older than two weeks.
+
+reason: `str` | `None`  
+The reason for deleting the messages. Shows up on the audit log.
+
+#### Returns
+
+List\[`.Message`\]  
+The list of messages that were deleted.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to do the actions required.
+
+HTTPException  
+Purging the messages failed.
+
+#### Examples
+
+Deleting bot's messages :
+
+    def is_me(m):
+        return m.author == client.user
+
+    deleted = await thread.purge(limit=100, check=is_me)
+    await thread.send(f'Deleted {len(deleted)} message(s)')
+
+#### `edit()`
+
+```python
+edit(*, name: str = ..., archived: bool = ..., locked: bool = ..., invitable: bool = ..., slowmode_delay: int = ..., auto_archive_duration: ThreadArchiveDuration | ThreadArchiveDurationEnum = ..., pinned: bool = ..., applied_tags: list[ForumTag] = ..., reason: str | None = None) -> Thread
+```
+
+*(coroutine)*
+
+Edits the thread.
+
+Editing the thread requires `.Permissions.manage_threads`. The thread creator can also edit `name`, `archived` or `auto_archive_duration`. Note that if the thread is locked then only those with `.Permissions.manage_threads` can send messages in it or unarchive a thread.
+
+The thread must be unarchived to be edited.
+
+#### Parameters
+
+name: `str`  
+The new name of the thread.
+
+archived: `bool`  
+Whether to archive the thread or not.
+
+locked: `bool`  
+Whether to lock the thread or not.
+
+invitable: `bool`  
+Whether non-moderators can add other non-moderators to this thread. Only available for private threads.
+
+auto_archive_duration: `int`  
+The new duration in minutes before a thread is automatically archived for inactivity. Must be one of `60`, `1440`, `4320`, or `10080`. `ThreadArchiveDuration` can be used alternatively.
+
+slowmode_delay: `int`  
+Specifies the slowmode rate limit for user in this thread, in seconds. A value of `0` disables slowmode. The maximum value possible is `21600`.
+
+reason: `str` | `None`  
+The reason for editing this thread. Shows up on the audit log.
+
+pinned: `bool`  
+Whether to pin the thread or not. This only works if the thread is part of a forum or media channel.
+
+applied_tags: List\[`ForumTag`\]  
+The set of tags to apply to the thread. Each tag object should have an ID set.
+
+*Added in 2.3.*
+
+#### Returns
+
+`Thread`  
+The newly edited thread.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to edit the thread.
+
+HTTPException  
+Editing the thread failed.
+
+#### `archive()`
+
+```python
+archive(locked: bool = ...) -> Thread
+```
+
+*(coroutine)*
+
+Archives the thread. This is a shorthand of `.edit`.
+
+#### Parameters
+
+locked: `bool`  
+Whether to lock the thread on archive, Defaults to `False`.
+
+#### Returns
+
+`.Thread`  
+The updated thread.
+
+#### `unarchive()`
+
+```python
+unarchive() -> Thread
+```
+
+*(coroutine)*
+
+Unarchives the thread. This is a shorthand of `.edit`.
+
+#### Returns
+
+`.Thread`  
+The updated thread.
+
+#### `join()`
+
+```python
+join()
+```
+
+*(coroutine)*
+
+Joins this thread.
+
+You must have `Permissions.send_messages_in_threads` to join a thread. If the thread is private, `Permissions.manage_threads` is also needed.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to join the thread.
+
+HTTPException  
+Joining the thread failed.
+
+#### `leave()`
+
+```python
+leave()
+```
+
+*(coroutine)*
+
+Leaves this thread.
+
+#### Raises
+
+HTTPException  
+Leaving the thread failed.
+
+#### `add_user()`
+
+```python
+add_user(user: Snowflake)
+```
+
+*(coroutine)*
+
+Adds a user to this thread.
+
+You must have `Permissions.send_messages_in_threads` to add a user to a public thread. If the thread is private and `invitable` is `False`, then `Permissions.manage_threads` is required.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user to add to the thread.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to add the user to the thread.
+
+HTTPException  
+Adding the user to the thread failed.
+
+#### `remove_user()`
+
+```python
+remove_user(user: Snowflake)
+```
+
+*(coroutine)*
+
+Removes a user from this thread.
+
+You must have `Permissions.manage_threads` or be the creator of the thread to remove a user.
+
+#### Parameters
+
+user: `abc.Snowflake`  
+The user to remove from the thread.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to remove the user from the thread.
+
+HTTPException  
+Removing the user from the thread failed.
+
+#### `fetch_members()`
+
+```python
+fetch_members() -> list[ThreadMember]
+```
+
+*(coroutine)*
+
+Retrieves all `ThreadMember` that are in this thread.
+
+This requires `Intents.members` to get information about members other than yourself.
+
+#### Returns
+
+List\[`ThreadMember`\]  
+All thread members in the thread.
+
+#### Raises
+
+HTTPException  
+Retrieving the members failed.
+
+#### `delete()`
+
+```python
+delete()
+```
+
+*(coroutine)*
+
+Deletes this thread.
+
+You must have `Permissions.manage_threads` to delete threads.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to delete this thread.
+
+HTTPException  
+Deleting the thread failed.
+
+#### `get_partial_message()`
+
+```python
+get_partial_message(message_id: int, /) -> PartialMessage
+```
+
+Creates a `PartialMessage` from the message ID.
+
+This is useful if you want to work with a message and only have its ID without doing an unnecessary API call.
+
+*Added in 2.0.*
+
+#### Parameters
+
+message_id: `int`  
+The message ID to create a partial message for.
+
+#### Returns
+
+`PartialMessage`  
+The partial message.
+
+### `ThreadMember`
+
+```python
+class ThreadMember(parent: Thread, data: ThreadMemberPayload)
+```
+
+Represents a Discord thread member.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two thread members are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two thread members are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the thread member's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the thread member's name.
+
+</div>
+
+</div>
+
+*Added in 2.0.*
+
+#### Attributes
+
+id: `int`  
+The thread member's ID.
+
+thread_id: `int`  
+The thread's ID.
+
+joined_at: `datetime.datetime`  
+The time the member joined the thread in UTC.

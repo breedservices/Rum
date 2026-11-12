@@ -1,0 +1,326 @@
+# `rum.poll`
+
+## Classes
+
+### `Poll`
+
+```python
+class Poll(question: PollMedia | str, *, answers: list[PollAnswer] | None = None, duration: int | None = 24, allow_multiselect: bool | None = False, layout_type: PollLayoutType | None = <PollLayoutType.default: 1>)
+```
+
+Represents a Poll. Polls are sent in regular messages, and you must have `discord.Permissions.send_polls` to send them.
+
+*Added in 2.6.*
+
+#### Attributes
+
+question: `PollMedia` | `str`  
+The poll's question media, or a `str` representing the question text. Question text can be up to 300 characters.
+
+answers: List\[`PollAnswer`\] | `None`  
+A list of the poll's answers. A maximum of 10 answers can be set.
+
+duration: `int`  
+The number of hours until this poll expires. Users must specify this when creating a poll, but existing polls return `expiry` instead. Defaults to 24.
+
+allow_multiselect: `bool`  
+Whether multiple answers can be selected. Defaults to `False`.
+
+layout_type: `PollLayoutType`  
+The poll's layout type. Only one exists at the moment.
+
+results: `PollResults` | `None`  
+The results of this poll received from Discord. If `None`, this should be considered "unknown" rather than "no" results.
+
+#### `to_dict()`
+
+```python
+to_dict() -> PollPayload
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: PollPayload, message: Message | PartialMessage | None = None) -> Poll
+```
+
+#### `has_ended()`
+
+```python
+has_ended() -> bool | None
+```
+
+Checks if this poll has completely ended. Shortcut for `PollResults.is_finalized`, if available.
+
+#### Returns
+
+`bool` | `None`  
+Returns a boolean if `results` is available, otherwise `None`.
+
+#### `total_votes()`
+
+```python
+total_votes() -> int | None
+```
+
+Shortcut for `PollResults.total_votes` This may not be precise if `is_finalized` is `False`.
+
+#### Returns
+
+`int` | `None`  
+The total number of votes on this poll if `results` is available, otherwise `None`.
+
+#### `get_answer()`
+
+```python
+get_answer(id) -> PollAnswer | None
+```
+
+Get a poll answer by ID.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.PollAnswer` | `None`  
+The returned answer or `None` if not found.
+
+#### `add_answer()`
+
+```python
+add_answer(text: str, *, emoji: GuildEmoji | AppEmoji | PartialEmoji | str | None = None) -> Poll
+```
+
+Add an answer to this poll.
+
+This function returns the class instance to allow for fluent-style chaining.
+
+#### Parameters
+
+text: `str`  
+The answer text. Maximum 55 characters.
+
+emoji: `GuildEmoji` | `AppEmoji` | `PartialEmoji` | `str` | `None`  
+The answer's emoji.
+
+#### Raises
+
+ValueError  
+The poll already has 10 answers or `text` exceeds the character length.
+
+RuntimeError  
+You cannot add an answer to an existing poll.
+
+#### Examples
+
+Regular usage :
+
+    poll = Poll(
+        question=PollMedia("What's your favorite color?"),
+
+        answers=[PollAnswer("Red", "❤")]
+        duration=24,
+        allow_multiselect=False
+    )
+    poll.add_answer(text="Green", emoji="💚")
+    poll.add_answer(text="Blue", emoji="💙")
+
+Chaining style :
+
+    poll = Poll("What's your favorite color?").add_answer("Red", emoji="❤").add_answer("Green").add_answer("Blue")
+
+#### `end()`
+
+```python
+end() -> Message
+```
+
+Immediately ends this poll, if attached to a message. Only doable by the poll's owner. Shortcut to `Message.end_poll`
+
+#### Returns
+
+`Message`  
+The updated message.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to end this poll.
+
+HTTPException  
+Ending this poll failed.
+
+RuntimeError  
+This poll wasn't received from a message.
+
+### `PollAnswer`
+
+```python
+class PollAnswer(text: str, emoji: GuildEmoji | AppEmoji | PartialEmoji | str | None = None)
+```
+
+Represents a poll answer object.
+
+*Added in 2.6.*
+
+#### Attributes
+
+id: `int`  
+The answer's ID. It currently starts at `1` for the first answer, then goes up sequentially. It may not be reliable to depend on this.
+
+media: `PollMedia`  
+The relevant media for this answer.
+
+#### `to_dict()`
+
+```python
+to_dict() -> PollAnswerPayload
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: PollAnswerPayload, poll=None, message: Message | PartialMessage | None = None) -> PollAnswer
+```
+
+#### `voters()`
+
+```python
+voters(*, limit: int | None = None, after: Snowflake | None = None) -> VoteIterator
+```
+
+Returns an `AsyncIterator` representing the users that have voted with this answer. Only works if this poll was received from Discord.
+
+The `after` parameter must represent a member and meet the `abc.Snowflake` abc.
+
+#### Parameters
+
+limit: `int` | `None`  
+The maximum number of results to return. If not provided, returns all the users who voted with this answer.
+
+after: `abc.Snowflake` | `None`  
+For pagination, answers are sorted by member.
+
+#### Yields
+
+`User` | `Member`  
+The member (if retrievable) or the user that has voted with this answer. The case where it can be a `Member` is in a guild message context. Sometimes it can be a `User` if the member has left the guild.
+
+#### Raises
+
+HTTPException  
+Getting the voters for the answer failed.
+
+RuntimeError  
+This poll wasn't received from a message.
+
+#### Examples
+
+Usage :
+
+    async for user in answer.users():
+        print(f'{user} voted **{answer.text}**!')
+
+Flattening into a list: :
+
+    users = await answer.users().flatten()
+    # users is now a list of User...
+    winner = random.choice(users)
+    await channel.send(f'{winner} has won the raffle.')
+
+### `PollAnswerCount`
+
+```python
+class PollAnswerCount(data: PollAnswerCountPayload)
+```
+
+Represents a poll answer count object.
+
+*Added in 2.6.*
+
+#### Attributes
+
+id: `int`  
+The answer's ID. It currently starts at `1` for the first answer, then goes up sequentially. It may not be reliable to depend on this.
+
+count: `int`  
+The number of votes for this answer.
+
+me: `bool`  
+If the current user voted this answer. This is always `False` for bots.
+
+#### `to_dict()`
+
+```python
+to_dict() -> PollAnswerCountPayload
+```
+
+### `PollMedia`
+
+```python
+class PollMedia(text: str, emoji: GuildEmoji | AppEmoji | PartialEmoji | str | None = None)
+```
+
+Represents a poll media object that supports both questions and answers.
+
+*Added in 2.6.*
+
+#### Attributes
+
+text: `str`  
+The question/answer text. May have up to 300 characters for questions and 55 characters for answers.
+
+emoji: `GuildEmoji` | `AppEmoji` | `PartialEmoji` | `str` | `None`  
+The answer's emoji.
+
+#### `to_dict()`
+
+```python
+to_dict() -> PollMediaPayload
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: PollMediaPayload, message: Message | PartialMessage | None = None) -> PollMedia
+```
+
+### `PollResults`
+
+```python
+class PollResults(data: PollResultsPayload)
+```
+
+Represents a poll results object.
+
+*Added in 2.6.*
+
+#### Attributes
+
+is_finalized: `bool`  
+Whether the poll has ended and all answer counts have been precisely tallied.
+
+answer_counts: List\[`PollAnswerCount`\]  
+A list of counts for each answer. If an answer isn't included, it has no votes.
+
+#### `to_dict()`
+
+```python
+to_dict() -> PollResultsPayload
+```
+
+#### `total_votes()`
+
+```python
+total_votes() -> int
+```
+
+Get the total number of votes across all answers. This may not be accurate if `is_finalized` is `False`.
+
+#### Returns
+
+`int`  
+The total number of votes on this poll.

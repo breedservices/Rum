@@ -1,0 +1,139 @@
+# `rum.ui.item`
+
+## Classes
+
+### `Item`
+
+```python
+class Item()
+```
+
+Represents the base UI item that all UI components inherit from.
+
+*Added in 2.0.*
+
+*Changed in 2.7 Now used as base class for `ViewItem` and `ModalItem`.*
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> dict[str, Any]
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: Component) -> None
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(interaction: Interaction) -> None
+```
+
+#### `from_component()`
+
+```python
+from_component(component: Component) -> I
+```
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_storable()`
+
+```python
+is_storable() -> bool
+```
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+#### `copy_text()`
+
+```python
+copy_text() -> str
+```
+
+### `ModalItem`
+
+```python
+class ModalItem()
+```
+
+Represents an item used in Modals.
+
+`discord.ui.InputText` is the original item supported in `discord.ui.Modal`.
+
+The following are newly available in `discord.ui.DesignerModal`:
+
+- `discord.ui.Label`
+- `discord.ui.TextDisplay`
+
+And `discord.ui.Label` should be used in `discord.ui.DesignerModal` to add the following items:
+
+- `discord.ui.InputText`
+- `discord.ui.Select`
+- `discord.ui.FileUpload`
+- `discord.ui.RadioGroup`
+- `discord.ui.CheckboxGroup`
+- `discord.ui.Checkbox`
+
+*Added in 2.7.*
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: dict) -> None
+```
+
+### `ViewItem`
+
+```python
+class ViewItem()
+```
+
+Represents an item used in Views.
+
+The following are the original items supported in `discord.ui.View`:
+
+- `discord.ui.Button`
+- `discord.ui.Select`
+
+And the following are new items under the "Components V2" specification for use in `discord.ui.DesignerView`:
+
+- `discord.ui.Section`
+- `discord.ui.TextDisplay`
+- `discord.ui.Thumbnail`
+- `discord.ui.MediaGallery`
+- `discord.ui.File`
+- `discord.ui.Separator`
+- `discord.ui.Container`
+
+Additionally, `discord.ui.ActionRow` should be used in `discord.ui.DesignerView` to support `discord.ui.Button` and `discord.ui.Select`.
+
+*Added in 2.7.*
+
+#### `callback()`
+
+```python
+callback(interaction: Interaction)
+```
+
+*(coroutine)*
+
+The callback associated with this UI item.
+
+This can be overridden by subclasses.
+
+#### Parameters
+
+interaction: `.Interaction`  
+The interaction that triggered this UI item.

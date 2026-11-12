@@ -1,0 +1,84 @@
+# `rum.ui.core`
+
+## Classes
+
+### `ItemInterface`
+
+```python
+class ItemInterface(*items: Item, timeout: float | None = 180.0, store: bool = True)
+```
+
+The base structure for classes that contain `discord.ui.Item`.
+
+*Added in 2.7.*
+
+#### Parameters
+
+\*items: `Item`  
+The initial items contained in this structure.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the UI before no longer accepting input. Defaults to 180.0. If `None` then there is no timeout.
+
+#### Attributes
+
+timeout: `float` | `None`  
+Timeout from last interaction with the UI before no longer accepting input. If `None` then there is no timeout.
+
+children: List\[`Item`\]  
+The list of children attached to this structure.
+
+store: `bool` | `None`  
+Whether this interface should be stored for callback listening. Setting it to `False` will ignore callbacks and prevent item values from being refreshed. Defaults to `True`.
+
+#### `to_components()`
+
+```python
+to_components() -> list[dict[str, Any]]
+```
+
+#### `get_item()`
+
+```python
+get_item(custom_id: str | int) -> Item | None
+```
+
+Gets an item from this structure. Roughly equal to <span class="title-ref">utils.get(self.children, ...)</span>. If an `int` is provided, the item will be retrieved by `id`, otherwise by `custom_id`. This method will also search nested items.
+
+#### Parameters
+
+custom_id: `str` | `int`  
+The id of the item to get
+
+#### Returns
+
+`Item` | `None`  
+The item with the matching `custom_id` or `id` if it exists.
+
+#### `add_item()`
+
+```python
+add_item(item: Item) -> Self
+```
+
+#### `remove_item()`
+
+```python
+remove_item(item: Item) -> Self
+```
+
+#### `clear_items()`
+
+```python
+clear_items() -> None
+```
+
+#### `on_timeout()`
+
+```python
+on_timeout() -> None
+```
+
+*(coroutine)*
+
+A callback that is called when this structure's timeout elapses without being explicitly stopped.

@@ -1,0 +1,917 @@
+# `rum.utils`
+
+## Classes
+
+### `CachedSlotProperty`
+
+```python
+class CachedSlotProperty(name: str, function: Callable[[T], T_co]) -> None
+```
+
+Abstract base class for generic types.
+
+On Python 3.12 and newer, generic classes implicitly inherit from Generic when they declare a parameter list after the class's name:
+
+    class Mapping[KT, VT]:
+        def __getitem__(self, key: KT) -> VT:
+            ...
+        # Etc.
+
+On older versions of Python, however, generic classes have to explicitly inherit from Generic.
+
+After a class has been declared to be generic, it can then be used as follows:
+
+    def lookup_name[KT, VT](mapping: Mapping[KT, VT], key: KT, default: VT) -> VT:
+        try:
+            return mapping[key]
+        except KeyError:
+            return default
+
+### `SequenceProxy`
+
+```python
+class SequenceProxy(proxied: Sequence[T_co])
+```
+
+Read-only proxy of a Sequence.
+
+#### `index()`
+
+```python
+index(value: Any, *args, **kwargs) -> int
+```
+
+S.index(value, \[start, \[stop\]\]) -\> integer -- return first index of value. Raises ValueError if the value is not present.
+
+Supporting start and stop arguments is optional, but recommended.
+
+#### `count()`
+
+```python
+count(value: Any) -> int
+```
+
+S.count(value) -\> integer -- return number of occurrences of value
+
+### `SnowflakeList`
+
+```python
+class SnowflakeList(data: Iterable[int], *, is_sorted: bool = False)
+```
+
+Internal data storage class to efficiently store a list of snowflakes.
+
+This should have the following characteristics:
+
+- Low memory usage
+- O(n) iteration (obviously)
+- O(n log n) initial creation if data is unsorted
+- O(log n) search and indexing
+- O(n) insertion
+
+#### `add()`
+
+```python
+add(element: int) -> None
+```
+
+#### `get()`
+
+```python
+get(element: int) -> int | None
+```
+
+#### `has()`
+
+```python
+has(element: int) -> bool
+```
+
+## Functions
+
+### `as_chunks()`
+
+```python
+as_chunks(iterator: _Iter[T], max_size: int) -> _Iter[list[T]]
+```
+
+A helper function that collects an iterator into chunks of a given size.
+
+*Added in 2.0.*
+
+> [!WARNING]
+> The last chunk collected may not be as large as `max_size`.
+
+#### Parameters
+
+iterator: `collections.abc.Iterator` | `collections.abc.AsyncIterator`  
+The iterator to chunk, can be sync or async.
+
+max_size: `int`  
+The maximum chunk size.
+
+#### Returns
+
+`collections.abc.Iterator` | `collections.abc.AsyncIterator`  
+A new iterator which yields chunks of a given size.
+
+### `async_all()`
+
+```python
+async_all(gen, *, check=<function isawaitable at 0x70de74aae820>)
+```
+
+### `basic_autocomplete()`
+
+```python
+basic_autocomplete(values: Values, *, filter: FilterFunc | None = None) -> AutocompleteFunc
+```
+
+A helper function to make a basic autocomplete for slash commands. This is a pretty standard autocomplete and will return any options that start with the value from the user, case-insensitive. If the `values` parameter is callable, it will be called with the AutocompleteContext.
+
+This is meant to be passed into the `discord.Option.autocomplete` attribute.
+
+#### Parameters
+
+values: Iterable\[`.OptionChoice`\] | Iterable\[`str`\] | Iterable\[`int`\] | Iterable\[`float`\] | Callable\[\[`.AutocompleteContext`\], Iterable\[`str`\] | Iterable\[`int`\] | Iterable\[`float`\] | Awaitable\[Iterable\[`str`\] | Iterable\[`int`\] | Iterable\[`float`\]\]\] | Awaitable\[Iterable\[`str`\] | Iterable\[`int`\] | Iterable\[`float`\]\]  
+Possible values for the option. Accepts an iterable of `str`, a callable (sync or async) that takes a single argument of `.AutocompleteContext`, or a coroutine. Must resolve to an iterable of `str`.
+
+filter: Callable\[\[`.AutocompleteContext`, Any\], `bool` | Awaitable\[`bool`\]\] | `None`  
+An optional callable (sync or async) used to filter the autocomplete options. It accepts two arguments: the `.AutocompleteContext` and an item from `values` iteration treated as callback parameters. If `None` is provided, a default filter is used that includes items whose string representation starts with the user's input value, case-insensitive.
+
+*Added in 2.7.*
+
+#### Returns
+
+Callable\[\[`.AutocompleteContext`\], Awaitable\[Iterable\[`.OptionChoice`\] | Iterable\[`str`\] | Iterable\[`int`\] | Iterable\[`float`\]\]\]  
+A wrapped callback for the autocomplete.
+
+#### Examples
+
+Basic usage:
+
+``` python3
+Option(str, "color", autocomplete=basic_autocomplete(("red", "green", "blue")))
+
+# or
+
+async def autocomplete(ctx):
+    return "foo", "bar", "baz", ctx.interaction.user.name
+
+Option(str, "name", autocomplete=basic_autocomplete(autocomplete))
+```
+
+With filter parameter:
+
+``` python3
+Option(str, "color", autocomplete=basic_autocomplete(("red", "green", "blue"), filter=lambda c, i: str(c.value or "") in i))
+```
+
+*Added in 2.0.*
+
+#### Note
+
+Autocomplete cannot be used for options that have specified choices.
+
+### `cached_slot_property()`
+
+```python
+cached_slot_property(name: str) -> Callable[[Callable[[T], T_co]], CachedSlotProperty[T, T_co]]
+```
+
+### `compute_timedelta()`
+
+```python
+compute_timedelta(dt: datetime.datetime)
+```
+
+### `copy_doc()`
+
+```python
+copy_doc(original: Callable) -> Callable[[T], T]
+```
+
+### `delay_task()`
+
+```python
+delay_task(delay: float, func: Coroutine)
+```
+
+### `deprecated()`
+
+```python
+deprecated(instead: str | None = None, since: str | None = None, removed: str | None = None, reference: str | None = None, stacklevel: int = 3, *, use_qualname: bool = True) -> Callable[[Callable[P, T]], Callable[P, T]]
+```
+
+A decorator implementation of `warn_deprecated`. This will automatically call `warn_deprecated` when the decorated function is called.
+
+<div class="deprecated">
+
+2.8 Deprecated in favor of `warnings.deprecated`.
+
+</div>
+
+#### Parameters
+
+instead: `str` | `None`  
+A recommended alternative to the function.
+
+since: `str` | `None`  
+The version in which the function was deprecated. This should be in the format `major.minor(.patch)`, where the patch version is optional.
+
+removed: `str` | `None`  
+The version in which the function is planned to be removed. This should be in the format `major.minor(.patch)`, where the patch version is optional.
+
+reference: `str` | `None`  
+A reference that explains the deprecation, typically a URL to a page such as a changelog entry or a GitHub issue/PR.
+
+stacklevel: `int`  
+The stacklevel kwarg passed to `warnings.warn`. Defaults to 3.
+
+use_qualname: `bool`  
+Whether to use the qualified name of the function in the deprecation warning. If `False`, the short name of the function will be used instead. For example, \_\_qualname\_\_ will display as `Client.login` while \_\_name\_\_ will display as `login`. Defaults to `True`.
+
+### `escape_markdown()`
+
+```python
+escape_markdown(text: str, *, as_needed: bool = False, ignore_links: bool = True) -> str
+```
+
+A helper function that escapes Discord's markdown.
+
+#### Parameters
+
+text: `str`  
+The text to escape markdown from.
+
+as_needed: `bool`  
+Whether to escape the markdown characters as needed. This means that it does not escape extraneous characters if it's not necessary, e.g. `**hello**` is escaped into `\*\*hello**` instead of `\*\*hello\*\*`. Note however that this can open you up to some clever syntax abuse. Defaults to `False`.
+
+ignore_links: `bool`  
+Whether to leave links alone when escaping markdown. For example, if a URL in the text contains characters such as `_` then it will be left alone. This option is not supported with `as_needed`. Defaults to `True`.
+
+#### Returns
+
+`str`  
+The text with the markdown special characters escaped with a slash.
+
+### `escape_mentions()`
+
+```python
+escape_mentions(text: str) -> str
+```
+
+A helper function that escapes everyone, here, role, and user mentions.
+
+> [!NOTE]
+> This does not include channel mentions.
+
+> [!NOTE]
+> For more granular control over what mentions should be escaped within messages, refer to the `discord.AllowedMentions` class.
+
+#### Parameters
+
+text: `str`  
+The text to escape mentions from.
+
+#### Returns
+
+`str`  
+The text with the mentions removed.
+
+### `evaluate_annotation()`
+
+```python
+evaluate_annotation(tp: Any, globals: dict[str, Any], locals: dict[str, Any], cache: dict[str, Any], *, implicit_str: bool = True)
+```
+
+### `filter_params()`
+
+```python
+filter_params(params, **kwargs)
+```
+
+A helper function to filter out and replace certain keyword parameters
+
+#### Parameters
+
+params: Dict\[str, Any\]  
+The initial parameters to filter.
+
+\*\*kwargs: Dict\[`str`, `str` | `None`\]  
+Key to value pairs where the key's contents would be moved to the value, or if the value is None, remove key's contents (see code example).
+
+#### Example
+
+``` python3
+>>> params = {"param1": 12, "param2": 13}
+>>> filter_params(params, param1="param3", param2=None)
+{'param3': 12}
+# values of 'param1' is moved to 'param3'
+# and values of 'param2' are completely removed.
+```
+
+### `find()`
+
+```python
+find(predicate: Callable[[T], Any], seq: Iterable[T]) -> T | None
+```
+
+A helper to return the first element found in the sequence that meets the predicate. For example: :
+
+    member = discord.utils.find(lambda m: m.name == 'Mighty', channel.guild.members)
+
+would find the first `discord.Member` whose name is 'Mighty' and return it. If an entry is not found, then `None` is returned.
+
+This is different from `filter` due to the fact it stops the moment it finds a valid entry.
+
+#### Parameters
+
+predicate  
+A function that returns a boolean-like result.
+
+seq: `collections.abc.Iterable`  
+The iterable to search through.
+
+### `format_dt()`
+
+```python
+format_dt(dt: datetime.datetime | datetime.time, /, style: TimestampStyle | None = None) -> str
+```
+
+A helper function to format a `datetime.datetime` for presentation within Discord.
+
+This allows for a locale-independent way of presenting data using Discord specific Markdown.
+
+<table style="width:85%;">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 40%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th><blockquote>
+<p>Style</p>
+</blockquote></th>
+<th><blockquote>
+<p>Example Output</p>
+</blockquote></th>
+<th><blockquote>
+<p>Description</p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t</td>
+<td>22:57</td>
+<td>Short Time</td>
+</tr>
+<tr>
+<td>T</td>
+<td>22:57:58</td>
+<td>Long Time</td>
+</tr>
+<tr>
+<td>d</td>
+<td>17/05/2016</td>
+<td>Short Date</td>
+</tr>
+<tr>
+<td>D</td>
+<td>17 May 2016</td>
+<td>Long Date</td>
+</tr>
+<tr>
+<td>f (default)</td>
+<td>17 May 2016 22:57</td>
+<td>Short Date Time</td>
+</tr>
+<tr>
+<td>F</td>
+<td>Tuesday, 17 May 2016 22:57</td>
+<td>Long Date Time</td>
+</tr>
+<tr>
+<td>R</td>
+<td>5 years ago</td>
+<td>Relative Time</td>
+</tr>
+</tbody>
+</table>
+
+Note that the exact output depends on the user's locale setting in the client. The example output presented is using the `en-GB` locale.
+
+*Added in 2.0.*
+
+#### Parameters
+
+dt: `datetime.datetime` | `datetime.time`  
+The datetime to format.
+
+style: `str`  
+The style to format the datetime with.
+
+#### Returns
+
+`str`  
+The formatted string.
+
+### `generate_snowflake()`
+
+```python
+generate_snowflake(dt: datetime.datetime | None = None) -> int
+```
+
+Returns a numeric snowflake pretending to be created at the given date but more accurate and random than `time_snowflake`. If dt is not passed, it makes one from the current time using utcnow.
+
+#### Parameters
+
+dt: `datetime.datetime`  
+A datetime object to convert to a snowflake. If naive, the timezone is assumed to be local time.
+
+#### Returns
+
+`int`  
+The snowflake representing the time given.
+
+### `get()`
+
+```python
+get(iterable: Iterable[T], **attrs: Any) -> T | None
+```
+
+A helper that returns the first element in the iterable that meets all the traits passed in `attrs`. This is an alternative for `discord.utils.find`.
+
+When multiple attributes are specified, they are checked using logical AND, not logical OR. Meaning they have to meet every attribute passed in and not one of them.
+
+To have a nested attribute search (i.e. search by `x.y`) then pass in `x__y` as the keyword argument.
+
+If nothing is found that matches the attributes passed, then `None` is returned.
+
+#### Examples
+
+Basic usage:
+
+``` python3
+member = discord.utils.get(message.guild.members, name='Foo')
+```
+
+Multiple attribute matching:
+
+``` python3
+channel = discord.utils.get(guild.voice_channels, name='Foo', bitrate=64000)
+```
+
+Nested attribute matching:
+
+``` python3
+channel = discord.utils.get(client.get_all_channels(), guild__name='Cool', name='general')
+```
+
+#### Parameters
+
+iterable  
+An iterable to search through.
+
+\*\*attrs  
+Keyword arguments that denote attributes to search with.
+
+### `get_missing_voice_dependencies()`
+
+```python
+get_missing_voice_dependencies() -> tuple[str, ...]
+```
+
+### `get_or_fetch()`
+
+```python
+get_or_fetch(obj: Guild | Client, object_type: type[_FETCHABLE] = ..., object_id: int | None = ..., default: _D = ..., attr: str = ..., id: int = ...) -> _FETCHABLE | _D | None
+```
+
+Shortcut method to get data from an object either by returning the cached version, or if it does not exist, attempting to fetch it from the API.
+
+#### Parameters
+
+obj: `discord.Guild` | `discord.Client`  
+The object to operate on.
+
+object_type: Type\[`discord.VoiceChannel` | `discord.TextChannel` | `discord.ForumChannel` | `discord.StageChannel` | `discord.CategoryChannel` | `discord.Thread` | `discord.User` | `discord.Guild` | `discord.Role` | `discord.Member` | `discord.GuildEmoji` | `discord.AppEmoji`\]  
+Type of object to fetch or get.
+
+object_id: `int` | `None`  
+ID of object to get.
+
+default: Any | `None`  
+The value to return instead of raising if fetching fails.
+
+#### Returns
+
+`discord.VoiceChannel` | `discord.TextChannel` | `discord.ForumChannel` | `discord.StageChannel` | `discord.CategoryChannel` | `discord.Thread` | `discord.User` | `discord.Guild` | `discord.Role` | `discord.Member` | `discord.GuildEmoji` | `discord.AppEmoji` | `None`  
+The object if found, or <span class="title-ref">default</span> if provided when not found. Returns `None` only if <span class="title-ref">object_id</span> is `None` and no <span class="title-ref">default</span> is given.
+
+#### Raises
+
+`TypeError`  
+Raised when required parameters are missing or invalid types are provided.
+
+`InvalidArgument`  
+Raised when an unsupported or incompatible object type is used.
+
+`NotFound`  
+Invalid ID for the object.
+
+`HTTPException`  
+An error occurred fetching the object.
+
+`Forbidden`  
+You do not have permission to fetch the object.
+
+`InvalidData`  
+Raised when the object resolves to a different guild.
+
+### `get_slots()`
+
+```python
+get_slots(cls: type[Any]) -> Iterator[str]
+```
+
+### `maybe_coroutine()`
+
+```python
+maybe_coroutine(f, *args, **kwargs)
+```
+
+### `normalise_optional_params()`
+
+```python
+normalise_optional_params(parameters: Iterable[Any]) -> tuple[Any, ...]
+```
+
+### `oauth_url()`
+
+```python
+oauth_url(client_id: int | str, *, permissions: Permissions = ..., guild: Snowflake = ..., redirect_uri: str = ..., scopes: Iterable[str] = ..., disable_guild_select: bool = False) -> str
+```
+
+A helper function that returns the OAuth2 URL for inviting the bot into guilds.
+
+#### Parameters
+
+client_id: `int` | `str`  
+The client ID for your bot.
+
+permissions: `discord.Permissions`  
+The permissions you're requesting. If not given then you won't be requesting any permissions.
+
+guild: `discord.abc.Snowflake`  
+The guild to pre-select in the authorization screen, if available.
+
+redirect_uri: `str`  
+An optional valid redirect URI.
+
+scopes: Iterable\[`str`\]  
+An optional valid list of scopes. Defaults to `('bot',)`.
+
+*Added in 1.7.*
+
+disable_guild_select: `bool`  
+Whether to disallow the user from changing the guild dropdown.
+
+*Added in 2.0.*
+
+#### Returns
+
+`str`  
+The OAuth2 URL for inviting the bot into guilds.
+
+### `parse_time()`
+
+```python
+parse_time(timestamp: str | None) -> datetime.datetime | None
+```
+
+A helper function to convert an ISO 8601 timestamp to a datetime object.
+
+#### Parameters
+
+timestamp: `str` | `None`  
+The timestamp to convert.
+
+#### Returns
+
+`datetime.datetime` | `None`  
+The converted datetime object.
+
+### `raw_channel_mentions()`
+
+```python
+raw_channel_mentions(text: str) -> list[int]
+```
+
+Returns a list of channel IDs matching `<@#channel_id>` in the string.
+
+*Added in 2.2.*
+
+#### Parameters
+
+text: `str`  
+The string to get channel mentions from.
+
+#### Returns
+
+List\[`int`\]  
+A list of channel IDs found in the string.
+
+### `raw_mentions()`
+
+```python
+raw_mentions(text: str) -> list[int]
+```
+
+Returns a list of user IDs matching `<@user_id>` in the string.
+
+*Added in 2.2.*
+
+#### Parameters
+
+text: `str`  
+The string to get user mentions from.
+
+#### Returns
+
+List\[`int`\]  
+A list of user IDs found in the string.
+
+### `raw_role_mentions()`
+
+```python
+raw_role_mentions(text: str) -> list[int]
+```
+
+Returns a list of role IDs matching `<@&role_id>` in the string.
+
+*Added in 2.2.*
+
+#### Parameters
+
+text: `str`  
+The string to get role mentions from.
+
+#### Returns
+
+List\[`int`\]  
+A list of role IDs found in the string.
+
+### `remove_markdown()`
+
+```python
+remove_markdown(text: str, *, ignore_links: bool = True) -> str
+```
+
+A helper function that removes markdown characters.
+
+*Added in 1.7.*
+
+> [!NOTE]
+> This function is not markdown aware and may remove meaning from the original text. For example, if the input contains `10 * 5` then it will be converted into `10  5`.
+
+#### Parameters
+
+text: `str`  
+The text to remove markdown from.
+
+ignore_links: `bool`  
+Whether to leave links alone when removing markdown. For example, if a URL in the text contains characters such as `_` then it will be left alone. Defaults to `True`.
+
+#### Returns
+
+`str`  
+The text with the markdown special characters removed.
+
+### `resolve_annotation()`
+
+```python
+resolve_annotation(annotation: Any, globalns: dict[str, Any], localns: dict[str, Any] | None, cache: dict[str, Any] | None) -> Any
+```
+
+### `resolve_invite()`
+
+```python
+resolve_invite(invite: Invite | str) -> str
+```
+
+Resolves an invite from a `discord.Invite`, URL or code.
+
+#### Parameters
+
+invite: `discord.Invite` | `str`  
+The invite.
+
+#### Returns
+
+`str`  
+The invite code.
+
+### `resolve_template()`
+
+```python
+resolve_template(code: Template | str) -> str
+```
+
+Resolves a template code from a `discord.Template`, URL or code.
+
+*Added in 1.4.*
+
+#### Parameters
+
+code: `discord.Template` | `str`  
+The code.
+
+#### Returns
+
+`str`  
+The template code.
+
+### `sane_wait_for()`
+
+```python
+sane_wait_for(futures, *, timeout)
+```
+
+### `setup_logging()`
+
+```python
+setup_logging(*, handler: logging.Handler = ..., formatter: logging.Formatter = ..., level: int = ..., root: bool = True) -> None
+```
+
+Set up the library's loggers.
+
+rum uses the standard `logging` module, so this is only a convenience wrapper around it. The library loggers are named `rum` and its submodules, e.g. `rum.client`, `rum.gateway` and `rum.http`.
+
+#### Parameters
+
+handler: `logging.Handler`  
+The handler to attach. Defaults to a `logging.StreamHandler`.
+
+formatter: `logging.Formatter`  
+The formatter to use for the handler. Defaults to `"[%(asctime)s] [%(levelname)s] %(name)s: %(message)s"`.
+
+level: `int`  
+The log level to use. Defaults to `logging.INFO`.
+
+root: `bool`  
+Whether to attach the handler to the root logger instead of only to the `rum` logger. Defaults to `True`.
+
+#### Examples
+
+``` python3
+import logging
+
+import rum
+
+rum.utils.setup_logging(level=logging.DEBUG)
+```
+
+### `sleep_until()`
+
+```python
+sleep_until(when: datetime.datetime, result: T | None = None) -> T | None
+```
+
+*(coroutine)*
+
+Sleep until a specified time.
+
+If the time supplied is in the past this function will yield instantly.
+
+*Added in 1.3.*
+
+#### Parameters
+
+when: `datetime.datetime`  
+The timestamp in which to sleep until. If the datetime is naive then it is assumed to be local time.
+
+result: Any  
+If provided is returned to the caller when the coroutine completes.
+
+### `snowflake_time()`
+
+```python
+snowflake_time(id: int) -> datetime.datetime
+```
+
+Converts a Discord snowflake ID to a UTC-aware datetime object.
+
+#### Parameters
+
+id: `int`  
+The snowflake ID.
+
+#### Returns
+
+`datetime.datetime`  
+An aware datetime in UTC representing the creation time of the snowflake.
+
+### `time_snowflake()`
+
+```python
+time_snowflake(dt: datetime.datetime, high: bool = False) -> int
+```
+
+Returns a numeric snowflake pretending to be created at the given date.
+
+When using as the lower end of a range, use `time_snowflake(high=False) - 1` to be inclusive, `high=True` to be exclusive.
+
+When using as the higher end of a range, use `time_snowflake(high=True) + 1` to be inclusive, `high=False` to be exclusive
+
+#### Parameters
+
+dt: `datetime.datetime`  
+A datetime object to convert to a snowflake. If naive, the timezone is assumed to be local time.
+
+high: `bool`  
+Whether to set the lower 22 bit to high or low.
+
+#### Returns
+
+`int`  
+The snowflake representing the time given.
+
+### `users_to_csv()`
+
+```python
+users_to_csv(users: Iterable[Snowflake]) -> io.BytesIO
+```
+
+Converts an iterable of users to a CSV file-like object for usage in `discord.abc.GuildChannel.create_invite` and `discord.Invite.edit_target_users`.
+
+#### Parameters
+
+users: Iterable\[`discord.abc.Snowflake`\]  
+An iterable of users to convert.
+
+#### Returns
+
+`io.BytesIO`  
+A file-like object containing the CSV data.
+
+### `utcnow()`
+
+```python
+utcnow() -> datetime.datetime
+```
+
+A helper function to return an aware UTC datetime representing the current time.
+
+This should be preferred to `datetime.datetime.utcnow` since it is an aware datetime, compared to the naive datetime in the standard library.
+
+*Added in 2.0.*
+
+#### Returns
+
+`datetime.datetime`  
+The current aware datetime in UTC.
+
+### `valid_icon_size()`
+
+```python
+valid_icon_size(size: int) -> bool
+```
+
+Icons must be power of 2 within \[16, 4096\].
+
+### `warn_deprecated()`
+
+```python
+warn_deprecated(name: str, instead: str | None = None, since: str | None = None, removed: str | None = None, reference: str | None = None, stacklevel: int = 3) -> None
+```
+
+Warn about a deprecated function, with the ability to specify details about the deprecation. Emits a DeprecationWarning.
+
+#### Parameters
+
+name: str  
+The name of the deprecated function.
+
+instead: `str` | `None`  
+A recommended alternative to the function.
+
+since: `str` | `None`  
+The version in which the function was deprecated. This should be in the format `major.minor(.patch)`, where the patch version is optional.
+
+removed: `str` | `None`  
+The version in which the function is planned to be removed. This should be in the format `major.minor(.patch)`, where the patch version is optional.
+
+reference: `str` | `None`  
+A reference that explains the deprecation, typically a URL to a page such as a changelog entry or a GitHub issue/PR.
+
+stacklevel: `int`  
+The stacklevel kwarg passed to `warnings.warn`. Defaults to 3.
+
+### `warn_if_voice_dependencies_missing()`
+
+```python
+warn_if_voice_dependencies_missing() -> None
+```

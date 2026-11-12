@@ -31,7 +31,6 @@ DEALINGS IN THE SOFTWARE.
 # slash_cog.py
 # This example demonstrates a standalone cog file with the bot instance in a separate file.
 
-import os
 import rum
 from rum.ext import commands
 

@@ -1,0 +1,35 @@
+# `rum.oggparse`
+
+## Classes
+
+### `OggError`
+
+```python
+class OggError(...)
+```
+
+An exception that is thrown for Ogg stream parsing errors.
+
+### `OggPage`
+
+```python
+class OggPage(stream: IO[bytes]) -> None
+```
+
+#### `iter_packets()`
+
+```python
+iter_packets() -> Generator[tuple[bytes, bool]]
+```
+
+### `OggStream`
+
+```python
+class OggStream(stream: IO[bytes]) -> None
+```
+
+#### `iter_packets()`
+
+```python
+iter_packets() -> Generator[bytes]
+```

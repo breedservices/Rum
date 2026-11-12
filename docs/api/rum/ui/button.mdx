@@ -1,0 +1,119 @@
+# `rum.ui.button`
+
+## Classes
+
+### `Button`
+
+```python
+class Button(*, style: ButtonStyle = <ButtonStyle.secondary: 2>, label: str | None = None, disabled: bool = False, custom_id: str | None = None, url: str | None = None, emoji: str | GuildEmoji | AppEmoji | PartialEmoji | None = None, sku_id: int | None = None, row: int | None = None, id: int | None = None)
+```
+
+Represents a UI button.
+
+*Added in 2.0.*
+
+#### Parameters
+
+style: `discord.ButtonStyle`  
+The style of the button.
+
+custom_id: `str` | `None`  
+The ID of the button that gets received during an interaction. If this button is for a URL, it does not have a custom ID.
+
+url: `str` | `None`  
+The URL this button sends you to.
+
+disabled: `bool`  
+Whether the button is disabled or not.
+
+label: `str` | `None`  
+The label of the button, if any. Maximum of 80 chars.
+
+emoji: `.PartialEmoji` | `GuildEmoji` | `AppEmoji` | `str` | `None`  
+The emoji of the button, if available.
+
+sku_id: `int` | `None`  
+The ID of the SKU this button refers to.
+
+row: `int` | `None`  
+The relative row this button belongs to. A Discord component can only have 5 rows. By default, items are arranged automatically into those 5 rows. If you'd like to control the relative positioning of the row then passing an index is advised. For example, row=1 will show up before row=2. Defaults to `None`, which is automatic ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+
+> [!WARNING]
+> This parameter does not work in `ActionRow`.
+
+id: `int` | `None`  
+The button's ID.
+
+#### `from_component()`
+
+```python
+from_component(button: ButtonComponent) -> B
+```
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> ButtonComponentPayload
+```
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_storable()`
+
+```python
+is_storable() -> bool
+```
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(button: ButtonComponent) -> None
+```
+
+## Functions
+
+### `button()`
+
+```python
+button(*, label: str | None = None, custom_id: str | None = None, disabled: bool = False, style: ButtonStyle = <ButtonStyle.secondary: 2>, emoji: str | GuildEmoji | AppEmoji | PartialEmoji | None = None, row: int | None = None, id: int | None = None) -> Callable[[ItemCallbackType[Button[V]]], Button[V]]
+```
+
+A decorator that attaches a button to a component.
+
+The function being decorated should have three parameters, `self` representing the `discord.ui.View`, `discord.ui.ActionRow` or `discord.ui.Section`, the `discord.ui.Button` being pressed, and the `discord.Interaction` you receive.
+
+> [!NOTE]
+> Premium and link buttons cannot be created with this decorator. Consider creating a `Button` object manually instead. These types of buttons do not have a callback associated since Discord doesn't handle them when clicked.
+
+#### Parameters
+
+label: `str` | `None`  
+The label of the button, if any.
+
+custom_id: `str` | `None`  
+The ID of the button that gets received during an interaction. It is recommended not to set this parameter to prevent conflicts.
+
+style: `.ButtonStyle`  
+The style of the button. Defaults to `.ButtonStyle.grey`.
+
+disabled: `bool`  
+Whether the button is disabled or not. Defaults to `False`.
+
+emoji: `str` | `GuildEmoji` | `AppEmoji` | `.PartialEmoji` | `None`  
+The emoji of the button. This can be in string form or a `.PartialEmoji` or a full `GuildEmoji` or `AppEmoji`.
+
+row: `int` | `None`  
+The relative row this button belongs to. A Discord component can only have 5 rows. By default, items are arranged automatically into those 5 rows. If you'd like to control the relative positioning of the row then passing an index is advised. For example, row=1 will show up before row=2. Defaults to `None`, which is automatic ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+
+> [!WARNING]
+> This parameter does not work in `ActionRow`.

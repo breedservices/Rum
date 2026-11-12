@@ -1,0 +1,213 @@
+# `rum.widget`
+
+## Classes
+
+### `Widget`
+
+```python
+class Widget(*, state: ConnectionState, data: WidgetPayload) -> None
+```
+
+Represents a `Guild` widget.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two widgets are the same.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two widgets are not the same.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the widget's JSON URL.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The guild's ID.
+
+name: `str`  
+The guild's name.
+
+channels: List\[`WidgetChannel`\]  
+The accessible voice channels in the guild.
+
+members: List\[`Member`\]  
+The online members in the server. Offline members do not appear in the widget.
+
+> [!NOTE]
+> Due to a Discord limitation, if this data is available the users will be "anonymized" with linear IDs and discriminator information being incorrect. Likewise, the number of members retrieved is capped.
+
+#### `fetch_invite()`
+
+```python
+fetch_invite(*, with_counts: bool = True) -> Invite
+```
+
+*(coroutine)*
+
+Retrieves an `Invite` from the widget's invite URL. This is the same as `Client.fetch_invite`; the invite code is abstracted away.
+
+#### Parameters
+
+with_counts: `bool`  
+Whether to include count information in the invite. This fills the `Invite.approximate_member_count` and `Invite.approximate_presence_count` fields.
+
+#### Returns
+
+`Invite`  
+The invite from the widget's invite URL.
+
+### `WidgetChannel`
+
+```python
+class WidgetChannel(id: int, name: str, position: int) -> None
+```
+
+Represents a "partial" widget channel.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two partial channels are the same.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two partial channels are not the same.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the partial channel's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the partial channel's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The channel's ID.
+
+name: `str`  
+The channel's name.
+
+position: `int`  
+The channel's position
+
+### `WidgetMember`
+
+```python
+class WidgetMember(*, state: ConnectionState, data: WidgetMemberPayload, connected_channel: WidgetChannel | None = None) -> None
+```
+
+Represents a "partial" member of the widget's guild.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two widget members are the same.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two widget members are not the same.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the widget member's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the widget member's <span class="title-ref">name#discriminator</span>.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The member's ID.
+
+name: `str`  
+The member's username.
+
+discriminator: `str`  
+The member's discriminator.
+
+bot: `bool`  
+Whether the member is a bot.
+
+status: `Status`  
+The member's status.
+
+nick: `str` | `None`  
+The member's nickname.
+
+avatar: `str` | `None`  
+The member's avatar hash.
+
+activity: `BaseActivity` | `Spotify` | `None`  
+The member's activity.
+
+deafened: `bool` | `None`  
+Whether the member is currently deafened.
+
+muted: `bool` | `None`  
+Whether the member is currently muted.
+
+suppress: `bool` | `None`  
+Whether the member is currently being suppressed.
+
+connected_channel: `WidgetChannel` | `None`  
+Which channel the member is connected to.

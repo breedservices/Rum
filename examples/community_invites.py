@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # community_invites.py
 import os
+
 import rum
 from rum.utils import users_to_csv
 

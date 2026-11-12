@@ -1,0 +1,41 @@
+# `rum.shared_client_theme`
+
+## Classes
+
+### `SharedClientTheme`
+
+```python
+class SharedClientTheme(gradient_angle: int = 0, base_mix: int = 0, colors: Sequence[Colour] = ..., colours: Sequence[Colour] = ..., *, base_theme: SharedClientThemeBaseType = <SharedClientThemeBaseType.unset: 0>) -> None
+```
+
+Represents a shared client theme that can be sent in a message.
+
+A shared client theme lets users transmit a customized Discord client appearance (colors, gradient, and base mode) through a message.
+
+*Added in 2.9.*
+
+#### Attributes
+
+colours: List\[`Colour`\]  
+The colours of the theme. A maximum of 5 colours.
+
+gradient_angle: `int`  
+The direction of the theme's colors, in degrees. Must be between `0` and `360`.
+
+base_mix: `int`  
+The intensity of the theme's colors. Must be between `0` and `100`.
+
+base_theme: `SharedClientThemeBaseType` | `None`  
+The mode of the theme. Defaults to `SharedClientThemeBaseType.unset`, which Discord treats as `SharedClientThemeBaseType.dark`.
+
+#### `to_dict()`
+
+```python
+to_dict() -> SharedClientThemePayload
+```
+
+#### `from_dict()`
+
+```python
+from_dict(data: SharedClientThemePayload) -> Self
+```

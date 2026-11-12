@@ -1,0 +1,1275 @@
+# Changelog
+
+This page keeps a detailed human-friendly rendering of what's new and changed in specific versions.
+
+> **Attention**
+>
+> <div class="title">
+>
+> Attention
+
+This page is no longer maintained. For an updated changelog for version 2.0+, please check out our [new changelog](../CHANGELOG.md) instead.
+
+</div>
+
+## v2.0.0
+
+- Fully deprecated/removed store channels
+- Buttons and Select Menus
+- Slash commands, User commands, and Message commands ([GH-31](https://github.com/breedservices/Rum/issues/31))
+- Message Content privileged intent ([GH-332](https://github.com/breedservices/Rum/issues/332))
+- Voice receive API ([GH-532](https://github.com/breedservices/Rum/issues/532))
+- rum.ext.pages (Paginators) ([GH-589](https://github.com/breedservices/Rum/issues/589))
+- Input Text and Modal components ([GH-630](https://github.com/breedservices/Rum/issues/630))
+- Discord API version changed from 9 to 10 ([GH-1012](https://github.com/breedservices/Rum/issues/1012))
+- Application permissions v2 ([GH-1129](https://github.com/breedservices/Rum/issues/1129))
+- rum.ext.bridge (slash and prefixed commands) ([GH-1131](https://github.com/breedservices/Rum/issues/1131))
+- `Client.get_message` ([GH-1141](https://github.com/breedservices/Rum/issues/1141))
+- Application Command Localization ([GH-1185](https://github.com/breedservices/Rum/issues/1185))
+- Guild Ban List Paginated ([GH-1217](https://github.com/breedservices/Rum/issues/1217))
+- Forum channels ([GH-1249](https://github.com/breedservices/Rum/issues/1249))
+- Methods and attributes that returned `TextChannel`, etc., can now return `Thread`.
+- Attributes that returned `Asset` are renamed, e.g. attributes ending with `_url` (i.e.: `avatar_url`) are changed to `avatar.url`. `User.avatar` returns `None` in case the default avatar is used.
+- `on_presence_update` replaces `on_member_update` for updates to `Member.status` and `Member.activities`.
+- `datetime.datetime` objects used in the library are now timezone-aware.
+- Sticker changes: `StickerType` has been renamed to `StickerFormatType`, and the type of `Message.stickers` is altered. `Sticker.preview_image`, `Sticker.image` and `Sticker.tags` are removed.
+- Webhooks are changed significantly; `WebhookAdapter` is removed, and synchronous requests using requests is now inside `SyncWebhook`.
+- `edit` method no longer updates the cache and instead returns modified instance.
+- User accounts (userbots) are no longer supported.
+- `Client.logout` is removed; use `Client.close` instead.
+- `on_private_channel_create/delete` events are removed.
+- `User.permissions_in` is removed; use `abc.GuildChannel.permissions_for` instead.
+- `Message.type` for replies are now `MessageType.reply`.
+- `Reaction.custom_emoji` property is changed to `Reaction.is_custom_emoji` method.
+- `missing_perms` attributes and arguments are renamed to `missing_permissions`.
+- Many method arguments now reject `None`.
+- Many arguments are now specified as positional-only or keyword-only; e.g. `utils.oauth_url` now takes keyword-only arguments, and methods starting with `get_` or `fetch_` take positional-only arguments.
+- [migrating_to_v2](migrating_to_v2.mdx)
+
+## v1.7.3
+
+### Bug Fixes
+
+- Fix a crash involving guild uploaded stickers
+- Fix `DMChannel.permissions_for` not having `Permissions.read_messages` set.
+
+## v1.7.2
+
+### Bug Fixes
+
+- Fix `fail_if_not_exists` causing certain message references to not be usable within `abc.Messageable.send` and `Message.reply` ([GH-6726](https://github.com/Rapptz/discord.py/issues/6726))
+- Fix `Guild.chunk` hanging when the user left the guild. ([GH-6730](https://github.com/Rapptz/discord.py/issues/6730))
+- Fix loop sleeping after final iteration rather than before ([GH-6744](https://github.com/Rapptz/discord.py/issues/6744))
+
+## v1.7.1
+
+### Bug Fixes
+
+- \[`ext.commands`\] Fix `Cog.has_error_handler` not working as intended.
+
+## v1.7.0
+
+This version is mainly for improvements and bug fixes. This is more than likely the last major version in the 1.x series. Work after this will be spent on v2.0. As a result, **this is the last version to support Python 3.5**. Likewise, **this is the last version to support user bots**.
+
+Development of v2.0 will have breaking changes and support for newer API features.
+
+### New Features
+
+- Add support for stage channels via `StageChannel` ([GH-6602](https://github.com/Rapptz/discord.py/issues/6602), [GH-6608](https://github.com/Rapptz/discord.py/issues/6608))
+
+- Add support for `MessageReference.fail_if_not_exists` ([GH-6484](https://github.com/Rapptz/discord.py/issues/6484))  
+  - By default, if the message you're replying to doesn't exist then the API errors out. This attribute tells the Discord API that it's okay for that message to be missing.
+
+- Add support for Discord's new permission serialisation scheme.
+
+- Add an easier way to move channels using `abc.GuildChannel.move`
+
+- Add `Permissions.use_slash_commands`
+
+- Add `Permissions.request_to_speak`
+
+- Add support for voice regions in voice channels via `VoiceChannel.rtc_region` ([GH-6606](https://github.com/Rapptz/discord.py/issues/6606))
+
+- Add support for `PartialEmoji.url_as` ([GH-6341](https://github.com/Rapptz/discord.py/issues/6341))
+
+- Add `MessageReference.jump_url` ([GH-6318](https://github.com/Rapptz/discord.py/issues/6318))
+
+- Add `File.spoiler` ([GH-6317](https://github.com/Rapptz/discord.py/issues/6317))
+
+- Add support for passing `roles` to `Guild.estimate_pruned_members` ([GH-6538](https://github.com/Rapptz/discord.py/issues/6538))
+
+- Allow callable class factories to be used in `abc.Connectable.play` ([GH-6478](https://github.com/Rapptz/discord.py/issues/6478))
+
+- Add a way to get mutual guilds from the client's cache via `User.mutual_guilds` ([GH-2539](https://github.com/Rapptz/discord.py/issues/2539), [GH-6444](https://github.com/Rapptz/discord.py/issues/6444))
+
+- `PartialMessage.edit` now returns a full `Message` upon success ([GH-6309](https://github.com/Rapptz/discord.py/issues/6309))
+
+- Add `RawMessageUpdateEvent.guild_id` ([GH-6489](https://github.com/Rapptz/discord.py/issues/6489))
+
+- `AuditLogEntry` is now hashable ([GH-6495](https://github.com/Rapptz/discord.py/issues/6495))
+
+- `Attachment` is now hashable
+
+- Add `Attachment.content_type` attribute ([GH-6618](https://github.com/Rapptz/discord.py/issues/6618))
+
+- Add support for casting `Attachment` to `str` to get the URL.
+
+- Add `seed` parameter for `Colour.random` ([GH-6562](https://github.com/Rapptz/discord.py/issues/6562))  
+  - This only seeds it for one call. If seeding for multiple calls is desirable, use `random.seed`.
+
+- Add a `utils.remove_markdown` helper function ([GH-6573](https://github.com/Rapptz/discord.py/issues/6573))
+
+- Add support for passing scopes to `utils.oauth_url` ([GH-6568](https://github.com/Rapptz/discord.py/issues/6568))
+
+- \[`ext.commands`\] Add support for `rgb` CSS function as a parameter to `ColourConverter` ([GH-6374](https://github.com/Rapptz/discord.py/issues/6374))
+
+- \[`ext.commands`\] Add support for converting `StoreChannel` via `StoreChannelConverter` ([GH-6603](https://github.com/Rapptz/discord.py/issues/6603))
+
+- \[`ext.commands`\] Add support for stripping whitespace after the prefix is encountered using the `strip_after_prefix` `ext.commands.Bot` constructor parameter.
+
+- \[`ext.commands`\] Add `Context.invoked_parents` to get the aliases a command's parent was invoked with ([GH-1874](https://github.com/Rapptz/discord.py/issues/1874), [GH-6462](https://github.com/Rapptz/discord.py/issues/6462))
+
+- \[`ext.commands`\] Add a converter for `PartialMessage` under `ext.commands.PartialMessageConverter` ([GH-6308](https://github.com/Rapptz/discord.py/issues/6308))
+
+- \[`ext.commands`\] Add a converter for `Guild` under `ext.commands.GuildConverter` ([GH-6016](https://github.com/Rapptz/discord.py/issues/6016), [GH-6365](https://github.com/Rapptz/discord.py/issues/6365))
+
+- \[`ext.commands`\] Add `Command.has_error_handler`  
+  - This is also adds `Cog.has_error_handler`
+
+- \[`ext.commands`\] Allow callable types to act as a bucket key for cooldowns ([GH-6563](https://github.com/Rapptz/discord.py/issues/6563))
+
+- \[`ext.commands`\] Add `linesep` keyword argument to `Paginator` ([GH-5975](https://github.com/Rapptz/discord.py/issues/5975))
+
+- \[`ext.commands`\] Allow `None` to be passed to `HelpCommand.verify_checks` to only verify in a guild context ([GH-2008](https://github.com/Rapptz/discord.py/issues/2008), [GH-6446](https://github.com/Rapptz/discord.py/issues/6446))
+
+- \[`ext.commands`\] Allow relative paths when loading extensions via a `package` keyword argument ([GH-2465](https://github.com/Rapptz/discord.py/issues/2465), [GH-6445](https://github.com/Rapptz/discord.py/issues/6445))
+
+### Bug Fixes
+
+- Fix mentions not working if `mention_author` is passed in `abc.Messageable.send` without `Client.allowed_mentions` set ([GH-6192](https://github.com/Rapptz/discord.py/issues/6192), [GH-6458](https://github.com/Rapptz/discord.py/issues/6458))
+
+- Fix user created instances of `CustomActivity` triggering an error ([GH-4049](https://github.com/Rapptz/discord.py/issues/4049))  
+  - Note that currently, bot users still cannot set a custom activity due to a Discord limitation.
+
+- Fix `ZeroDivisionError` being raised from `VoiceClient.average_latency` ([GH-6430](https://github.com/Rapptz/discord.py/issues/6430), [GH-6436](https://github.com/Rapptz/discord.py/issues/6436))
+
+- Fix `User.public_flags` not updating upon edit ([GH-6315](https://github.com/Rapptz/discord.py/issues/6315))
+
+- Fix `Message.call` sometimes causing attribute errors ([GH-6390](https://github.com/Rapptz/discord.py/issues/6390))
+
+- Fix issue resending a file during request retries on newer versions of `aiohttp` ([GH-6531](https://github.com/Rapptz/discord.py/issues/6531))
+
+- Raise an error when `user_ids` is empty in `Guild.query_members`
+
+- Fix `__str__` magic method raising when a `Guild` is unavailable.
+
+- Fix potential `AttributeError` when accessing `VoiceChannel.members` ([GH-6602](https://github.com/Rapptz/discord.py/issues/6602))
+
+- `Embed` constructor parameters now implicitly convert to `str` ([GH-6574](https://github.com/Rapptz/discord.py/issues/6574))
+
+- Ensure `discord` package is only run if executed as a script ([GH-6483](https://github.com/Rapptz/discord.py/issues/6483))
+
+- \[`ext.commands`\] Fix irrelevant commands potentially being unloaded during cog unload due to failure.
+
+- \[`ext.commands`\] Fix attribute errors when setting a cog to `.ext.commands.HelpCommand` ([GH-5154](https://github.com/Rapptz/discord.py/issues/5154))
+
+- \[`ext.commands`\] Fix `Context.invoked_with` being improperly reassigned during a `ext.commands.Context.reinvoke` ([GH-6451](https://github.com/Rapptz/discord.py/issues/6451), [GH-6462](https://github.com/Rapptz/discord.py/issues/6462))
+
+- \[`ext.commands`\] Remove duplicates from `HelpCommand.get_bot_mapping` ([GH-6316](https://github.com/Rapptz/discord.py/issues/6316))
+
+- \[`ext.commands`\] Properly handle positional-only parameters in bot command signatures ([GH-6431](https://github.com/Rapptz/discord.py/issues/6431))
+
+- \[`ext.commands`\] Group signatures now properly show up in `Command.signature` ([GH-6529](https://github.com/Rapptz/discord.py/issues/6529), [GH-6530](https://github.com/Rapptz/discord.py/issues/6530))
+
+### Miscellaneous
+
+- User endpoints and all userbot related functionality has been deprecated and will be removed in the next major version of the library.
+- `Permission` class methods were updated to match the UI of the Discord client ([GH-6476](https://github.com/Rapptz/discord.py/issues/6476))
+- `_` and `-` characters are now stripped when making a new cog using the `discord` package ([GH-6313](https://github.com/Rapptz/discord.py/issues/6313))
+
+## v1.6.0
+
+This version comes with support for replies and stickers.
+
+### New Features
+
+- An entirely redesigned documentation. This was the cumulation of multiple months of effort.  
+  - There's now a dark theme, feel free to navigate to the cog on the screen to change your setting, though this should be automatic.
+
+- Add support for `AppInfo.icon_url_as` and `AppInfo.cover_image_url_as` ([GH-5888](https://github.com/Rapptz/discord.py/issues/5888))
+
+- Add `Colour.random` to get a random colour ([GH-6067](https://github.com/Rapptz/discord.py/issues/6067))
+
+- Add support for stickers via `Sticker` ([GH-5946](https://github.com/Rapptz/discord.py/issues/5946))
+
+- Add support for replying via `Message.reply` ([GH-6061](https://github.com/Rapptz/discord.py/issues/6061))  
+  - This also comes with the `AllowedMentions.replied_user` setting.
+  - `abc.Messageable.send` can now accept a `MessageReference`.
+  - `MessageReference` can now be constructed by users.
+  - `Message.to_reference` can now convert a message to a `MessageReference`.
+
+- Add support for getting the replied to resolved message through `MessageReference.resolved`.
+
+- Add support for role tags.  
+  - `Guild.premium_subscriber_role` to get the "Nitro Booster" role (if available).
+  - `Guild.self_role` to get the bot's own role (if available).
+  - `Role.tags` to get the role's tags.
+  - `Role.is_premium_subscriber` to check if a role is the "Nitro Booster" role.
+  - `Role.is_bot_managed` to check if a role is a bot role (i.e. the automatically created role for bots).
+  - `Role.is_integration` to check if a role is role created by an integration.
+
+- Add `Client.is_ws_ratelimited` to check if the websocket is rate limited.  
+  - `ShardInfo.is_ws_ratelimited` is the equivalent for checking a specific shard.
+
+- Add support for chunking an `AsyncIterator` through `AsyncIterator.chunk` ([GH-6100](https://github.com/Rapptz/discord.py/issues/6100), [GH-6082](https://github.com/Rapptz/discord.py/issues/6082))
+
+- Add `PartialEmoji.created_at` ([GH-6128](https://github.com/Rapptz/discord.py/issues/6128))
+
+- Add support for editing and deleting webhook sent messages ([GH-6058](https://github.com/Rapptz/discord.py/issues/6058))  
+  - This adds `WebhookMessage` as well to power this behaviour.
+
+- Add `PartialMessage` to allow working with a message via channel objects and just a message_id ([GH-5905](https://github.com/Rapptz/discord.py/issues/5905))  
+  - This is useful if you don't want to incur an extra API call to fetch the message.
+
+- Add `Emoji.url_as` ([GH-6162](https://github.com/Rapptz/discord.py/issues/6162))
+
+- Add support for `Member.pending` for the membership gating feature.
+
+- Allow `colour` parameter to take `int` in `Guild.create_role` ([GH-6195](https://github.com/Rapptz/discord.py/issues/6195))
+
+- Add support for `presences` in `Guild.query_members` ([GH-2354](https://github.com/Rapptz/discord.py/issues/2354))
+
+- \[`ext.commands`\] Add support for `description` keyword argument in `commands.Cog` ([GH-6028](https://github.com/Rapptz/discord.py/issues/6028))
+
+- \[`ext.tasks`\] Add support for calling the wrapped coroutine as a function via `__call__`.
+
+### Bug Fixes
+
+- Raise `DiscordServerError` when reaching 503s repeatedly ([GH-6044](https://github.com/Rapptz/discord.py/issues/6044))
+
+- Fix `AttributeError` when `Client.fetch_template` is called ([GH-5986](https://github.com/Rapptz/discord.py/issues/5986))
+
+- Fix errors when playing audio and moving to another channel ([GH-5953](https://github.com/Rapptz/discord.py/issues/5953))
+
+- Fix `AttributeError` when voice channels disconnect too fast ([GH-6039](https://github.com/Rapptz/discord.py/issues/6039))
+
+- Fix stale `User` references when the members intent is off.
+
+- Fix `on_user_update` not dispatching in certain cases when a member is not cached but the user somehow is.
+
+- Fix `Message.author` being overwritten in certain cases during message update.  
+  - This would previously make it so `Message.author` is a `User`.
+
+- Fix `UnboundLocalError` for editing `public_updates_channel` in `Guild.edit` ([GH-6093](https://github.com/Rapptz/discord.py/issues/6093))
+
+- Fix uninitialised `CustomActivity.created_at` ([GH-6095](https://github.com/Rapptz/discord.py/issues/6095))
+
+- \[`ext.commands`\] Errors during cog unload no longer stops module cleanup ([GH-6113](https://github.com/Rapptz/discord.py/issues/6113))
+
+- \[`ext.commands`\] Properly cleanup lingering commands when a conflicting alias is found when adding commands ([GH-6217](https://github.com/Rapptz/discord.py/issues/6217))
+
+### Miscellaneous
+
+- `ffmpeg` spawned processes no longer open a window in Windows ([GH-6038](https://github.com/Rapptz/discord.py/issues/6038))
+- Update dependencies to allow the library to work on Python 3.9+ without requiring build tools. ([GH-5984](https://github.com/Rapptz/discord.py/issues/5984), [GH-5970](https://github.com/Rapptz/discord.py/issues/5970))
+- Fix docstring issue leading to a SyntaxError in 3.9 ([GH-6153](https://github.com/Rapptz/discord.py/issues/6153))
+- Update Windows opus binaries from 1.2.1 to 1.3.1 ([GH-6161](https://github.com/Rapptz/discord.py/issues/6161))
+- Allow `Guild.create_role` to accept `int` as the `colour` parameter ([GH-6195](https://github.com/Rapptz/discord.py/issues/6195))
+- \[`ext.commands`\] `MessageConverter` regex got updated to support `www.` prefixes ([GH-6002](https://github.com/Rapptz/discord.py/issues/6002))
+- \[`ext.commands`\] `UserConverter` now fetches the API if an ID is passed and the user is not cached.
+- \[`ext.commands`\] `max_concurrency` is now called before cooldowns ([GH-6172](https://github.com/Rapptz/discord.py/issues/6172))
+
+## v1.5.1
+
+### Bug Fixes
+
+- Fix `utils.escape_markdown` not escaping quotes properly ([GH-5897](https://github.com/Rapptz/discord.py/issues/5897))
+- Fix `Message` not being hashable ([GH-5901](https://github.com/Rapptz/discord.py/issues/5901), [GH-5866](https://github.com/Rapptz/discord.py/issues/5866))
+- Fix moving channels to the end of the channel list ([GH-5923](https://github.com/Rapptz/discord.py/issues/5923))
+- Fix seemingly strange behaviour in `__eq__` for `PermissionOverwrite` ([GH-5929](https://github.com/Rapptz/discord.py/issues/5929))
+- Fix aliases showing up in `__iter__` for `Intents` ([GH-5945](https://github.com/Rapptz/discord.py/issues/5945))
+- Fix the bot disconnecting from voice when moving them to another channel ([GH-5904](https://github.com/Rapptz/discord.py/issues/5904))
+- Fix attribute errors when chunking times out sometimes during delayed on_ready dispatching.
+- Ensure that the bot's own member is not evicted from the cache ([GH-5949](https://github.com/Rapptz/discord.py/issues/5949))
+
+### Miscellaneous
+
+- Members are now loaded during `GUILD_MEMBER_UPDATE` events if `MemberCacheFlags.joined` is set. ([GH-5930](https://github.com/Rapptz/discord.py/issues/5930))
+
+- \[`ext.commands`\] `MemberConverter` now properly lazily fetches members if not available from cache.  
+  - This is the same as having `rum.Member` as the type-hint.
+
+- `Guild.chunk` now allows concurrent calls without spamming the gateway with requests.
+
+## v1.5.0
+
+This version came with forced breaking changes that Discord is requiring all bots to go through on October 7th. It is highly recommended to read the documentation on intents, `intents_primer`.
+
+### API Changes
+
+- Members and presences will no longer be retrieved due to an API change. See `privileged_intents` for more info.
+- As a consequence, fetching offline members is disabled if the members intent is not enabled.
+
+### New Features
+
+- Support for gateway intents, passed via `intents` in `Client` using `Intents`.
+
+- Add `VoiceRegion.south_korea` ([GH-5233](https://github.com/Rapptz/discord.py/issues/5233))
+
+- Add support for `__eq__` for `Message` ([GH-5789](https://github.com/Rapptz/discord.py/issues/5789))
+
+- Add `Colour.dark_theme` factory method ([GH-1584](https://github.com/Rapptz/discord.py/issues/1584))
+
+- Add `AllowedMentions.none` and `AllowedMentions.all` ([GH-5785](https://github.com/Rapptz/discord.py/issues/5785))
+
+- Add more concrete exceptions for 500 class errors under `DiscordServerError` ([GH-5797](https://github.com/Rapptz/discord.py/issues/5797))
+
+- Implement `VoiceProtocol` to better intersect the voice flow.
+
+- Add `Guild.chunk` to fully chunk a guild.
+
+- Add `MemberCacheFlags` to better control member cache. See `intents_member_cache` for more info.
+
+- Add support for `ActivityType.competing` ([GH-5823](https://github.com/Rapptz/discord.py/issues/5823))  
+  - This seems currently unused API wise.
+
+- Add support for message references, `Message.reference` ([GH-5754](https://github.com/Rapptz/discord.py/issues/5754), [GH-5832](https://github.com/Rapptz/discord.py/issues/5832))
+
+- Add alias for `ColourConverter` under `ColorConverter` ([GH-5773](https://github.com/Rapptz/discord.py/issues/5773))
+
+- Add alias for `PublicUserFlags.verified_bot_developer` under `PublicUserFlags.early_verified_bot_developer` ([GH-5849](https://github.com/Rapptz/discord.py/issues/5849))
+
+- \[`ext.commands`\] Add support for `require_var_positional` for `Command` ([GH-5793](https://github.com/Rapptz/discord.py/issues/5793))
+
+### Bug Fixes
+
+- Fix issue with `Guild.by_category` not showing certain channels.
+- Fix `abc.GuildChannel.permissions_synced` always being `False` ([GH-5772](https://github.com/Rapptz/discord.py/issues/5772))
+- Fix handling of cloudflare bans on webhook related requests ([GH-5221](https://github.com/Rapptz/discord.py/issues/5221))
+- Fix cases where a keep-alive thread would ack despite already dying ([GH-5800](https://github.com/Rapptz/discord.py/issues/5800))
+- Fix cases where a `Member` reference would be stale when cache is disabled in message events ([GH-5819](https://github.com/Rapptz/discord.py/issues/5819))
+- Fix `allowed_mentions` not being sent when sending a single file ([GH-5835](https://github.com/Rapptz/discord.py/issues/5835))
+- Fix `overwrites` being ignored in `abc.GuildChannel.edit` if `{}` is passed ([GH-5756](https://github.com/Rapptz/discord.py/issues/5756), [GH-5757](https://github.com/Rapptz/discord.py/issues/5757))
+- \[`ext.commands`\] Fix exceptions being raised improperly in command invoke hooks ([GH-5799](https://github.com/Rapptz/discord.py/issues/5799))
+- \[`ext.commands`\] Fix commands not being properly ejected during errors in a cog injection ([GH-5804](https://github.com/Rapptz/discord.py/issues/5804))
+- \[`ext.commands`\] Fix cooldown timing ignoring edited timestamps.
+- \[`ext.tasks`\] Fix tasks extending the next iteration on handled exceptions ([GH-5762](https://github.com/Rapptz/discord.py/issues/5762), [GH-5763](https://github.com/Rapptz/discord.py/issues/5763))
+
+### Miscellaneous
+
+- Webhook requests are now logged ([GH-5798](https://github.com/Rapptz/discord.py/issues/5798))
+- Remove caching layer from `AutoShardedClient.shards`. This was causing issues if queried before launching shards.
+- Gateway rate limits are now handled.
+- Warnings logged due to missed caches are now changed to DEBUG log level.
+- Some strings are now explicitly interned to reduce memory usage.
+- Usage of namedtuples has been reduced to avoid potential breaking changes in the future ([GH-5834](https://github.com/Rapptz/discord.py/issues/5834))
+- \[`ext.commands`\] All `BadArgument` exceptions from the built-in converters now raise concrete exceptions to better tell them apart ([GH-5748](https://github.com/Rapptz/discord.py/issues/5748))
+- \[`ext.tasks`\] Lazily fetch the event loop to prevent surprises when changing event loop policy ([GH-5808](https://github.com/Rapptz/discord.py/issues/5808))
+
+## v1.4.2
+
+This is a maintenance release with backports from `vp1p5p0`.
+
+### Bug Fixes
+
+- Fix issue with `Guild.by_category` not showing certain channels.
+- Fix `abc.GuildChannel.permissions_synced` always being `False` ([GH-5772](https://github.com/Rapptz/discord.py/issues/5772))
+- Fix handling of cloudflare bans on webhook related requests ([GH-5221](https://github.com/Rapptz/discord.py/issues/5221))
+- Fix cases where a keep-alive thread would ack despite already dying ([GH-5800](https://github.com/Rapptz/discord.py/issues/5800))
+- Fix cases where a `Member` reference would be stale when cache is disabled in message events ([GH-5819](https://github.com/Rapptz/discord.py/issues/5819))
+- Fix `allowed_mentions` not being sent when sending a single file ([GH-5835](https://github.com/Rapptz/discord.py/issues/5835))
+- Fix `overwrites` being ignored in `abc.GuildChannel.edit` if `{}` is passed ([GH-5756](https://github.com/Rapptz/discord.py/issues/5756), [GH-5757](https://github.com/Rapptz/discord.py/issues/5757))
+- \[`ext.commands`\] Fix exceptions being raised improperly in command invoke hooks ([GH-5799](https://github.com/Rapptz/discord.py/issues/5799))
+- \[`ext.commands`\] Fix commands not being properly ejected during errors in a cog injection ([GH-5804](https://github.com/Rapptz/discord.py/issues/5804))
+- \[`ext.commands`\] Fix cooldown timing ignoring edited timestamps.
+- \[`ext.tasks`\] Fix tasks extending the next iteration on handled exceptions ([GH-5762](https://github.com/Rapptz/discord.py/issues/5762), [GH-5763](https://github.com/Rapptz/discord.py/issues/5763))
+
+### Miscellaneous
+
+- Remove caching layer from `AutoShardedClient.shards`. This was causing issues if queried before launching shards.
+- \[`ext.tasks`\] Lazily fetch the event loop to prevent surprises when changing event loop policy ([GH-5808](https://github.com/Rapptz/discord.py/issues/5808))
+
+## v1.4.1
+
+### Bug Fixes
+
+- Properly terminate the connection when `Client.close` is called ([GH-5207](https://github.com/Rapptz/discord.py/issues/5207))
+- Fix error being raised when clearing embed author or image when it was already cleared ([GH-5210](https://github.com/Rapptz/discord.py/issues/5210), [GH-5212](https://github.com/Rapptz/discord.py/issues/5212))
+- Fix `__path__` to allow editable extensions ([GH-5213](https://github.com/Rapptz/discord.py/issues/5213))
+
+## v1.4.0
+
+Another version with a long development time. Features like Intents are slated to be released in a v1.5 release. Thank you for your patience!
+
+### New Features
+
+- Add support for `AllowedMentions` to have more control over what gets mentioned.  
+  - This can be set globally through `Client.allowed_mentions`
+  - This can also be set on a per message basis via `abc.Messageable.send`
+
+- `AutoShardedClient` has been completely redesigned from the ground up to better suit multi-process clusters ([GH-2654](https://github.com/Rapptz/discord.py/issues/2654))  
+  - Add `ShardInfo` which allows fetching specific information about a shard.
+  - The `ShardInfo` allows for reconnecting and disconnecting of a specific shard as well.
+  - Add `AutoShardedClient.get_shard` and `AutoShardedClient.shards` to get information about shards.
+  - Rework the entire connection flow to better facilitate the `IDENTIFY` rate limits.
+  - Add a hook `Client.before_identify_hook` to have better control over what happens before an `IDENTIFY` is done.
+  - Add more shard related events such as `on_shard_connect`, `on_shard_disconnect` and `on_shard_resumed`.
+
+- Add support for guild templates ([GH-2652](https://github.com/Rapptz/discord.py/issues/2652))  
+  - This adds `Template` to read a template's information.
+  - `Client.fetch_template` can be used to fetch a template's information from the API.
+  - `Client.create_guild` can now take an optional template to base the creation from.
+  - Note that fetching a guild's template is currently restricted for bot accounts.
+
+- Add support for guild integrations ([GH-2051](https://github.com/Rapptz/discord.py/issues/2051), [GH-1083](https://github.com/Rapptz/discord.py/issues/1083))  
+  - `Integration` is used to read integration information.
+  - `IntegrationAccount` is used to read integration account information.
+  - `Guild.integrations` will fetch all integrations in a guild.
+  - `Guild.create_integration` will create an integration.
+  - `Integration.edit` will edit an existing integration.
+  - `Integration.delete` will delete an integration.
+  - `Integration.sync` will sync an integration.
+  - There is currently no support in the audit log for this.
+
+- Add an alias for `VerificationLevel.extreme` under `VerificationLevel.very_high` ([GH-2650](https://github.com/Rapptz/discord.py/issues/2650))
+
+- Add various grey to gray aliases for `Colour` ([GH-5130](https://github.com/Rapptz/discord.py/issues/5130))
+
+- Added `VoiceClient.latency` and `VoiceClient.average_latency` ([GH-2535](https://github.com/Rapptz/discord.py/issues/2535))
+
+- Add `use_cached` and `spoiler` parameters to `Attachment.to_file` ([GH-2577](https://github.com/Rapptz/discord.py/issues/2577), [GH-4095](https://github.com/Rapptz/discord.py/issues/4095))
+
+- Add `position` parameter support to `Guild.create_category` ([GH-2623](https://github.com/Rapptz/discord.py/issues/2623))
+
+- Allow passing `int` for the colour in `Role.edit` ([GH-4057](https://github.com/Rapptz/discord.py/issues/4057))
+
+- Add `Embed.remove_author` to clear author information from an embed ([GH-4068](https://github.com/Rapptz/discord.py/issues/4068))
+
+- Add the ability to clear images and thumbnails in embeds using `Embed.Empty` ([GH-4053](https://github.com/Rapptz/discord.py/issues/4053))
+
+- Add `Guild.max_video_channel_users` ([GH-4120](https://github.com/Rapptz/discord.py/issues/4120))
+
+- Add `Guild.public_updates_channel` ([GH-4120](https://github.com/Rapptz/discord.py/issues/4120))
+
+- Add `guild_ready_timeout` parameter to `Client` and subclasses to control timeouts when the `GUILD_CREATE` stream takes too long ([GH-4112](https://github.com/Rapptz/discord.py/issues/4112))
+
+- Add support for public user flags via `User.public_flags` and `PublicUserFlags` ([GH-3999](https://github.com/Rapptz/discord.py/issues/3999))
+
+- Allow changing of channel types via `TextChannel.edit` to and from a news channel ([GH-4121](https://github.com/Rapptz/discord.py/issues/4121))
+
+- Add `Guild.edit_role_positions` to bulk edit role positions in a single API call ([GH-2501](https://github.com/Rapptz/discord.py/issues/2501), [GH-2143](https://github.com/Rapptz/discord.py/issues/2143))
+
+- Add `Guild.change_voice_state` to change your voice state in a guild ([GH-5088](https://github.com/Rapptz/discord.py/issues/5088))
+
+- Add `PartialInviteGuild.is_icon_animated` for checking if the invite guild has animated icon ([GH-4180](https://github.com/Rapptz/discord.py/issues/4180), [GH-4181](https://github.com/Rapptz/discord.py/issues/4181))
+
+- Add `PartialInviteGuild.icon_url_as` now supports `static_format` for consistency ([GH-4180](https://github.com/Rapptz/discord.py/issues/4180), [GH-4181](https://github.com/Rapptz/discord.py/issues/4181))
+
+- Add support for `user_ids` in `Guild.query_members`
+
+- Add support for pruning members by roles in `Guild.prune_members` ([GH-4043](https://github.com/Rapptz/discord.py/issues/4043))
+
+- \[`ext.commands`\] Implement `ext.commands.before_invoke` and `ext.commands.after_invoke` decorators ([GH-1986](https://github.com/Rapptz/discord.py/issues/1986), [GH-2502](https://github.com/Rapptz/discord.py/issues/2502))
+
+- \[`ext.commands`\] Add a way to retrieve `retry_after` from a cooldown in a command via `Command.get_cooldown_retry_after` ([GH-5195](https://github.com/Rapptz/discord.py/issues/5195))
+
+- \[`ext.commands`\] Add a way to dynamically add and remove checks from a `HelpCommand` ([GH-5197](https://github.com/Rapptz/discord.py/issues/5197))
+
+- \[`ext.tasks`\] Add `Loop.is_running` method to the task objects ([GH-2540](https://github.com/Rapptz/discord.py/issues/2540))
+
+- \[`ext.tasks`\] Allow usage of custom error handlers similar to the command extensions to tasks using `Loop.error` decorator ([GH-2621](https://github.com/Rapptz/discord.py/issues/2621))
+
+### Bug Fixes
+
+- Fix issue with `PartialEmoji.url` reads leading to a failure ([GH-4015](https://github.com/Rapptz/discord.py/issues/4015), [GH-4016](https://github.com/Rapptz/discord.py/issues/4016))
+- Allow `abc.Messageable.history` to take a limit of `1` even if `around` is passed ([GH-4019](https://github.com/Rapptz/discord.py/issues/4019))
+- Fix `Guild.member_count` not updating in certain cases when a member has left the guild ([GH-4021](https://github.com/Rapptz/discord.py/issues/4021))
+- Fix the type of `Object.id` not being validated. For backwards compatibility `str` is still allowed but is converted to `int` ([GH-4002](https://github.com/Rapptz/discord.py/issues/4002))
+- Fix `Guild.edit` not allowing editing of notification settings ([GH-4074](https://github.com/Rapptz/discord.py/issues/4074), [GH-4047](https://github.com/Rapptz/discord.py/issues/4047))
+- Fix crash when the guild widget contains channels that aren't in the payload ([GH-4114](https://github.com/Rapptz/discord.py/issues/4114), [GH-4115](https://github.com/Rapptz/discord.py/issues/4115))
+- Close ffmpeg stdin handling from spawned processes with `FFmpegOpusAudio` and `FFmpegPCMAudio` ([GH-4036](https://github.com/Rapptz/discord.py/issues/4036))
+- Fix `utils.escape_markdown` not escaping masked links ([GH-4206](https://github.com/Rapptz/discord.py/issues/4206), [GH-4207](https://github.com/Rapptz/discord.py/issues/4207))
+- Fix reconnect loop due to failed handshake on region change ([GH-4210](https://github.com/Rapptz/discord.py/issues/4210), [GH-3996](https://github.com/Rapptz/discord.py/issues/3996))
+- Fix `Guild.by_category` not returning empty categories ([GH-4186](https://github.com/Rapptz/discord.py/issues/4186))
+- Fix certain JPEG images not being identified as JPEG ([GH-5143](https://github.com/Rapptz/discord.py/issues/5143))
+- Fix a crash when an incomplete guild object is used when fetching reaction information ([GH-5181](https://github.com/Rapptz/discord.py/issues/5181))
+- Fix a timeout issue when fetching members using `Guild.query_members`
+- Fix an issue with domain resolution in voice ([GH-5188](https://github.com/Rapptz/discord.py/issues/5188), [GH-5191](https://github.com/Rapptz/discord.py/issues/5191))
+- Fix an issue where `PartialEmoji.id` could be a string ([GH-4153](https://github.com/Rapptz/discord.py/issues/4153), [GH-4152](https://github.com/Rapptz/discord.py/issues/4152))
+- Fix regression where `Member.activities` would not clear.
+- \[`ext.commands`\] A `TypeError` is now raised when `typing.Optional` is used within `commands.Greedy` ([GH-2253](https://github.com/Rapptz/discord.py/issues/2253), [GH-5068](https://github.com/Rapptz/discord.py/issues/5068))
+- \[`ext.commands`\] `Bot.walk_commands` no longer yields duplicate commands due to aliases ([GH-2591](https://github.com/Rapptz/discord.py/issues/2591))
+- \[`ext.commands`\] Fix regex characters not being escaped in `HelpCommand.clean_prefix` ([GH-4058](https://github.com/Rapptz/discord.py/issues/4058), [GH-4071](https://github.com/Rapptz/discord.py/issues/4071))
+- \[`ext.commands`\] Fix `Bot.get_command` from raising errors when a name only has whitespace ([GH-5124](https://github.com/Rapptz/discord.py/issues/5124))
+- \[`ext.commands`\] Fix issue with `Context.subcommand_passed` not functioning as expected ([GH-5198](https://github.com/Rapptz/discord.py/issues/5198))
+- \[`ext.tasks`\] Task objects are no longer stored globally so two class instances can now start two separate tasks ([GH-2294](https://github.com/Rapptz/discord.py/issues/2294))
+- \[`ext.tasks`\] Allow cancelling the loop within `before_loop` ([GH-4082](https://github.com/Rapptz/discord.py/issues/4082))
+
+### Miscellaneous
+
+- The `Member.roles` cache introduced in v1.3 was reverted due to issues caused ([GH-4087](https://github.com/Rapptz/discord.py/issues/4087), [GH-4157](https://github.com/Rapptz/discord.py/issues/4157))
+
+- `Webhook` objects are now comparable and hashable ([GH-4182](https://github.com/Rapptz/discord.py/issues/4182))
+
+- Some more API requests got a `reason` parameter for audit logs ([GH-5086](https://github.com/Rapptz/discord.py/issues/5086))  
+  - `TextChannel.follow`
+  - `Message.pin` and `Message.unpin`
+  - `Webhook.delete` and `Webhook.edit`
+
+- For performance reasons `websockets` has been dropped in favour of `aiohttp.ws`.
+
+- The blocking logging message now shows the stack trace of where the main thread was blocking
+
+- The domain name was changed from `discordapp.com` to `discord.com` to prepare for the required domain migration
+
+- Reduce memory usage when reconnecting due to stale references being held by the message cache ([GH-5133](https://github.com/Rapptz/discord.py/issues/5133))
+
+- Optimize `abc.GuildChannel.permissions_for` by not creating as many temporary objects (20-32% savings).
+
+- \[`ext.commands`\] Raise `ext.commands.CommandRegistrationError` instead of `ClientException` when a duplicate error is registered ([GH-4217](https://github.com/Rapptz/discord.py/issues/4217))
+
+- \[`ext.tasks`\] No longer handle `HTTPException` by default in the task reconnect loop ([GH-5193](https://github.com/Rapptz/discord.py/issues/5193))
+
+## v1.3.4
+
+### Bug Fixes
+
+- Fix an issue with channel overwrites causing multiple issues including crashes ([GH-5109](https://github.com/Rapptz/discord.py/issues/5109))
+
+## v1.3.3
+
+### Bug Fixes
+
+- Change default WS close to 4000 instead of 1000.  
+  - The previous close code caused sessions to be invalidated at a higher frequency than desired.
+
+- Fix `None` appearing in `Member.activities`. ([GH-2619](https://github.com/Rapptz/discord.py/issues/2619))
+
+## v1.3.2
+
+Another minor bug fix release.
+
+### Bug Fixes
+
+- Higher the wait time during the `GUILD_CREATE` stream before `on_ready` is fired for `AutoShardedClient`.
+- `on_voice_state_update` now uses the inner `member` payload which should make it more reliable.
+- Fix various Cloudflare handling errors ([GH-2572](https://github.com/Rapptz/discord.py/issues/2572), [GH-2544](https://github.com/Rapptz/discord.py/issues/2544))
+- Fix crashes if `Message.guild` is `Object` instead of `Guild`.
+- Fix `Webhook.send` returning an empty string instead of `None` when `wait=False`.
+- Fix invalid format specifier in webhook state ([GH-2570](https://github.com/Rapptz/discord.py/issues/2570))
+- \[`ext.commands`\] Passing invalid permissions to permission related checks now raises `TypeError`.
+
+## v1.3.1
+
+Minor bug fix release.
+
+### Bug Fixes
+
+- Fix fetching invites in guilds that the user is not in.
+- Fix the channel returned from `Client.fetch_channel` raising when sending messages. ([GH-2531](https://github.com/Rapptz/discord.py/issues/2531))
+
+### Miscellaneous
+
+- Fix compatibility warnings when using the Python 3.9 alpha.
+- Change the unknown event logging from WARNING to DEBUG to reduce noise.
+
+## v1.3.0
+
+This version comes with a lot of bug fixes and new features. It's been in development for a lot longer than was anticipated!
+
+### New Features
+
+- Add `Guild.fetch_members` to fetch members from the HTTP API. ([GH-2204](https://github.com/Rapptz/discord.py/issues/2204))
+
+- Add `Guild.fetch_roles` to fetch roles from the HTTP API. ([GH-2208](https://github.com/Rapptz/discord.py/issues/2208))
+
+- Add support for teams via `Team` when fetching with `Client.application_info`. ([GH-2239](https://github.com/Rapptz/discord.py/issues/2239))
+
+- Add support for suppressing embeds via `Message.edit`
+
+- Add support for guild subscriptions. See the `Client` documentation for more details.
+
+- Add `VoiceChannel.voice_states` to get voice states without relying on member cache.
+
+- Add `Guild.query_members` to request members from the gateway.
+
+- Add `FFmpegOpusAudio` and other voice improvements. ([GH-2258](https://github.com/Rapptz/discord.py/issues/2258))
+
+- Add `RawMessageUpdateEvent.channel_id` for retrieving channel IDs during raw message updates. ([GH-2301](https://github.com/Rapptz/discord.py/issues/2301))
+
+- Add `RawReactionActionEvent.event_type` to disambiguate between reaction addition and removal in reaction events.
+
+- Add `abc.GuildChannel.permissions_synced` to query whether permissions are synced with the category. ([GH-2300](https://github.com/Rapptz/discord.py/issues/2300), [GH-2324](https://github.com/Rapptz/discord.py/issues/2324))
+
+- Add `MessageType.channel_follow_add` message type for announcement channels being followed. ([GH-2314](https://github.com/Rapptz/discord.py/issues/2314))
+
+- Add `Message.is_system` to allow for quickly filtering through system messages.
+
+- Add `VoiceState.self_stream` to indicate whether someone is streaming via Go Live. ([GH-2343](https://github.com/Rapptz/discord.py/issues/2343))
+
+- Add `Emoji.is_usable` to check if the client user can use an emoji. ([GH-2349](https://github.com/Rapptz/discord.py/issues/2349))
+
+- Add `VoiceRegion.europe` and `VoiceRegion.dubai`. ([GH-2358](https://github.com/Rapptz/discord.py/issues/2358), [GH-2490](https://github.com/Rapptz/discord.py/issues/2490))
+
+- Add `TextChannel.follow` to follow a news channel. ([GH-2367](https://github.com/Rapptz/discord.py/issues/2367))
+
+- Add `Permissions.view_guild_insights` permission. ([GH-2415](https://github.com/Rapptz/discord.py/issues/2415))
+
+- Add support for new audit log types. See `discord-api-audit-logs` for more information. ([GH-2427](https://github.com/Rapptz/discord.py/issues/2427))  
+  - Note that integration support is not finalized.
+
+- Add `Webhook.type` to query the type of webhook (`WebhookType`). ([GH-2441](https://github.com/Rapptz/discord.py/issues/2441))
+
+- Allow bulk editing of channel overwrites through `abc.GuildChannel.edit`. ([GH-2198](https://github.com/Rapptz/discord.py/issues/2198))
+
+- Add `Activity.created_at` to see when an activity was started. ([GH-2446](https://github.com/Rapptz/discord.py/issues/2446))
+
+- Add support for `xsalsa20_poly1305_lite` encryption mode for voice. ([GH-2463](https://github.com/Rapptz/discord.py/issues/2463))
+
+- Add `RawReactionActionEvent.member` to get the member who did the reaction. ([GH-2443](https://github.com/Rapptz/discord.py/issues/2443))
+
+- Add support for new YouTube streaming via `Streaming.platform` and `Streaming.game`. ([GH-2445](https://github.com/Rapptz/discord.py/issues/2445))
+
+- Add `Guild.discovery_splash_url` to get the discovery splash image asset. ([GH-2482](https://github.com/Rapptz/discord.py/issues/2482))
+
+- Add `Guild.rules_channel` to get the rules channel of public guilds. ([GH-2482](https://github.com/Rapptz/discord.py/issues/2482))  
+  - It should be noted that this feature is restricted to those who are either in Server Discovery or planning to be there.
+
+- Add support for message flags via `Message.flags` and `MessageFlags`. ([GH-2433](https://github.com/Rapptz/discord.py/issues/2433))
+
+- Add `User.system` and `Profile.system` to know whether a user is an official Discord Trust and Safety account.
+
+- Add `Profile.team_user` to check whether a user is a member of a team.
+
+- Add `Attachment.to_file` to easily convert attachments to `File` for sending.
+
+- Add certain aliases to `Permissions` to match the UI better. ([GH-2496](https://github.com/Rapptz/discord.py/issues/2496))  
+  - `Permissions.manage_permissions`
+  - `Permissions.view_channel`
+  - `Permissions.use_external_emojis`
+
+- Add support for passing keyword arguments when creating `Permissions`.
+
+- Add support for custom activities via `CustomActivity`. ([GH-2400](https://github.com/Rapptz/discord.py/issues/2400))  
+  - Note that as of now, bots cannot send custom activities yet.
+
+- Add support for `on_invite_create` and `on_invite_delete` events.
+
+- Add support for clearing a specific reaction emoji from a message.  
+  - `Message.clear_reaction` and `Reaction.clear` methods.
+  - `on_raw_reaction_clear_emoji` and `on_reaction_clear_emoji` events.
+
+- Add `utils.sleep_until` helper to sleep until a specific datetime. ([GH-2517](https://github.com/Rapptz/discord.py/issues/2517), [GH-2519](https://github.com/Rapptz/discord.py/issues/2519))
+
+- \[`ext.commands`\] Add support for teams and `Bot.owner_ids` to have multiple bot owners. ([GH-2239](https://github.com/Rapptz/discord.py/issues/2239))
+
+- \[`ext.commands`\] Add new `BucketType.role` bucket type. ([GH-2201](https://github.com/Rapptz/discord.py/issues/2201))
+
+- \[`ext.commands`\] Expose `Command.cog` property publicly. ([GH-2360](https://github.com/Rapptz/discord.py/issues/2360))
+
+- \[`ext.commands`\] Add non-decorator interface for adding checks to commands via `Command.add_check` and `Command.remove_check`. ([GH-2411](https://github.com/Rapptz/discord.py/issues/2411))
+
+- \[`ext.commands`\] Add `has_guild_permissions` check. ([GH-2460](https://github.com/Rapptz/discord.py/issues/2460))
+
+- \[`ext.commands`\] Add `bot_has_guild_permissions` check. ([GH-2460](https://github.com/Rapptz/discord.py/issues/2460))
+
+- \[`ext.commands`\] Add `predicate` attribute to checks decorated with `.ext.commands.check`.
+
+- \[`ext.commands`\] Add `.ext.commands.check_any` check to logical OR multiple checks.
+
+- \[`ext.commands`\] Add `.ext.commands.max_concurrency` to allow only a certain amount of users to use a command concurrently before waiting or erroring.
+
+- \[`ext.commands`\] Add support for calling a `.ext.commands.Command` as a regular function.
+
+- \[`ext.tasks`\] `Loop.add_exception_type` now allows multiple exceptions to be set. ([GH-2333](https://github.com/Rapptz/discord.py/issues/2333))
+
+- \[`ext.tasks`\] Add `Loop.next_iteration` property. ([GH-2305](https://github.com/Rapptz/discord.py/issues/2305))
+
+### Bug Fixes
+
+- Fix issue with permission resolution sometimes failing for guilds with no owner.
+- Tokens are now stripped upon use. ([GH-2135](https://github.com/Rapptz/discord.py/issues/2135))
+- Passing in a `name` is no longer required for `Emoji.edit`. ([GH-2368](https://github.com/Rapptz/discord.py/issues/2368))
+- Fix issue with webhooks not re-raising after retries have run out. ([GH-2272](https://github.com/Rapptz/discord.py/issues/2272), [GH-2380](https://github.com/Rapptz/discord.py/issues/2380))
+- Fix mismatch in URL handling in `utils.escape_markdown`. ([GH-2420](https://github.com/Rapptz/discord.py/issues/2420))
+- Fix issue with ports being read in little endian when they should be big endian in voice connections. ([GH-2470](https://github.com/Rapptz/discord.py/issues/2470))
+- Fix `Member.mentioned_in` not taking into consideration the message's guild.
+- Fix bug with moving channels when there are gaps in positions due to channel deletion and creation.
+- Fix `on_shard_ready` not triggering when `fetch_offline_members` is disabled. ([GH-2504](https://github.com/Rapptz/discord.py/issues/2504))
+- Fix issue with large sharded bots taking too long to actually dispatch `on_ready`.
+- Fix issue with fetching group DM based invites in `Client.fetch_invite`.
+- Fix out of order files being sent in webhooks when there are 10 files.
+- \[`ext.commands`\] Extensions that fail internally due to ImportError will no longer raise `.ext.commands.ExtensionNotFound`. ([GH-2244](https://github.com/Rapptz/discord.py/issues/2244), [GH-2275](https://github.com/Rapptz/discord.py/issues/2275), [GH-2291](https://github.com/Rapptz/discord.py/issues/2291))
+- \[`ext.commands`\] Updating the `Paginator.suffix` will not cause out of date calculations. ([GH-2251](https://github.com/Rapptz/discord.py/issues/2251))
+- \[`ext.commands`\] Allow converters from custom extension packages. ([GH-2369](https://github.com/Rapptz/discord.py/issues/2369), 2374)
+- \[`ext.commands`\] Fix issue with paginator prefix being `None` causing empty pages. ([GH-2471](https://github.com/Rapptz/discord.py/issues/2471))
+- \[`ext.commands`\] `.commands.Greedy` now ignores parsing errors rather than propagating them.
+- \[`ext.commands`\] `Command.can_run` now checks whether a command is disabled.
+- \[`ext.commands`\] `HelpCommand.clean_prefix` now takes into consideration nickname mentions. ([GH-2489](https://github.com/Rapptz/discord.py/issues/2489))
+- \[`ext.commands`\] `Context.send_help` now properly propagates to the `HelpCommand.on_help_command_error` handler.
+
+### Miscellaneous
+
+- The library now fully supports Python 3.8 without warnings.
+
+- Bump the dependency of `websockets` to 8.0 for those who can use it. ([GH-2453](https://github.com/Rapptz/discord.py/issues/2453))
+
+- Due to Discord providing `Member` data in mentions, users will now be upgraded to `Member` more often if mentioned.
+
+- `utils.escape_markdown` now properly escapes new quote markdown.
+
+- The message cache can now be disabled by passing `None` to `max_messages` in `Client`.
+
+- The default message cache size has changed from 5000 to 1000 to accommodate small bots.
+
+- Lower memory usage by only creating certain objects as needed in `Role`.
+
+- There is now a sleep of 5 seconds before re-IDENTIFYing during a reconnect to prevent long loops of session invalidation.
+
+- The rate limiting code now uses millisecond precision to have more granular rate limit handling.  
+  - Along with that, the rate limiting code now uses Discord's response to wait. If you need to use the system clock again for whatever reason, consider passing `assume_synced_clock` in `Client`.
+
+- The performance of `Guild.default_role` has been improved from O(N) to O(1). ([GH-2375](https://github.com/Rapptz/discord.py/issues/2375))
+
+- The performance of `Member.roles` has improved due to usage of caching to avoid surprising performance traps.
+
+- The GC is manually triggered during things that cause large deallocations (such as guild removal) to prevent memory fragmentation.
+
+- There have been many changes to the documentation for fixes both for usability, correctness, and to fix some linter errors. Thanks to everyone who contributed to those.
+
+- The loading of the opus module has been delayed which would make the result of `opus.is_loaded` somewhat surprising.
+
+- \[`ext.commands`\] Usernames prefixed with @ inside DMs will properly convert using the `User` converter. ([GH-2498](https://github.com/Rapptz/discord.py/issues/2498))
+
+- \[`ext.tasks`\] The task sleeping time will now take into consideration the amount of time the task body has taken before sleeping. ([GH-2516](https://github.com/Rapptz/discord.py/issues/2516))
+
+## v1.2.5
+
+### Bug Fixes
+
+- Fix a bug that caused crashes due to missing `animated` field in Emoji structures in reactions.
+
+## v1.2.4
+
+### Bug Fixes
+
+- Fix a regression when `Message.channel` would be `None`.
+- Fix a regression where `Message.edited_at` would not update during edits.
+- Fix a crash that would trigger during message updates (GH-2265, [GH-2287](https://github.com/Rapptz/discord.py/issues/2287)).
+- Fix a bug when `VoiceChannel.connect` would not return ([GH-2274](https://github.com/Rapptz/discord.py/issues/2274), [GH-2372](https://github.com/Rapptz/discord.py/issues/2372), [GH-2373](https://github.com/Rapptz/discord.py/issues/2373), [GH-2377](https://github.com/Rapptz/discord.py/issues/2377)).
+- Fix a crash relating to token-less webhooks ([GH-2364](https://github.com/Rapptz/discord.py/issues/2364)).
+- Fix issue where `Guild.premium_subscription_count` would be `None` due to a Discord bug. ([GH-2331](https://github.com/Rapptz/discord.py/issues/2331), [GH-2376](https://github.com/Rapptz/discord.py/issues/2376)).
+
+## v1.2.3
+
+### Bug Fixes
+
+- Fix an AttributeError when accessing `Member.premium_since` in `on_member_update`. ([GH-2213](https://github.com/Rapptz/discord.py/issues/2213))
+- Handle `asyncio.CancelledError` in `abc.Messageable.typing` context manager. ([GH-2218](https://github.com/Rapptz/discord.py/issues/2218))
+- Raise the max encoder bitrate to 512kbps to account for nitro boosting. ([GH-2232](https://github.com/Rapptz/discord.py/issues/2232))
+- Properly propagate exceptions in `Client.run`. ([GH-2237](https://github.com/Rapptz/discord.py/issues/2237))
+- \[`ext.commands`\] Ensure cooldowns are properly copied when used in cog level `command_attrs`.
+
+## v1.2.2
+
+### Bug Fixes
+
+- Audit log related attribute access have been fixed to not error out when they shouldn't have.
+
+## v1.2.1
+
+### Bug Fixes
+
+- `User.avatar_url` and related attributes no longer raise an error.
+- More compatibility shims with the `enum.Enum` code.
+
+## v1.2.0
+
+This update mainly brings performance improvements and various nitro boosting attributes (referred to in the API as "premium guilds").
+
+### New Features
+
+- Add `Guild.premium_tier` to query the guild's current nitro boost level.
+
+- Add `Guild.emoji_limit`, `Guild.bitrate_limit`, `Guild.filesize_limit` to query the new limits of a guild when taking into consideration boosting.
+
+- Add `Guild.premium_subscription_count` to query how many members are boosting a guild.
+
+- Add `Member.premium_since` to query since when a member has boosted a guild.
+
+- Add `Guild.premium_subscribers` to query all the members currently boosting the guild.
+
+- Add `Guild.system_channel_flags` to query the settings for a guild's `Guild.system_channel`.  
+  - This includes a new type named `SystemChannelFlags`
+
+- Add `Emoji.available` to query if an emoji can be used (within the guild or otherwise).
+
+- Add support for animated icons in `Guild.icon_url_as` and `Guild.icon_url`.
+
+- Add `Guild.is_icon_animated`.
+
+- Add support for the various new `MessageType` involving nitro boosting.
+
+- Add `VoiceRegion.india`. ([GH-2145](https://github.com/Rapptz/discord.py/issues/2145))
+
+- Add `Embed.insert_field_at`. ([GH-2178](https://github.com/Rapptz/discord.py/issues/2178))
+
+- Add a `type` attribute for all channels to their appropriate `ChannelType`. ([GH-2185](https://github.com/Rapptz/discord.py/issues/2185))
+
+- Add `Client.fetch_channel` to fetch a channel by ID via HTTP. ([GH-2169](https://github.com/Rapptz/discord.py/issues/2169))
+
+- Add `Guild.fetch_channels` to fetch all channels via HTTP. ([GH-2169](https://github.com/Rapptz/discord.py/issues/2169))
+
+- \[`ext.tasks`\] Add `Loop.stop` to gracefully stop a task rather than cancelling.
+
+- \[`ext.tasks`\] Add `Loop.failed` to query if a task had failed somehow.
+
+- \[`ext.tasks`\] Add `Loop.change_interval` to change the sleep interval at runtime ([GH-2158](https://github.com/Rapptz/discord.py/issues/2158), [GH-2162](https://github.com/Rapptz/discord.py/issues/2162))
+
+### Bug Fixes
+
+- Fix internal error when using `Guild.prune_members`.
+- \[`ext.commands`\] Fix `.Command.invoked_subcommand` being invalid in many cases.
+- \[`ext.tasks`\] Reset iteration count when the loop terminates and is restarted.
+- \[`ext.tasks`\] The decorator interface now works as expected when stacking ([GH-2154](https://github.com/Rapptz/discord.py/issues/2154))
+
+### Miscellaneous
+
+- Improve performance of all Enum related code significantly.  
+  - This was done by replacing the `enum.Enum` code with an API compatible one.
+  - This should not be a breaking change for most users due to duck-typing.
+
+- Improve performance of message creation by about 1.5x.
+
+- Improve performance of message editing by about 1.5-4x depending on payload size.
+
+- Improve performance of attribute access on `Member` about by 2x.
+
+- Improve performance of `utils.get` by around 4-6x depending on usage.
+
+- Improve performance of event parsing lookup by around 2.5x.
+
+- Keyword arguments in `Client.start` and `Client.run` are now validated ([GH-953](https://github.com/Rapptz/discord.py/issues/953), [GH-2170](https://github.com/Rapptz/discord.py/issues/2170))
+
+- The Discord error code is now shown in the exception message for `HTTPException`.
+
+- Internal tasks launched by the library will now have their own custom `__repr__`.
+
+- All public facing types should now have a proper and more detailed `__repr__`.
+
+- \[`ext.tasks`\] Errors are now logged via the standard `logging` module.
+
+## v1.1.1
+
+### Bug Fixes
+
+- Webhooks do not overwrite data on retrying their HTTP requests ([GH-2140](https://github.com/Rapptz/discord.py/issues/2140))
+
+### Miscellaneous
+
+- Add back signal handling to `Client.run` due to issues some users had with proper cleanup.
+
+## v1.1.0
+
+### New Features
+
+- **There is a new extension dedicated to making background tasks easier.**  
+  - You can check the documentation here: `ext_tasks_api`.
+
+- Add `Permissions.stream` permission. ([GH-2077](https://github.com/Rapptz/discord.py/issues/2077))
+
+- Add equality comparison and hash support to `Asset`
+
+- Add `compute_prune_members` parameter to `Guild.prune_members` ([GH-2085](https://github.com/Rapptz/discord.py/issues/2085))
+
+- Add `Client.cached_messages` attribute to fetch the message cache ([GH-2086](https://github.com/Rapptz/discord.py/issues/2086))
+
+- Add `abc.GuildChannel.clone` to clone a guild channel. ([GH-2093](https://github.com/Rapptz/discord.py/issues/2093))
+
+- Add `delay` keyword-only argument to `Message.delete` ([GH-2094](https://github.com/Rapptz/discord.py/issues/2094))
+
+- Add support for `<:name:id>` when adding reactions ([GH-2095](https://github.com/Rapptz/discord.py/issues/2095))
+
+- Add `Asset.read` to fetch the bytes content of an asset ([GH-2107](https://github.com/Rapptz/discord.py/issues/2107))
+
+- Add `Attachment.read` to fetch the bytes content of an attachment ([GH-2118](https://github.com/Rapptz/discord.py/issues/2118))
+
+- Add support for voice kicking by passing `None` to `Member.move_to`.
+
+#### `rum.ext.commands`
+
+- Add new `.commands.dm_only` check.
+
+- Support callable converters in `.commands.Greedy`
+
+- Add new `.commands.MessageConverter`.  
+  - This allows you to use `Message` as a type hint in functions.
+
+- Allow passing `cls` in the `.commands.group` decorator ([GH-2061](https://github.com/Rapptz/discord.py/issues/2061))
+
+- Add `.Command.parents` to fetch the parents of a command ([GH-2104](https://github.com/Rapptz/discord.py/issues/2104))
+
+### Bug Fixes
+
+- Fix `AttributeError` when using `__repr__` on `Widget`.
+- Fix issue with `abc.GuildChannel.overwrites` returning `None` for keys.
+- Remove incorrect legacy NSFW checks in e.g. `TextChannel.is_nsfw`.
+- Fix `UnboundLocalError` when `RequestsWebhookAdapter` raises an error.
+- Fix bug where updating your own user did not update your member instances.
+- Tighten constraints of `__eq__` in `Spotify` objects ([GH-2113](https://github.com/Rapptz/discord.py/issues/2113), [GH-2117](https://github.com/Rapptz/discord.py/issues/2117))
+
+#### `rum.ext.commands`
+
+- Fix lambda converters in a non-module context (e.g. `eval`).
+
+- Use message creation time for reference time when computing cooldowns.  
+  - This prevents cooldowns from triggering during e.g. a RESUME session.
+
+- Fix the default `on_command_error` to work with new-style cogs ([GH-2094](https://github.com/Rapptz/discord.py/issues/2094))
+
+- DM channels are now recognised as NSFW in `.commands.is_nsfw` check.
+
+- Fix race condition with help commands ([GH-2123](https://github.com/Rapptz/discord.py/issues/2123))
+
+- Fix cog descriptions not showing in `.commands.MinimalHelpCommand` ([GH-2139](https://github.com/Rapptz/discord.py/issues/2139))
+
+### Miscellaneous
+
+- Improve the performance of internal enum creation in the library by about 5x.
+- Make the output of `python -m discord --version` a bit more useful.
+- The loop cleanup facility has been rewritten again.
+- The signal handling in `Client.run` has been removed.
+
+#### `rum.ext.commands`
+
+- Custom exception classes are now used for all default checks in the library ([GH-2101](https://github.com/Rapptz/discord.py/issues/2101))
+
+## v1.0.1
+
+### Bug Fixes
+
+- Fix issue with speaking state being cast to `int` when it was invalid.
+- Fix some issues with loop cleanup that some users experienced on Linux machines.
+- Fix voice handshake race condition ([GH-2056](https://github.com/Rapptz/discord.py/issues/2056), [GH-2063](https://github.com/Rapptz/discord.py/issues/2063))
+
+## v1.0.0
+
+The changeset for this version are too big to be listed here, for more information please see `the migrating page`.
+
+## v0.16.6
+
+### Bug Fixes
+
+- Fix issue with `Client.create_server` that made it stop working.
+- Fix main thread being blocked upon calling `StreamPlayer.stop`.
+- Handle HEARTBEAT_ACK and resume gracefully when it occurs.
+- Fix race condition when pre-emptively rate limiting that caused releasing an already released lock.
+- Fix invalid state errors when immediately cancelling a coroutine.
+
+## v0.16.1
+
+This release is just a bug fix release with some better rate limit implementation.
+
+### Bug Fixes
+
+- Servers are now properly chunked for user bots.
+- The CDN URL is now used instead of the API URL for assets.
+- Rate limit implementation now tries to use header information if possible.
+- Event loop is now properly propagated ([GH-420](https://github.com/Rapptz/discord.py/issues/420))
+- Allow falsey values in `Client.send_message` and `Client.send_file`.
+
+## v0.16.0
+
+### New Features
+
+- Add `Channel.overwrites` to get all the permission overwrites of a channel.
+- Add `Server.features` to get information about partnered servers.
+
+### Bug Fixes
+
+- Timeout when waiting for offline members while triggering `on_ready`.
+
+  > - The fact that we did not timeout caused a gigantic memory leak in the library that caused thousands of duplicate `Member` instances causing big memory spikes.
+
+- Discard null sequences in the gateway.
+
+  > - The fact these were not discarded meant that `on_ready` kept being called instead of `on_resumed`. Since this has been corrected, in most cases `on_ready` will be called once or twice with `on_resumed` being called much more often.
+
+## v0.15.1
+
+- Fix crash on duplicate or out of order reactions.
+
+## v0.15.0
+
+### New Features
+
+- Rich Embeds for messages are now supported.
+
+  > - To do so, create your own `Embed` and pass the instance to the `embed` keyword argument to `Client.send_message` or `Client.edit_message`.
+
+- Add `Client.clear_reactions` to remove all reactions from a message.
+
+- Add support for MESSAGE_REACTION_REMOVE_ALL event, under `on_reaction_clear`.
+
+- Add `Permissions.update` and `PermissionOverwrite.update` for bulk permission updates.
+
+  > - This allows you to use e.g. `p.update(read_messages=True, send_messages=False)` in a single line.
+
+- Add `PermissionOverwrite.is_empty` to check if the overwrite is empty (i.e. has no overwrites set explicitly as true or false).
+
+For the command extension, the following changed:
+
+- `Context` is no longer slotted to facilitate setting dynamic attributes.
+
+## v0.14.3
+
+### Bug Fixes
+
+- Fix crash when dealing with MESSAGE_REACTION_REMOVE
+- Fix incorrect buckets for reactions.
+
+## v0.14.2
+
+### New Features
+
+- `Client.wait_for_reaction` now returns a namedtuple with `reaction` and `user` attributes.  
+  - This is for better support in the case that `None` is returned since tuple unpacking can lead to issues.
+
+### Bug Fixes
+
+- Fix bug that disallowed `None` to be passed for `emoji` parameter in `Client.wait_for_reaction`.
+
+## v0.14.1
+
+### Bug fixes
+
+- Fix bug with <span class="title-ref">Reaction</span> not being visible at import.  
+  - This was also breaking the documentation.
+
+## v0.14.0
+
+This update adds new API features and a couple of bug fixes.
+
+### New Features
+
+- Add support for Manage Webhooks permission under `Permissions.manage_webhooks`
+
+- Add support for `around` argument in 3.5+ `Client.logs_from`.
+
+- Add support for reactions.  
+  - `Client.add_reaction` to add a reactions
+  - `Client.remove_reaction` to remove a reaction.
+  - `Client.get_reaction_users` to get the users that reacted to a message.
+  - `Permissions.add_reactions` permission bit support.
+  - Two new events, `on_reaction_add` and `on_reaction_remove`.
+  - `Message.reactions` to get reactions from a message.
+  - `Client.wait_for_reaction` to wait for a reaction from a user.
+
+### Bug Fixes
+
+- Fix bug with Paginator still allowing lines that are too long.
+- Fix the `Permissions.manage_emojis` bit being incorrect.
+
+## v0.13.0
+
+This is a backwards compatible update with new features.
+
+### New Features
+
+- Add the ability to manage emojis.
+
+  > - `Client.create_custom_emoji` to create new emoji.
+  > - `Client.edit_custom_emoji` to edit an old emoji.
+  > - `Client.delete_custom_emoji` to delete a custom emoji.
+
+- Add new `Permissions.manage_emojis` toggle.
+
+  > - This applies for `PermissionOverwrite` as well.
+
+- Add new statuses for `Status`.
+
+  > - `Status.dnd` (aliased with `Status.do_not_disturb`) for Do Not Disturb.
+  > - `Status.invisible` for setting your status to invisible (please see the docs for a caveat).
+
+- Deprecate `Client.change_status`
+
+  > - Use `Client.change_presence` instead for better more up to date functionality.
+  > - This method is subject for removal in a future API version.
+
+- Add `Client.change_presence` for changing your status with the new Discord API change.
+
+  > - This is the only method that allows changing your status to invisible or do not disturb.
+
+### Bug Fixes
+
+- Paginator pages do not exceed their max_size anymore ([GH-340](https://github.com/Rapptz/discord.py/issues/340))
+- Do Not Disturb users no longer show up offline due to the new `Status` changes.
+
+## v0.12.0
+
+This is a bug fix update that also comes with new features.
+
+### New Features
+
+- Add custom emoji support.
+
+  > - Adds a new class to represent a custom Emoji named `Emoji`
+  > - Adds a utility generator function, `Client.get_all_emojis`.
+  > - Adds a list of emojis on a server, `Server.emojis`.
+  > - Adds a new event, `on_server_emojis_update`.
+
+- Add new server regions to `ServerRegion`
+
+  > - `ServerRegion.eu_central` and `ServerRegion.eu_west`.
+
+- Add support for new pinned system message under `MessageType.pins_add`.
+
+- Add order comparisons for `Role` to allow it to be compared with regards to hierarchy.
+
+  > - This means that you can now do `role_a > role_b` etc to check if `role_b` is lower in the hierarchy.
+
+- Add `Server.role_hierarchy` to get the server's role hierarchy.
+
+- Add `Member.server_permissions` to get a member's server permissions without their channel specific overwrites.
+
+- Add `Client.get_user_info` to retrieve a user's info from their ID.
+
+- Add a new `Player` property, `Player.error` to fetch the error that stopped the player.
+
+  > - To help with this change, a player's `after` function can now take a single parameter denoting the current player.
+
+- Add support for server verification levels.
+
+  > - Adds a new enum called `VerificationLevel`.
+  > - This enum can be used in `Client.edit_server` under the `verification_level` keyword argument.
+  > - Adds a new attribute in the server, `Server.verification_level`.
+
+- Add `Server.voice_client` shortcut property for `Client.voice_client_in`.
+
+  > - This is technically old (was added in v0.10.0) but was undocumented until v0.12.0.
+
+For the command extension, the following are new:
+
+- Add custom emoji converter.
+- All default converters that can take IDs can now convert via ID.
+- Add coroutine support for `Bot.command_prefix`.
+- Add a method to reset command cooldown.
+
+### Bug Fixes
+
+- Fix bug that caused the library to not work with the latest `websockets` library.
+- Fix bug that leaked keep alive threads ([GH-309](https://github.com/Rapptz/discord.py/issues/309))
+- Fix bug that disallowed `ServerRegion` from being used in `Client.edit_server`.
+- Fix bug in `Channel.permissions_for` that caused permission resolution to happen out of order.
+- Fix bug in `Member.top_role` that did not account for same-position roles.
+
+## v0.11.0
+
+This is a minor bug fix update that comes with a gateway update (v5 -\> v6).
+
+### Breaking Changes
+
+- `Permissions.change_nicknames` has been renamed to `Permissions.change_nickname` to match the UI.
+
+### New Features
+
+- Add the ability to prune members via `Client.prune_members`.
+
+- Switch the websocket gateway version to v6 from v5. This allows the library to work with group DMs and 1-on-1 calls.
+
+- Add `AppInfo.owner` attribute.
+
+- Add `CallMessage` for group voice call messages.
+
+- Add `GroupCall` for group voice call information.
+
+- Add `Message.system_content` to get the system message.
+
+- Add the remaining VIP servers and the Brazil servers into `ServerRegion` enum.
+
+- Add `stderr` argument to `VoiceClient.create_ffmpeg_player` to redirect stderr.
+
+- The library now handles implicit permission resolution in `Channel.permissions_for`.
+
+- Add `Server.mfa_level` to query a server's 2FA requirement.
+
+- Add `Permissions.external_emojis` permission.
+
+- Add `Member.voice` attribute that refers to a `VoiceState`.
+
+  > - For backwards compatibility, the member object will have properties mirroring the old behaviour.
+
+For the command extension, the following are new:
+
+- Command cooldown system with the `cooldown` decorator.
+- `UserInputError` exception for the hierarchy for user input related errors.
+
+### Bug Fixes
+
+- `Client.email` is now saved when using a token for user accounts.
+- Fix issue when removing roles out of order.
+- Fix bug where discriminators would not update.
+- Handle cases where `HEARTBEAT` opcode is received. This caused bots to disconnect seemingly randomly.
+
+For the command extension, the following bug fixes apply:
+
+- `Bot.check` decorator is actually a decorator not requiring parentheses.
+- `Bot.remove_command` and `Group.remove_command` no longer throw if the command doesn't exist.
+- Command names are no longer forced to be `lower()`.
+- Fix a bug where Member and User converters failed to work in private message contexts.
+- `HelpFormatter` now ignores hidden commands when deciding the maximum width.
+
+## v0.10.0
+
+For breaking changes, see [0.10.0 migration](https://discordpy.readthedocs.io/en/stable/migrating_to_async.html#migrating-to-async). The breaking changes listed there will not be enumerated below. Since this version is rather a big departure from v0.9.2, this change log will be non-exhaustive.
+
+### New Features
+
+- The library is now fully `asyncio` compatible, allowing you to write non-blocking code a lot more easily.
+- The library now fully handles 429s and unconditionally retries on 502s.
+- A new command extension module was added but is currently undocumented. Figuring it out is left as an exercise to the reader.
+- Two new exception types, `Forbidden` and `NotFound` to denote permission errors or 404 errors.
+- Added `Client.delete_invite` to revoke invites.
+- Added support for sending voice. Check `VoiceClient` for more details.
+- Added `Client.wait_for_message` coroutine to aid with follow up commands.
+- Added `version_info` named tuple to check version info of the library.
+- Login credentials are now cached to have a faster login experience. You can disable this by passing in `cache_auth=False` when constructing a `Client`.
+- New utility function, `rum.utils.get` to simplify retrieval of items based on attributes.
+- All data classes now support `!=`, `==`, `hash(obj)` and `str(obj)`.
+- Added `Client.get_bans` to get banned members from a server.
+- Added `Client.invites_from` to get currently active invites in a server.
+- Added `Server.me` attribute to get the `Member` version of `Client.user`.
+- Most data classes now support a `hash(obj)` function to allow you to use them in `set` or `dict` classes or subclasses.
+- Add `Message.clean_content` to get a text version of the content with the user and channel mentioned changed into their names.
+- Added a way to remove the messages of the user that just got banned in `Client.ban`.
+- Added `Client.wait_until_ready` to facilitate easy creation of tasks that require the client cache to be ready.
+- Added `Client.wait_until_login` to facilitate easy creation of tasks that require the client to be logged in.
+- Add `rum.Game` to represent any game with custom text to send to `Client.change_status`.
+- Add `Message.nonce` attribute.
+- Add `Member.permissions_in` as another way of doing `Channel.permissions_for`.
+- Add `Client.move_member` to move a member to another voice channel.
+- You can now create a server via `Client.create_server`.
+- Added `Client.edit_server` to edit existing servers.
+- Added `Client.server_voice_state` to server mute or server deafen a member.
+- If you are being rate limited, the library will now handle it for you.
+- Add `on_member_ban` and `on_member_unban` events that trigger when a member is banned/unbanned.
+
+### Performance Improvements
+
+- All data classes now use `__slots__` which greatly reduce the memory usage of things kept in cache.
+- Due to the usage of `asyncio`, the CPU usage of the library has gone down significantly.
+- A lot of the internal cache lists were changed into dictionaries to change the `O(n)` lookup into `O(1)`.
+- Compressed READY is now on by default. This means if you're on a lot of servers (or maybe even a few) you would receive performance improvements by having to download and process less data.
+- While minor, change regex from `\d+` to `[0-9]+` to avoid unnecessary unicode character lookups.
+
+### Bug Fixes
+
+- Fix bug where guilds being updated did not edit the items in cache.
+- Fix bug where `member.roles` were empty upon joining instead of having the `@everyone` role.
+- Fix bug where `Role.is_everyone` was not being set properly when the role was being edited.
+- `Client.logs_from` now handles cases where limit \> 100 to sidestep the discord API limitation.
+- Fix bug where a role being deleted would trigger a `ValueError`.
+- Fix bug where `Permissions.kick_members` and `Permissions.ban_members` were flipped.
+- Mentions are now triggered normally. This was changed due to the way discord handles it internally.
+- Fix issue when a `Message` would attempt to upgrade a `Message.server` when the channel is a `Object`.
+- Unavailable servers were not being added into cache, this has been corrected.

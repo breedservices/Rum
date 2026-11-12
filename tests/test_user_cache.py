@@ -510,6 +510,19 @@ def test_a_rule_bounds_the_cache_of_its_kind():
     assert 1 not in cache
 
 
+def test_a_bounded_cache_can_be_iterated():
+    provider = rum.DefaultCacheProvider(
+        rules={rum.CacheKind.MEMBER: rum.CacheRule(max_entries=2)}
+    )
+    cache = provider.create_guild_member_cache(None)
+    cache[1] = "a"
+    cache[2] = "b"
+    # reading an entry must not break the views built on top of the cache
+    assert sorted(cache.keys()) == [1, 2]
+    assert list(cache.values()) == ["a", "b"]
+    assert list(cache.items()) == [(1, "a"), (2, "b")]
+
+
 def test_a_disabled_policy_caches_nothing():
     provider = rum.DefaultCacheProvider(
         rules={rum.CacheKind.MEMBER: rum.CacheRule(enabled=False)}
@@ -543,3 +556,22 @@ def test_a_rule_keeps_only_the_fields_it_names():
     assert thing.name == "name"
     assert thing.topic is None
     assert thing.id == 1
+
+
+def test_a_custom_container_keeps_the_rule():
+    provider = rum.DefaultCacheProvider(
+        rules={rum.CacheKind.MEMBER: rum.CacheRule(max_entries=2, ttl=60)}
+    )
+
+    class MyContainer(dict):
+        pass
+
+    container = MyContainer()
+    cache = provider.cache_for(rum.CacheKind.MEMBER, container)
+    cache[1] = "a"
+    cache[2] = "b"
+    cache[3] = "c"
+    # the entries live in the container that was given
+    assert len(container) == 2
+    # and the rule of the kind still applies
+    assert 1 not in cache

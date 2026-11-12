@@ -1,0 +1,204 @@
+# `rum.voice.utils.buffer`
+
+## Classes
+
+### `BaseBuff`
+
+```python
+class BaseBuff() -> None
+```
+
+Base class for protocol classes.
+
+Protocol classes are defined as:
+
+    class Proto(Protocol):
+        def meth(self) -> int:
+            ...
+
+Such classes are primarily used with static type checkers that recognize structural subtyping (static duck-typing).
+
+For example:
+
+    class C:
+        def meth(self) -> int:
+            return 0
+
+    def func(x: Proto) -> int:
+        return x.meth()
+
+    func(C())  # Passes static type check
+
+See PEP 544 for details. Protocol classes decorated with @typing.runtime_checkable act as simple-minded runtime protocols that check only the presence of given attributes, ignoring their type signatures. Protocol classes can be generic, they are defined as:
+
+    class GenProto[T](Protocol):
+        def meth(self) -> T:
+            ...
+
+#### `push()`
+
+```python
+push(item: PacketT) -> None
+```
+
+#### `pop()`
+
+```python
+pop() -> PacketT | None
+```
+
+#### `peek()`
+
+```python
+peek() -> PacketT | None
+```
+
+#### `flush()`
+
+```python
+flush() -> list[PacketT]
+```
+
+#### `reset()`
+
+```python
+reset() -> None
+```
+
+### `Buffer`
+
+```python
+class Buffer(*args, **kwargs)
+```
+
+Base class for protocol classes.
+
+Protocol classes are defined as:
+
+    class Proto(Protocol):
+        def meth(self) -> int:
+            ...
+
+Such classes are primarily used with static type checkers that recognize structural subtyping (static duck-typing).
+
+For example:
+
+    class C:
+        def meth(self) -> int:
+            return 0
+
+    def func(x: Proto) -> int:
+        return x.meth()
+
+    func(C())  # Passes static type check
+
+See PEP 544 for details. Protocol classes decorated with @typing.runtime_checkable act as simple-minded runtime protocols that check only the presence of given attributes, ignoring their type signatures. Protocol classes can be generic, they are defined as:
+
+    class GenProto[T](Protocol):
+        def meth(self) -> T:
+            ...
+
+#### `push()`
+
+```python
+push(item: T) -> None
+```
+
+#### `pop()`
+
+```python
+pop() -> T | None
+```
+
+#### `peek()`
+
+```python
+peek() -> T | None
+```
+
+#### `flush()`
+
+```python
+flush() -> list[T]
+```
+
+#### `reset()`
+
+```python
+reset() -> None
+```
+
+### `JitterBuffer`
+
+```python
+class JitterBuffer(max_size: int = 10, *, pref_size: int = 1, prefill: int = 1) -> None
+```
+
+Base class for protocol classes.
+
+Protocol classes are defined as:
+
+    class Proto(Protocol):
+        def meth(self) -> int:
+            ...
+
+Such classes are primarily used with static type checkers that recognize structural subtyping (static duck-typing).
+
+For example:
+
+    class C:
+        def meth(self) -> int:
+            return 0
+
+    def func(x: Proto) -> int:
+        return x.meth()
+
+    func(C())  # Passes static type check
+
+See PEP 544 for details. Protocol classes decorated with @typing.runtime_checkable act as simple-minded runtime protocols that check only the presence of given attributes, ignoring their type signatures. Protocol classes can be generic, they are defined as:
+
+    class GenProto[T](Protocol):
+        def meth(self) -> T:
+            ...
+
+#### `push()`
+
+```python
+push(packet: Packet) -> bool
+```
+
+#### `pop()`
+
+```python
+pop(*, timeout: float | None = 0) -> Packet | None
+```
+
+#### `peek()`
+
+```python
+peek(*, all: bool = False) -> Packet | None
+```
+
+#### `peek_next()`
+
+```python
+peek_next() -> Packet | None
+```
+
+#### `gap()`
+
+```python
+gap() -> int
+```
+
+#### `flush()`
+
+```python
+flush() -> list[Packet]
+```
+
+#### `reset()`
+
+```python
+reset() -> None
+```

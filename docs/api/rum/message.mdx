@@ -1,0 +1,1660 @@
+# `rum.message`
+
+## Classes
+
+### `Attachment`
+
+```python
+class Attachment(*, data: AttachmentPayload, state: ConnectionState)
+```
+
+Represents an attachment from Discord.
+
+<div class="container operations">
+
+<div class="describe">
+
+str(x)
+
+Returns the URL of the attachment.
+
+</div>
+
+<div class="describe">
+
+x == y
+
+Checks if the attachment is equal to another attachment.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if the attachment is not equal to another attachment.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the attachment's unique identifier.
+
+This is equivalent to `id`.
+
+</div>
+
+</div>
+
+*Changed in 1.7 Attachment can now be cast to `str` and is hashable.*
+
+#### Attributes
+
+id: `int`  
+The attachment ID.
+
+size: `int`  
+The attachment size in bytes.
+
+height: `int` | `None`  
+The attachment's height, in pixels. Only applicable to images and videos.
+
+width: `int` | `None`  
+The attachment's width, in pixels. Only applicable to images and videos.
+
+filename: `str`  
+The attachment's filename.
+
+title: `str` | `None`  
+The attachment's title. This is equal to the original `filename` (without an extension) if special characters were filtered from it.
+
+*Added in 2.6.*
+
+url: `str`  
+The attachment URL. If the message this attachment was attached to is deleted, then this will 404.
+
+proxy_url: `str`  
+The proxy URL. This is a cached version of the `Attachment.url` in the case of images. When the message is deleted, this URL might be valid for a few minutes or not valid at all.
+
+content_type: `str` | `None`  
+The attachment's [media type](https://en.wikipedia.org/wiki/Media_type).
+
+ephemeral: `bool`  
+Whether the attachment is ephemeral or not.
+
+*Added in 1.7.*
+
+description: `str` | `None`  
+The attachment's description.
+
+*Added in 2.0.*
+
+duration_secs: `float` | `None`  
+The duration of the audio file (currently for voice messages).
+
+*Added in 2.5.*
+
+waveform: `str` | `None`  
+The base64 encoded bytearray representing a sampled waveform (currently for voice messages).
+
+*Added in 2.5.*
+
+flags: `AttachmentFlags`  
+Extra attributes of the attachment.
+
+*Added in 2.5.*
+
+hm: `str`  
+The unique signature of this attachment's instance.
+
+*Added in 2.5.*
+
+#### `is_spoiler()`
+
+```python
+is_spoiler() -> bool
+```
+
+Whether this attachment contains a spoiler.
+
+#### `save()`
+
+```python
+save(fp: io.BufferedIOBase | PathLike, *, seek_begin: bool = True, use_cached: bool = False, chunksize: int | None = None) -> int
+```
+
+*(coroutine)*
+
+Saves this attachment into a file-like object.
+
+#### Parameters
+
+fp: `io.BufferedIOBase` | `os.PathLike`  
+The file-like object to save this attachment to or the filename to use. If a filename is passed then a file is created with that filename and used instead.
+
+seek_begin: `bool`  
+Whether to seek to the beginning of the file after saving is successfully done.
+
+use_cached: `bool`  
+Whether to use `proxy_url` rather than `url` when downloading the attachment. This will allow attachments to be saved after deletion more often, compared to the regular URL which is generally deleted right after the message is deleted. Note that this can still fail to download deleted attachments if too much time has passed, and it does not work on some types of attachments.
+
+chunksize: `int` | `None`  
+The maximum size of each chunk to process. Must be a positive integer.
+
+#### Returns
+
+`int`  
+The number of bytes written.
+
+#### Raises
+
+HTTPException  
+Saving the attachment failed.
+
+NotFound  
+The attachment was deleted.
+
+InvalidArgument  
+Argument <span class="title-ref">chunksize</span> is less than 1.
+
+#### `read()`
+
+```python
+read(*, use_cached: bool = False) -> bytes
+```
+
+*(coroutine)*
+
+Retrieves the content of this attachment as a `bytes` object.
+
+*Added in 1.1.*
+
+#### Parameters
+
+use_cached: `bool`  
+Whether to use `proxy_url` rather than `url` when downloading the attachment. This will allow attachments to be saved after deletion more often, compared to the regular URL which is generally deleted right after the message is deleted. Note that this can still fail to download deleted attachments if too much time has passed, and it does not work on some types of attachments.
+
+#### Returns
+
+`bytes`  
+The contents of the attachment.
+
+#### Raises
+
+HTTPException  
+Downloading the attachment failed.
+
+Forbidden  
+You do not have permissions to access this attachment
+
+NotFound  
+The attachment was deleted.
+
+#### `read_chunked()`
+
+```python
+read_chunked(chunksize: int, *, use_cached: bool = False) -> AsyncGenerator[bytes]
+```
+
+*(coroutine)*
+
+Retrieves the content of this attachment in chunks as a `AsyncGenerator` object of bytes.
+
+#### Parameters
+
+chunksize: `int`  
+The maximum size of each chunk to process. Must be a positive integer.
+
+use_cached: `bool`  
+Whether to use `proxy_url` rather than `url` when downloading the attachment. This will allow attachments to be saved after deletion more often, compared to the regular URL which is generally deleted right after the message is deleted. Note that this can still fail to download deleted attachments if too much time has passed, and it does not work on some types of attachments.
+
+#### Yields
+
+`bytes`  
+A chunk of the file.
+
+#### Raises
+
+HTTPException  
+Downloading the attachment failed.
+
+Forbidden  
+You do not have permissions to access this attachment
+
+NotFound  
+The attachment was deleted.
+
+InvalidArgument  
+Argument <span class="title-ref">chunksize</span> is less than 1.
+
+#### `to_file()`
+
+```python
+to_file(*, use_cached: bool = False, spoiler: bool = False) -> File
+```
+
+*(coroutine)*
+
+Converts the attachment into a `File` suitable for sending via `abc.Messageable.send`.
+
+*Added in 1.3.*
+
+#### Parameters
+
+use_cached: `bool`  
+Whether to use `proxy_url` rather than `url` when downloading the attachment. This will allow attachments to be saved after deletion more often, compared to the regular URL which is generally deleted right after the message is deleted. Note that this can still fail to download deleted attachments if too much time has passed, and it does not work on some types of attachments.
+
+*Added in 1.4.*
+
+spoiler: `bool`  
+Whether the file is a spoiler.
+
+*Added in 1.4.*
+
+#### Returns
+
+`File`  
+The attachment as a file suitable for sending.
+
+#### Raises
+
+HTTPException  
+Downloading the attachment failed.
+
+Forbidden  
+You do not have permissions to access this attachment
+
+NotFound  
+The attachment was deleted.
+
+#### `to_dict()`
+
+```python
+to_dict() -> AttachmentPayload
+```
+
+### `DeletedReferencedMessage`
+
+```python
+class DeletedReferencedMessage(parent: MessageReference)
+```
+
+A special sentinel type that denotes whether the resolved message referenced message had since been deleted.
+
+The purpose of this class is to separate referenced messages that could not be fetched and those that were previously fetched but have since been deleted.
+
+*Added in 1.6.*
+
+### `ForwardedMessage`
+
+```python
+class ForwardedMessage(*, state: ConnectionState, reference: MessageReference, data: ForwardedMessagePayload)
+```
+
+Represents the snapshotted contents from a forwarded message. Forwarded messages are immutable; any updates to the original message will not be reflected.
+
+*Added in 2.7.*
+
+#### Attributes
+
+type: `MessageType`  
+The type of the original message. In most cases this should not be checked, but it is helpful in cases where it might be a system message for `system_content`.
+
+original_message: `Message` | `PartialMessage` | `None`  
+The original message that was forwarded, if available.
+
+channel: `TextChannel` | `Thread` | `DMChannel` | `GroupChannel` | `PartialMessageable`  
+The `TextChannel` or `Thread` that the original message was sent from.
+
+guild: `Guild` | `Object` | `None`  
+The guild that the original message belonged to, if applicable.
+
+content: `str`  
+The contents of the original message.
+
+embeds: List\[`Embed`\]  
+A list of embeds the original message had.
+
+attachments: List\[`Attachment`\]  
+A list of attachments given to the original message.
+
+flags: `MessageFlags`  
+Extra features of the original message.
+
+mentions: List\[`User`\]  
+A list of `User` that were originally mentioned.
+
+> [!NOTE]
+> This list will be empty if the message was forwarded to a different place, e.g., from a DM to a guild, or from one guild to another.
+
+role_mentions: List\[`Role`\]  
+A list of `Role` that were originally mentioned.
+
+> [!WARNING]
+> This is only available using `abc.Messageable.fetch_message`.
+
+stickers: List\[`StickerItem`\]  
+A list of sticker items given to the original message.
+
+components: List\[`Component`\]  
+A list of components in the original message.
+
+### `Message`
+
+```python
+class Message(*, state: ConnectionState, channel: MessageableChannel, data: MessagePayload)
+```
+
+Represents a message from Discord.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two messages are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two messages are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the message's hash.
+
+</div>
+
+</div>
+
+#### Attributes
+
+tts: `bool`  
+Specifies if the message was done with text-to-speech. This can only be accurately received in `on_message` due to a discord limitation.
+
+type: `MessageType`  
+The type of message. In most cases this should not be checked, but it is helpful in cases where it might be a system message for `system_content`.
+
+author: `Member` | `abc.User`  
+A `Member` that sent the message. If `channel` is a private channel or the user has the left the guild, then it is a `User` instead.
+
+content: `str`  
+The actual contents of the message.
+
+nonce: `str` | `int` | `None`  
+The value used by the discord guild and the client to verify that the message is successfully sent. This is not stored long term within Discord's servers and is only used ephemerally.
+
+embeds: List\[`Embed`\]  
+A list of embeds the message has.
+
+channel: `TextChannel` | `Thread` | `DMChannel` | `GroupChannel` | `PartialMessageable`  
+The `TextChannel` or `Thread` that the message was sent from. Could be a `DMChannel` or `GroupChannel` if it's a private message.
+
+reference: `discord.MessageReference` | `None`  
+The message that this message references. This is only applicable to messages of type `MessageType.pins_add`, crossposted messages created by a followed channel integration, or message replies.
+
+*Added in 1.5.*
+
+mention_everyone: `bool`  
+Specifies if the message mentions everyone.
+
+> [!NOTE]
+> This does not check if the `@everyone` or the `@here` text is in the message itself. Rather this boolean indicates if either the `@everyone` or the `@here` text is in the message **and** it did end up mentioning.
+
+mentions: List\[`abc.User`\]  
+A list of `Member` that were mentioned. If the message is in a private message then the list will be of `User` instead. For messages that are not of type `MessageType.default`, this array can be used to aid in system messages. For more information, see `system_content`.
+
+> [!WARNING]
+> The order of the mentions list is not in any particular order, so you should not rely on it. This is a Discord limitation, not one with the library.
+
+channel_mentions: List\[`abc.GuildChannel`\]  
+A list of `abc.GuildChannel` that were mentioned. If the message is in a private message then the list is always empty.
+
+role_mentions: List\[`Role`\]  
+A list of `Role` that were mentioned. If the message is in a private message then the list is always empty.
+
+id: `int`  
+The message ID.
+
+webhook_id: `int` | `None`  
+If this message was sent by a webhook, then this is the webhook ID's that sent this message.
+
+attachments: List\[`Attachment`\]  
+A list of attachments given to a message.
+
+pinned: `bool`  
+Specifies if the message is currently pinned.
+
+flags: `MessageFlags`  
+Extra features of the message.
+
+*Added in 1.3.*
+
+reactions : List\[`Reaction`\]  
+Reactions to a message. Reactions can be either custom emoji or standard unicode emoji.
+
+activity: `dict` | `None`  
+The activity associated with this message. Sent with Rich-Presence related messages that for example, request joining, spectating, or listening to or with another member.
+
+It is a dictionary with the following optional keys:
+
+- `type`: An integer denoting the type of message activity being requested.
+- `party_id`: The party ID associated with the party.
+
+application: `dict` | `None`  
+The rich presence enabled application associated with this message.
+
+It is a dictionary with the following keys:
+
+- `id`: A string representing the application's ID.
+- `name`: A string representing the application's name.
+- `description`: A string representing the application's description.
+- `icon`: A string representing the icon ID of the application.
+- `cover_image`: A string representing the embed's image asset ID.
+
+stickers: List\[`StickerItem`\]  
+A list of sticker items given to the message.
+
+*Added in 1.6.*
+
+components: List\[`Component`\]  
+A list of components in the message.
+
+*Added in 2.0.*
+
+guild: `Guild` | `None`  
+The guild that the message belongs to, if applicable.
+
+interaction: `MessageInteraction` | `None`  
+The interaction associated with the message, if applicable.
+
+<div class="deprecated">
+
+2.6
+
+Use `interaction_metadata` instead.
+
+</div>
+
+interaction_metadata: `InteractionMetadata` | `None`  
+The interaction metadata associated with the message, if applicable.
+
+*Added in 2.6.*
+
+thread: `Thread` | `None`  
+The thread created from this message, if applicable.
+
+*Added in 2.0.*
+
+poll: `Poll` | `None`  
+The poll associated with this message, if applicable.
+
+*Added in 2.6.*
+
+shared_client_theme: `SharedClientTheme` | `None`  
+The shared client theme transmitted via this message, if applicable.
+
+*Added in 2.9.*
+
+call: `MessageCall` | `None`  
+The call information associated with this message, if applicable.
+
+*Added in 2.6.*
+
+snapshots: List\[`MessageSnapshot`\] | `None`  
+The snapshots attached to this message, if applicable.
+
+*Added in 2.7.*
+
+#### `is_system()`
+
+```python
+is_system() -> bool
+```
+
+Whether the message is a system message.
+
+A system message is a message that is constructed entirely by the Discord API in response to something.
+
+*Added in 1.3.*
+
+#### `delete()`
+
+```python
+delete(*, delay: float | None = None, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the message.
+
+Your own messages could be deleted without any proper permissions. However, to delete other people's messages, you need the `Permissions.manage_messages` permission.
+
+*Changed in 1.1 Added the new `delay` keyword-only parameter.*
+
+#### Parameters
+
+delay: `float` | `None`  
+If provided, the number of seconds to wait in the background before deleting the message. If the deletion fails then it is silently ignored.
+
+reason: `str` | `None`  
+The reason for deleting the message. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to delete the message.
+
+NotFound  
+The message was deleted already
+
+HTTPException  
+Deleting the message failed.
+
+#### `edit()`
+
+```python
+edit(content: str | None = ..., embed: Embed | None = ..., embeds: list[Embed] = ..., file: Sequence[File] = ..., files: list[Sequence[File]] = ..., attachments: list[Attachment] = ..., suppress: bool = ..., suppress_embeds: bool = ..., delete_after: float | None = None, allowed_mentions: AllowedMentions | None = ..., view: BaseView | None = ...) -> Message
+```
+
+*(coroutine)*
+
+Edits the message.
+
+The content must be able to be transformed into a string via `str(content)`.
+
+*Changed in 1.3 The `suppress` keyword-only parameter was added.*
+
+#### Parameters
+
+content: `str` | `None`  
+The new content to replace the message with. Could be `None` to remove the content.
+
+embed: `Embed` | `None`  
+The new embed to replace the original with. Could be `None` to remove the embed.
+
+embeds: List\[`Embed`\]  
+The new embeds to replace the original with. Must be a maximum of 10. To remove all embeds `[]` should be passed.
+
+*Added in 2.0.*
+
+file: Sequence\[`File`\]  
+A new file to add to the message.
+
+files: List\[Sequence\[`File`\]\]  
+New files to add to the message.
+
+attachments: List\[`Attachment`\]  
+A list of attachments to keep in the message. If `[]` is passed then all attachments are removed.
+
+suppress: `bool`  
+Whether to suppress embeds for the message. This removes all the embeds if set to `True`. If set to `False` this brings the embeds back if they were suppressed. Using this parameter requires `.Permissions.manage_messages`.
+
+<div class="deprecated">
+
+2.8
+
+</div>
+
+suppress_embeds: `bool`  
+Whether to suppress embeds for the message. This removes all the embeds if set to `True`. If set to `False` this brings the embeds back if they were suppressed. Using this parameter requires `.Permissions.manage_messages`.
+
+*Added in 2.8.*
+
+delete_after: `float` | `None`  
+If provided, the number of seconds to wait in the background before deleting the message we just edited. If the deletion fails, then it is silently ignored.
+
+allowed_mentions: `discord.AllowedMentions` | `None`  
+Controls the mentions being processed in this message. If this is passed, then the object is merged with `discord.Client.allowed_mentions`. The merging behaviour only overrides attributes that have been explicitly passed to the object, otherwise it uses the attributes set in `discord.Client.allowed_mentions`. If no object is passed at all then the defaults given by `discord.Client.allowed_mentions` are used instead.
+
+*Added in 1.4.*
+
+view: `discord.ui.BaseView` | `None`  
+The updated view to update this message with. If `None` is passed then the view is removed.
+
+#### Raises
+
+NotFound  
+The message was not found.
+
+HTTPException  
+Editing the message failed.
+
+Forbidden  
+Tried to suppress a message without permissions or edited a message's content or embed that isn't yours.
+
+~discord.InvalidArgument  
+You specified both `embed` and `embeds`, specified both `file` and `files`, or either`file` or `files` were of the wrong type.
+
+#### `publish()`
+
+```python
+publish() -> None
+```
+
+*(coroutine)*
+
+Publishes this message to your announcement channel.
+
+You must have the `Permissions.send_messages` permission to do this.
+
+If the message is not your own then the `Permissions.manage_messages` permission is also needed.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to publish this message.
+
+HTTPException  
+Publishing the message failed.
+
+#### `pin()`
+
+```python
+pin(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Pins the message.
+
+You must have the `Permissions.pin_messages` permission to do this in a non-private channel context.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for pinning the message. Shows up on the audit log.
+
+*Added in 1.4.*
+
+#### Raises
+
+Forbidden  
+You do not have permissions to pin the message.
+
+NotFound  
+The message or channel was not found or deleted.
+
+HTTPException  
+Pinning the message failed, probably due to the channel having more than 50 pinned messages.
+
+#### `unpin()`
+
+```python
+unpin(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Unpins the message.
+
+You must have the `Permissions.pin_messages` permission to do this in a non-private channel context.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for unpinning the message. Shows up on the audit log.
+
+*Added in 1.4.*
+
+#### Raises
+
+Forbidden  
+You do not have permissions to unpin the message.
+
+NotFound  
+The message or channel was not found or deleted.
+
+HTTPException  
+Unpinning the message failed.
+
+#### `add_reaction()`
+
+```python
+add_reaction(emoji: EmojiInputType) -> None
+```
+
+*(coroutine)*
+
+Add a reaction to the message.
+
+The emoji may be a unicode emoji, a custom `GuildEmoji`, or an `AppEmoji`.
+
+You must have the `Permissions.read_message_history` permission to use this. If nobody else has reacted to the message using this emoji, the `Permissions.add_reactions` permission is required.
+
+#### Parameters
+
+emoji: `GuildEmoji` | `AppEmoji` | `Reaction` | `PartialEmoji` | `str`  
+The emoji to react with.
+
+#### Raises
+
+HTTPException  
+Adding the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to react to the message.
+
+NotFound  
+The emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `remove_reaction()`
+
+```python
+remove_reaction(emoji: EmojiInputType | Reaction, member: Snowflake) -> None
+```
+
+*(coroutine)*
+
+Remove a reaction by the member from the message.
+
+The emoji may be a unicode emoji, a custom `GuildEmoji`, or an `AppEmoji`.
+
+If the reaction is not your own (i.e. `member` parameter is not you) then the `Permissions.manage_messages` permission is needed.
+
+The `member` parameter must represent a member and meet the `abc.Snowflake` abc.
+
+#### Parameters
+
+emoji: `GuildEmoji` | `AppEmoji` | `Reaction` | `PartialEmoji` | `str`  
+The emoji to remove.
+
+member: `abc.Snowflake`  
+The member for which to remove the reaction.
+
+#### Raises
+
+HTTPException  
+Removing the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to remove the reaction.
+
+NotFound  
+The member or emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `clear_reaction()`
+
+```python
+clear_reaction(emoji: EmojiInputType | Reaction) -> None
+```
+
+*(coroutine)*
+
+Clears a specific reaction from the message.
+
+The emoji may be a unicode emoji, a custom `GuildEmoji`, or an `AppEmoji`.
+
+You need the `Permissions.manage_messages` permission to use this.
+
+*Added in 1.3.*
+
+#### Parameters
+
+emoji: `GuildEmoji` | `AppEmoji` | `Reaction` | `PartialEmoji` | `str`  
+The emoji to clear.
+
+#### Raises
+
+HTTPException  
+Clearing the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to clear the reaction.
+
+NotFound  
+The emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `clear_reactions()`
+
+```python
+clear_reactions() -> None
+```
+
+*(coroutine)*
+
+Removes all the reactions from the message.
+
+You need the `Permissions.manage_messages` permission to use this.
+
+#### Raises
+
+HTTPException  
+Removing the reactions failed.
+
+Forbidden  
+You do not have the proper permissions to remove all the reactions.
+
+#### `create_thread()`
+
+```python
+create_thread(*, name: str, auto_archive_duration: ThreadArchiveDuration = ..., slowmode_delay: int = ...) -> Thread
+```
+
+*(coroutine)*
+
+Creates a public thread from this message.
+
+You must have `discord.Permissions.create_public_threads` in order to create a public thread from a message.
+
+The channel this message belongs in must be a `TextChannel`.
+
+*Added in 2.0.*
+
+#### Parameters
+
+name: `str`  
+The name of the thread.
+
+auto_archive_duration: `int` | `None`  
+The duration in minutes before a thread is automatically archived for inactivity. If not provided, the channel's default auto archive duration is used.
+
+slowmode_delay: `int` | `None`  
+Specifies the slowmode rate limit for user in this thread, in seconds. A value of `0` disables slowmode. The maximum value possible is `21600`.
+
+#### Returns
+
+`.Thread`  
+The created thread.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to create a thread.
+
+HTTPException  
+Creating the thread failed.
+
+InvalidArgument  
+This message does not have guild info attached.
+
+#### `reply()`
+
+```python
+reply(content: str | None = None, **kwargs) -> Message
+```
+
+*(coroutine)*
+
+A shortcut method to `.abc.Messageable.send` to reply to the `.Message`.
+
+*Added in 1.6.*
+
+#### Returns
+
+`.Message`  
+The message that was sent.
+
+#### Raises
+
+~discord.HTTPException  
+Sending the message failed.
+
+~discord.Forbidden  
+You do not have the proper permissions to send the message.
+
+~discord.InvalidArgument  
+The `files` list is not of the appropriate size, or you specified both `file` and `files`.
+
+#### `forward_to()`
+
+```python
+forward_to(channel: MessageableChannel | PartialMessageableChannel, **kwargs) -> Message
+```
+
+*(coroutine)*
+
+A shortcut method to `.abc.Messageable.send` to forward the `.Message` to a channel.
+
+*Added in 2.7.*
+
+#### Parameters
+
+channel: `TextChannel` | `Thread` | `DMChannel` | `GroupChannel` | `PartialMessageable`  
+The channel to forward this to.
+
+#### Returns
+
+`.Message`  
+The message that was sent.
+
+#### Raises
+
+~discord.HTTPException  
+Sending the message failed.
+
+~discord.Forbidden  
+You do not have the proper permissions to send the message.
+
+~discord.InvalidArgument  
+The `files` list is not of the appropriate size, or you specified both `file` and `files`.
+
+#### `end_poll()`
+
+```python
+end_poll() -> Message
+```
+
+*(coroutine)*
+
+Immediately ends the poll associated with this message. Only doable by the poll's owner.
+
+*Added in 2.6.*
+
+#### Returns
+
+`Message`  
+The updated message.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to end this poll.
+
+HTTPException  
+Ending this poll failed.
+
+#### `to_reference()`
+
+```python
+to_reference(*, fail_if_not_exists: bool = True, type: MessageReferenceType = None) -> MessageReference
+```
+
+Creates a `discord.MessageReference` from the current message.
+
+*Added in 1.6.*
+
+#### Parameters
+
+fail_if_not_exists: `bool`  
+Whether replying using the message reference should raise `HTTPException` if the message no longer exists or Discord could not fetch the message.
+
+*Added in 1.7.*
+
+type: `discord.MessageReferenceType` | `None`  
+The type of message reference. Defaults to a reply.
+
+*Added in 2.7.*
+
+#### Returns
+
+`discord.MessageReference`  
+The reference to this message.
+
+#### `to_message_reference_dict()`
+
+```python
+to_message_reference_dict(type: MessageReferenceType = None) -> MessageReferencePayload
+```
+
+#### `get_component()`
+
+```python
+get_component(id: str | int) -> Component | None
+```
+
+Gets a component from this message. Roughly equal to <span class="title-ref">utils.get(message.components, ...)</span>. If an `int` is provided, the component will be retrieved by `id`, otherwise by `custom_id`. This method will also search nested components.
+
+#### Parameters
+
+id: `str` | `int`  
+The id or custom_id the item to get
+
+#### Returns
+
+`Component` | `None`  
+The component with the matching `custom_id` or `id` if it exists.
+
+### `MessageCall`
+
+```python
+class MessageCall(state: ConnectionState, data: MessageCallPayload)
+```
+
+Represents information about a call in a private channel.
+
+*Added in 2.6.*
+
+### `MessagePin`
+
+```python
+class MessagePin(state: ConnectionState, channel: MessageableChannel, data: MessagePinPayload)
+```
+
+Represents information about a pinned message.
+
+*Added in 2.7.*
+
+### `MessageReference`
+
+```python
+class MessageReference(*, message_id: int, channel_id: int, guild_id: int | None = None, fail_if_not_exists: bool = True, type: MessageReferenceType = <MessageReferenceType.default: 0>)
+```
+
+Represents a reference to a `discord.Message`.
+
+*Added in 1.5.*
+
+*Changed in 1.6 This class can now be constructed by users.*
+
+#### Attributes
+
+type: `discord.MessageReferenceType` | `None`  
+The type of message reference. If this is not provided, assume the default behavior (i.e., reply).
+
+*Added in 2.7.*
+
+message_id: `int` | `None`  
+The id of the message referenced.
+
+channel_id: `int`  
+The channel id of the message referenced.
+
+guild_id: `int` | `None`  
+The guild id of the message referenced.
+
+fail_if_not_exists: `bool`  
+Whether replying to the referenced message should raise `HTTPException` if the message no longer exists or Discord could not fetch the message.
+
+*Added in 1.7.*
+
+resolved: `Message` | `DeletedReferencedMessage` | `None`  
+The message that this reference resolved to. If this is `None` then the original message was not fetched either due to the Discord API not attempting to resolve it or it not being available at the time of creation. If the message was resolved at a prior point but has since been deleted then this will be of type `DeletedReferencedMessage`.
+
+Currently, this is mainly the replied to message when a user replies to a message.
+
+*Added in 1.6.*
+
+#### `with_state()`
+
+```python
+with_state(state: ConnectionState, data: MessageReferencePayload) -> MR
+```
+
+#### `from_message()`
+
+```python
+from_message(message: Message, *, fail_if_not_exists: bool = True, type: MessageReferenceType = <MessageReferenceType.default: 0>) -> MR
+```
+
+Creates a `MessageReference` from an existing `discord.Message`.
+
+*Added in 1.6.*
+
+#### Parameters
+
+message: `discord.Message`  
+The message to be converted into a reference.
+
+fail_if_not_exists: `bool`  
+Whether replying to the referenced message should raise `HTTPException` if the message no longer exists or Discord could not fetch the message.
+
+*Added in 1.7.*
+
+type: `discord.MessageReferenceType` | `None`  
+The type of reference to create. Defaults to `MessageReferenceType.default` (reply).
+
+*Added in 2.7.*
+
+#### Returns
+
+`MessageReference`  
+A reference to the message.
+
+#### `to_dict()`
+
+```python
+to_dict() -> MessageReferencePayload
+```
+
+#### `to_message_reference_dict()`
+
+```python
+to_message_reference_dict() -> MessageReferencePayload
+```
+
+### `MessageSnapshot`
+
+```python
+class MessageSnapshot(*, state: ConnectionState, reference: MessageReference, data: MessageSnapshotPayload)
+```
+
+Represents a message snapshot.
+
+*Added in 2.7.*
+
+#### Attributes
+
+message: `ForwardedMessage`  
+The forwarded message, which includes a minimal subset of fields from the original message.
+
+### `PartialMessage`
+
+```python
+class PartialMessage(*, channel: PartialMessageableChannel, id: int)
+```
+
+Represents a partial message to aid with working messages when only a message and channel ID are present.
+
+There are two ways to construct this class. The first one is through the constructor itself, and the second is via the following:
+
+- `TextChannel.get_partial_message`
+- `Thread.get_partial_message`
+- `DMChannel.get_partial_message`
+- `VoiceChannel.get_partial_message`
+- `StageChannel.get_partial_message`
+- `PartialMessageable.get_partial_message`
+
+Note that this class is trimmed down and has no rich attributes.
+
+*Added in 1.6.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two partial messages are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two partial messages are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the partial message's hash.
+
+</div>
+
+</div>
+
+#### Attributes
+
+channel: `TextChannel` | `Thread` | `DMChannel` | `VoiceChannel` | `StageChannel` | `PartialMessageable`  
+The channel associated with this partial message.
+
+id: `int`  
+The message ID.
+
+#### `delete()`
+
+```python
+delete(*, delay: float | None = None, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the message.
+
+Your own messages could be deleted without any proper permissions. However, to delete other people's messages, you need the `Permissions.manage_messages` permission.
+
+*Changed in 1.1 Added the new `delay` keyword-only parameter.*
+
+#### Parameters
+
+delay: `float` | `None`  
+If provided, the number of seconds to wait in the background before deleting the message. If the deletion fails then it is silently ignored.
+
+reason: `str` | `None`  
+The reason for deleting the message. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have proper permissions to delete the message.
+
+NotFound  
+The message was deleted already
+
+HTTPException  
+Deleting the message failed.
+
+#### `publish()`
+
+```python
+publish() -> None
+```
+
+*(coroutine)*
+
+Publishes this message to your announcement channel.
+
+You must have the `Permissions.send_messages` permission to do this.
+
+If the message is not your own then the `Permissions.manage_messages` permission is also needed.
+
+#### Raises
+
+Forbidden  
+You do not have the proper permissions to publish this message.
+
+HTTPException  
+Publishing the message failed.
+
+#### `pin()`
+
+```python
+pin(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Pins the message.
+
+You must have the `Permissions.pin_messages` permission to do this in a non-private channel context.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for pinning the message. Shows up on the audit log.
+
+*Added in 1.4.*
+
+#### Raises
+
+Forbidden  
+You do not have permissions to pin the message.
+
+NotFound  
+The message or channel was not found or deleted.
+
+HTTPException  
+Pinning the message failed, probably due to the channel having more than 50 pinned messages.
+
+#### `unpin()`
+
+```python
+unpin(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Unpins the message.
+
+You must have the `Permissions.pin_messages` permission to do this in a non-private channel context.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for unpinning the message. Shows up on the audit log.
+
+*Added in 1.4.*
+
+#### Raises
+
+Forbidden  
+You do not have permissions to unpin the message.
+
+NotFound  
+The message or channel was not found or deleted.
+
+HTTPException  
+Unpinning the message failed.
+
+#### `add_reaction()`
+
+```python
+add_reaction(emoji: EmojiInputType) -> None
+```
+
+*(coroutine)*
+
+Add a reaction to the message.
+
+The emoji may be a unicode emoji, a custom `GuildEmoji`, or an `AppEmoji`.
+
+You must have the `Permissions.read_message_history` permission to use this. If nobody else has reacted to the message using this emoji, the `Permissions.add_reactions` permission is required.
+
+#### Parameters
+
+emoji: `GuildEmoji` | `AppEmoji` | `Reaction` | `PartialEmoji` | `str`  
+The emoji to react with.
+
+#### Raises
+
+HTTPException  
+Adding the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to react to the message.
+
+NotFound  
+The emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `remove_reaction()`
+
+```python
+remove_reaction(emoji: EmojiInputType | Reaction, member: Snowflake) -> None
+```
+
+*(coroutine)*
+
+Remove a reaction by the member from the message.
+
+The emoji may be a unicode emoji, a custom `GuildEmoji`, or an `AppEmoji`.
+
+If the reaction is not your own (i.e. `member` parameter is not you) then the `Permissions.manage_messages` permission is needed.
+
+The `member` parameter must represent a member and meet the `abc.Snowflake` abc.
+
+#### Parameters
+
+emoji: `GuildEmoji` | `AppEmoji` | `Reaction` | `PartialEmoji` | `str`  
+The emoji to remove.
+
+member: `abc.Snowflake`  
+The member for which to remove the reaction.
+
+#### Raises
+
+HTTPException  
+Removing the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to remove the reaction.
+
+NotFound  
+The member or emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `clear_reaction()`
+
+```python
+clear_reaction(emoji: EmojiInputType | Reaction) -> None
+```
+
+*(coroutine)*
+
+Clears a specific reaction from the message.
+
+The emoji may be a unicode emoji, a custom `GuildEmoji`, or an `AppEmoji`.
+
+You need the `Permissions.manage_messages` permission to use this.
+
+*Added in 1.3.*
+
+#### Parameters
+
+emoji: `GuildEmoji` | `AppEmoji` | `Reaction` | `PartialEmoji` | `str`  
+The emoji to clear.
+
+#### Raises
+
+HTTPException  
+Clearing the reaction failed.
+
+Forbidden  
+You do not have the proper permissions to clear the reaction.
+
+NotFound  
+The emoji you specified was not found.
+
+InvalidArgument  
+The emoji parameter is invalid.
+
+#### `clear_reactions()`
+
+```python
+clear_reactions() -> None
+```
+
+*(coroutine)*
+
+Removes all the reactions from the message.
+
+You need the `Permissions.manage_messages` permission to use this.
+
+#### Raises
+
+HTTPException  
+Removing the reactions failed.
+
+Forbidden  
+You do not have the proper permissions to remove all the reactions.
+
+#### `reply()`
+
+```python
+reply(content: str | None = None, **kwargs) -> Message
+```
+
+*(coroutine)*
+
+A shortcut method to `.abc.Messageable.send` to reply to the `.Message`.
+
+*Added in 1.6.*
+
+#### Returns
+
+`.Message`  
+The message that was sent.
+
+#### Raises
+
+~discord.HTTPException  
+Sending the message failed.
+
+~discord.Forbidden  
+You do not have the proper permissions to send the message.
+
+~discord.InvalidArgument  
+The `files` list is not of the appropriate size, or you specified both `file` and `files`.
+
+#### `forward_to()`
+
+```python
+forward_to(channel: MessageableChannel | PartialMessageableChannel, **kwargs) -> Message
+```
+
+*(coroutine)*
+
+A shortcut method to `.abc.Messageable.send` to forward the `.Message` to a channel.
+
+*Added in 2.7.*
+
+#### Parameters
+
+channel: `TextChannel` | `Thread` | `DMChannel` | `GroupChannel` | `PartialMessageable`  
+The channel to forward this to.
+
+#### Returns
+
+`.Message`  
+The message that was sent.
+
+#### Raises
+
+~discord.HTTPException  
+Sending the message failed.
+
+~discord.Forbidden  
+You do not have the proper permissions to send the message.
+
+~discord.InvalidArgument  
+The `files` list is not of the appropriate size, or you specified both `file` and `files`.
+
+#### `to_reference()`
+
+```python
+to_reference(*, fail_if_not_exists: bool = True, type: MessageReferenceType = None) -> MessageReference
+```
+
+Creates a `discord.MessageReference` from the current message.
+
+*Added in 1.6.*
+
+#### Parameters
+
+fail_if_not_exists: `bool`  
+Whether replying using the message reference should raise `HTTPException` if the message no longer exists or Discord could not fetch the message.
+
+*Added in 1.7.*
+
+type: `discord.MessageReferenceType` | `None`  
+The type of message reference. Defaults to a reply.
+
+*Added in 2.7.*
+
+#### Returns
+
+`discord.MessageReference`  
+The reference to this message.
+
+#### `to_message_reference_dict()`
+
+```python
+to_message_reference_dict(type: MessageReferenceType = None) -> MessageReferencePayload
+```
+
+#### `fetch()`
+
+```python
+fetch() -> Message
+```
+
+*(coroutine)*
+
+Fetches the partial message to a full `Message`.
+
+#### Returns
+
+`Message`  
+The full message.
+
+#### Raises
+
+NotFound  
+The message was not found.
+
+Forbidden  
+You do not have the permissions required to get a message.
+
+HTTPException  
+Retrieving the message failed.
+
+#### `edit()`
+
+```python
+edit(**fields: Any) -> Message | None
+```
+
+*(coroutine)*
+
+Edits the message.
+
+*Changed in 1.7 `discord.Message` is returned instead of `None` if an edit took place.*
+
+#### Parameters
+
+content: `str` | `None`  
+The new content to replace the message with. Could be `None` to remove the content.
+
+embed: `discord.Embed` | `None`  
+The new embed to replace the original with. Could be `None` to remove the embed.
+
+embeds: List\[`discord.Embed`\] | `None`  
+A list of embeds to upload. Must be a maximum of 10.
+
+*Added in 2.0.*
+
+suppress: `bool`  
+Whether to suppress embeds for the message. This removes all the embeds if set to `True`. If set to `False` this brings the embeds back if they were suppressed. Using this parameter requires `.Permissions.manage_messages`.
+
+delete_after: `float` | `None`  
+If provided, the number of seconds to wait in the background before deleting the message we just edited. If the deletion fails, then it is silently ignored.
+
+allowed_mentions: `discord.AllowedMentions` | `None`  
+Controls the mentions being processed in this message. If this is passed, then the object is merged with `discord.Client.allowed_mentions`. The merging behaviour only overrides attributes that have been explicitly passed to the object, otherwise it uses the attributes set in `discord.Client.allowed_mentions`. If no object is passed at all then the defaults given by `discord.Client.allowed_mentions` are used instead.
+
+view: `discord.ui.BaseView` | `None`  
+The updated view to update this message with. If `None` is passed then the view is removed.
+
+*Added in 2.0.*
+
+#### Returns
+
+`Message` | `None`  
+The message that was edited.
+
+#### Raises
+
+NotFound  
+The message was not found.
+
+HTTPException  
+Editing the message failed.
+
+Forbidden  
+Tried to suppress a message without permissions or edited a message's content or embed that isn't yours.
+
+#### `end_poll()`
+
+```python
+end_poll() -> Message
+```
+
+*(coroutine)*
+
+Immediately ends the poll associated with this message. Only doable by the poll's owner.
+
+*Added in 2.6.*
+
+#### Returns
+
+`Message`  
+The updated message.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to end this poll.
+
+HTTPException  
+Ending this poll failed.
+
+## Functions
+
+### `convert_emoji_reaction()`
+
+```python
+convert_emoji_reaction(emoji)
+```
+
+### `flatten_handlers()`
+
+```python
+flatten_handlers(cls)
+```

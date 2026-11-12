@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # slash_options.py
 import os
+
 import rum
 from rum import option
 

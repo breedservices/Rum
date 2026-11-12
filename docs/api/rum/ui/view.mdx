@@ -1,0 +1,553 @@
+# `rum.ui.view`
+
+## Classes
+
+### `BaseView`
+
+```python
+class BaseView(*items: ViewItem[V], timeout: float | None = 180.0, disable_on_timeout: bool = False, store: bool = True)
+```
+
+The base class for UI views used in messages.
+
+*Added in 2.7.*
+
+#### `add_item()`
+
+```python
+add_item(item: ViewItem[V]) -> Self
+```
+
+Adds an item to the view.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to add to the view.
+
+#### Raises
+
+TypeError  
+An `ViewItem` was not passed.
+
+ValueError  
+Maximum number of children has been exceeded
+
+#### `remove_item()`
+
+```python
+remove_item(item: ViewItem[V] | int | str) -> Self
+```
+
+Removes an item from the view. If an `int` or `str` is passed, the item will be removed by ViewItem `id` or `custom_id` respectively.
+
+#### Parameters
+
+item: `ViewItem` | `int` | `str`  
+The item, item `id`, or item `custom_id` to remove from the view.
+
+#### Returns
+
+`BaseView`  
+The view instance.
+
+#### `clear_items()`
+
+```python
+clear_items() -> Self
+```
+
+Removes all items from this view.
+
+#### `interaction_check()`
+
+```python
+interaction_check(interaction: Interaction) -> bool
+```
+
+*(coroutine)*
+
+A callback that is called when an interaction happens within the view that checks whether the view should process item callbacks for the interaction.
+
+This is useful to override if, for example, you want to ensure that the interaction author is a given user.
+
+The default implementation of this returns `True`.
+
+If this returns `False`, `on_check_failure` is called.
+
+> [!NOTE]
+> If an exception occurs within the body then the check is considered a failure and `on_error` is called.
+
+#### Parameters
+
+interaction: `discord.Interaction`  
+The interaction that occurred.
+
+#### Returns
+
+`bool`  
+Whether the view children's callbacks should be called.
+
+#### `on_timeout()`
+
+```python
+on_timeout() -> None
+```
+
+*(coroutine)*
+
+A callback that is called when a view's timeout elapses without being explicitly stopped.
+
+#### `on_check_failure()`
+
+```python
+on_check_failure(interaction: Interaction) -> None
+```
+
+*(coroutine)* A callback that is called when a `BaseView.interaction_check` returns `False`. This can be used to send a response when a check failure occurs.
+
+#### Parameters
+
+interaction: `discord.Interaction`  
+The interaction that occurred.
+
+#### `on_error()`
+
+```python
+on_error(error: Exception, item: ViewItem[V], interaction: Interaction) -> None
+```
+
+*(coroutine)*
+
+A callback that is called when an item's callback or `interaction_check` fails with an error.
+
+The default implementation prints the traceback to stderr.
+
+#### Parameters
+
+error: `Exception`  
+The exception that was raised.
+
+item: `ViewItem`  
+The item that failed the dispatch.
+
+interaction: `discord.Interaction`  
+The interaction that led to the failure.
+
+#### `is_components_v2()`
+
+```python
+is_components_v2() -> bool
+```
+
+Whether the view contains V2 components.
+
+A view containing V2 components cannot be sent alongside message content or embeds.
+
+#### `is_finished()`
+
+```python
+is_finished() -> bool
+```
+
+Whether the view has finished interacting.
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_dispatching()`
+
+```python
+is_dispatching() -> bool
+```
+
+Whether the view has been added for dispatching purposes.
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+Whether the view is set up as persistent.
+
+A persistent view has all their components with a set `custom_id` and a `timeout` set to `None`.
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+Stops listening to interaction events from this view.
+
+This operation cannot be undone.
+
+#### `wait()`
+
+```python
+wait() -> bool
+```
+
+Waits until the view has finished interacting.
+
+A view is considered finished when `stop` is called, or it times out.
+
+#### Returns
+
+`bool`  
+If `True`, then the view timed out. If `False` then the view finished normally.
+
+#### `disable_all_items()`
+
+```python
+disable_all_items(*, exclusions: list[ViewItem[V]] | None = None) -> Self
+```
+
+Disables all buttons and select menus in the view.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.children</span> to not disable from the view.
+
+#### `enable_all_items()`
+
+```python
+enable_all_items(*, exclusions: list[ViewItem[V]] | None = None) -> Self
+```
+
+Enables all buttons and select menus in the view.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.children</span> to not enable from the view.
+
+#### `copy_text()`
+
+```python
+copy_text() -> str
+```
+
+Returns the text of all `discord.ui.TextDisplay` items in this View. Equivalent to the <span class="title-ref">Copy Text</span> option on Discord clients.
+
+#### `walk_children()`
+
+```python
+walk_children() -> Iterator[ViewItem]
+```
+
+### `DesignerView`
+
+```python
+class DesignerView(*items: ViewItem[V], timeout: float | None = 180.0, disable_on_timeout: bool = False, store: bool = True)
+```
+
+Represents a UI view compatible with v2 components.
+
+This object must be inherited to create a UI within Discord.
+
+*Added in 2.7.*
+
+#### Parameters
+
+\*items: `ViewItem`  
+The initial items attached to this view.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the UI before no longer accepting input. Defaults to 180.0. If `None` then there is no timeout.
+
+store: `bool` | `None`  
+Whether this view should be stored for callback listening. Setting it to `False` will ignore item callbacks and prevent their values from being refreshed. Defaults to `True`.
+
+#### Attributes
+
+timeout: `float` | `None`  
+Timeout from last interaction with the UI before no longer accepting input. If `None` then there is no timeout.
+
+children: List\[`ViewItem`\]  
+The list of items attached to this view.
+
+disable_on_timeout: `bool`  
+Whether to disable the view's items when the timeout is reached. Defaults to `False`.
+
+message: `.Message` | `None`  
+The message that this view is attached to. If `None` then the view has not been sent with a message.
+
+parent: `.Interaction` | `None`  
+The parent interaction which this view was sent from. If `None` then the view was not sent using `InteractionResponse.send_message`.
+
+#### `from_message()`
+
+```python
+from_message(message: Message, /, *, timeout: float | None = 180.0) -> View
+```
+
+Converts a message's components into a `DesignerView`.
+
+The `.Message.components` of a message are read-only and separate types from those in the `discord.ui` namespace. In order to modify and edit message components they must be converted into a `View` first.
+
+#### Parameters
+
+message: `.Message`  
+The message with components to convert into a view.
+
+timeout: `float` | `None`  
+The timeout of the converted view.
+
+#### Returns
+
+`View`  
+The converted view. This always returns a `View` and not one of its subclasses.
+
+#### `from_dict()`
+
+```python
+from_dict(data: list[Component], /, *, timeout: float | None = 180.0) -> View
+```
+
+Converts a list of component dicts into a `DesignerView`.
+
+#### Parameters
+
+data: List\[`.Component`\]  
+The list of components to convert into a view.
+
+timeout: `float` | `None`  
+The timeout of the converted view.
+
+#### Returns
+
+`DesignerView`  
+The converted view. This always returns a `View` and not one of its subclasses.
+
+#### `add_item()`
+
+```python
+add_item(item: ViewItem[V]) -> Self
+```
+
+Adds an item to the view.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to add to the view.
+
+#### Raises
+
+TypeError  
+An `ViewItem` was not passed.
+
+ValueError  
+Maximum number of items has been exceeded (40)
+
+#### `is_components_v2()`
+
+```python
+is_components_v2() -> bool
+```
+
+Whether the view contains V2 components.
+
+A view containing V2 components cannot be sent alongside message content or embeds.
+
+### `View`
+
+```python
+class View(*items: ViewItem[V], timeout: float | None = 180.0, disable_on_timeout: bool = False, store: bool = True)
+```
+
+Represents a legacy UI view for V1 components `discord.ui.Button` and `discord.ui.Select`.
+
+This object must be inherited to create a UI within Discord.
+
+*Added in 2.0.*
+
+*Changed in 2.7
+
+Now inherits from `BaseView`.*
+
+#### Parameters
+
+\*items: `ViewItem`  
+The initial items attached to this view.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the UI before no longer accepting input. Defaults to 180.0. If `None` then there is no timeout.
+
+store: `bool` | `None`  
+Whether this view should be stored for callback listening. Setting it to `False` will ignore item callbacks and prevent their values from being refreshed. Defaults to `True`.
+
+#### Attributes
+
+timeout: `float` | `None`  
+Timeout from last interaction with the UI before no longer accepting input. If `None` then there is no timeout.
+
+children: List\[`ViewItem`\]  
+The list of children attached to this view.
+
+disable_on_timeout: `bool`  
+Whether to disable the view when the timeout is reached. Defaults to `False`.
+
+message: `.Message` | `None`  
+The message that this view is attached to. If `None` then the view has not been sent with a message.
+
+parent: `.Interaction` | `None`  
+The parent interaction which this view was sent from. If `None` then the view was not sent using `InteractionResponse.send_message`.
+
+#### `to_components()`
+
+```python
+to_components() -> list[dict[str, Any]]
+```
+
+#### `from_message()`
+
+```python
+from_message(message: Message, /, *, timeout: float | None = 180.0) -> View
+```
+
+Converts a message's components into a `View`.
+
+The `.Message.components` of a message are read-only and separate types from those in the `discord.ui` namespace. In order to modify and edit message components they must be converted into a `View` first.
+
+#### Parameters
+
+message: `.Message`  
+The message with components to convert into a view.
+
+timeout: `float` | `None`  
+The timeout of the converted view.
+
+#### Returns
+
+`View`  
+The converted view. This always returns a `View` and not one of its subclasses.
+
+#### `from_dict()`
+
+```python
+from_dict(data: list[Component], /, *, timeout: float | None = 180.0) -> View
+```
+
+Converts a list of component dicts into a `View`.
+
+#### Parameters
+
+data: List\[`.Component`\]  
+The list of components to convert into a view.
+
+timeout: `float` | `None`  
+The timeout of the converted view.
+
+#### Returns
+
+`View`  
+The converted view. This always returns a `View` and not one of its subclasses.
+
+#### `add_item()`
+
+```python
+add_item(item: ViewItem[V]) -> Self
+```
+
+Adds an item to the view. Attempting to add a `discord.ui.ActionRow` will add its children instead.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to add to the view.
+
+#### Raises
+
+TypeError  
+An `ViewItem` was not passed.
+
+ValueError  
+Maximum number of children has been exceeded (25) or the row the item is trying to be added to is full.
+
+#### `remove_item()`
+
+```python
+remove_item(item: ViewItem[V] | int | str) -> Self
+```
+
+Removes an item from the view. If an `int` or `str` is passed, the item will be removed by Item `id` or `custom_id` respectively.
+
+#### Parameters
+
+item: `ViewItem` | `int` | `str`  
+The item, item `id`, or item `custom_id` to remove from the view.
+
+#### `clear_items()`
+
+```python
+clear_items() -> Self
+```
+
+Removes all items from the view.
+
+#### `is_components_v2()`
+
+```python
+is_components_v2() -> bool
+```
+
+Whether the view contains V2 components.
+
+A view containing V2 components cannot be sent alongside message content or embeds.
+
+This is always `False` for `View`.
+
+### `ViewStore`
+
+```python
+class ViewStore(state: ConnectionState)
+```
+
+#### `add_view()`
+
+```python
+add_view(view: BaseView, message_id: int | None = None)
+```
+
+#### `remove_view()`
+
+```python
+remove_view(view: BaseView)
+```
+
+#### `remove_message_view()`
+
+```python
+remove_message_view(message_id)
+```
+
+#### `dispatch()`
+
+```python
+dispatch(component_type: int, custom_id: str, interaction: Interaction)
+```
+
+#### `is_message_tracked()`
+
+```python
+is_message_tracked(message_id: int)
+```
+
+#### `remove_message_tracking()`
+
+```python
+remove_message_tracking(message_id: int) -> BaseView | None
+```
+
+#### `update_from_message()`
+
+```python
+update_from_message(message_id: int, components: list[ComponentPayload])
+```

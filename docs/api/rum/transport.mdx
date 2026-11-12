@@ -1,0 +1,127 @@
+# `rum.transport`
+
+## Classes
+
+### `Response`
+
+```python
+class Response(status: int, headers: list[tuple[bytes, bytes]], body: bytes) -> None
+```
+
+The response of an HTTP request.
+
+#### `bytes()`
+
+```python
+bytes() -> bytes
+```
+
+The body of the response.
+
+#### `text()`
+
+```python
+text(encoding: str = 'utf-8') -> str
+```
+
+The body of the response, as text.
+
+### `Session`
+
+```python
+class Session(*, proxy: str | None = None, timeout: float = 30.0) -> None
+```
+
+The HTTP session of the client.
+
+The session keeps one connection per host alive and reuses it, the way a browser does.
+
+#### Parameters
+
+proxy: `str` | `None`  
+The proxy every request of the session goes through.
+
+timeout: `float`  
+How long a request may take, in seconds.
+
+#### `request()`
+
+```python
+request(method: str, url: str, *, headers: Mapping[str, str] | None = None, body: bytes | None = None, json: Any = None, multipart: Iterable[dict[str, Any]] | None = None, params: Mapping[str, Any] | None = None) -> AsyncIterator[Response]
+```
+
+Makes a request and returns the response.
+
+#### `get()`
+
+```python
+get(url: str) -> AsyncIterator[Response]
+```
+
+Makes a GET request and returns the response.
+
+#### `stream()`
+
+```python
+stream(method: str, url: str, *, headers: Mapping[str, str] | None = None) -> AsyncIterator[bytes]
+```
+
+Makes a request and yields the body as it comes in.
+
+#### `aclose()`
+
+```python
+aclose() -> None
+```
+
+Closes the session and its connections.
+
+### `WebSocket`
+
+```python
+class WebSocket(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None
+```
+
+A websocket client, written on h11 and wsproto.
+
+#### `connect()`
+
+```python
+connect(url: str, *, headers: Mapping[str, str] | None = None, timeout: float = 30.0) -> WebSocket
+```
+
+Opens a websocket connection.
+
+#### `send()`
+
+```python
+send(data: str | bytes) -> None
+```
+
+Sends a message.
+
+#### `recv()`
+
+```python
+recv(timeout: float | None = None) -> str | bytes | None
+```
+
+Receives a message, or `None` when the connection is closed.
+
+#### `close()`
+
+```python
+close(code: int = 1000, reason: str = '') -> None
+```
+
+Closes the connection.
+
+## Functions
+
+### `multipart_body()`
+
+```python
+multipart_body(form: Iterable[dict[str, Any]]) -> tuple[bytes, str]
+```
+
+Builds a multipart body and returns it with its content type.

@@ -44,9 +44,9 @@ used in the cache.
 from __future__ import annotations
 
 import logging
+import os
 from collections import OrderedDict
 from collections.abc import Iterator, MutableMapping
-import os
 from typing import Any
 
 import msgspec
@@ -196,7 +196,7 @@ async def cache_stats(ctx: rum.ApplicationContext):
     # Every cache created by the provider is an instrumented mapping, so the
     # recorded events can be decoded back into plain dictionaries.
     events = []
-    for name, cache in caches.items():
+    for cache in caches.values():
         dump = getattr(cache, "dump_events", None)
         if dump is not None:
             events.extend(dump())

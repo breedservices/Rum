@@ -1,0 +1,278 @@
+# `rum.onboarding`
+
+## Classes
+
+### `Onboarding`
+
+```python
+class Onboarding(data: OnboardingPayload, guild: Guild)
+```
+
+Represents the onboarding flow for a guild.
+
+*Added in 2.5.*
+
+#### Attributes
+
+prompts: List\[`OnboardingPrompt`\]  
+A list of prompts displayed in the onboarding flow.
+
+enabled: `bool`  
+Whether onboarding is enabled in the guild.
+
+mode: `OnboardingMode`  
+The current onboarding mode.
+
+#### `edit()`
+
+```python
+edit(*, prompts: list[OnboardingPrompt] | None = ..., default_channels: list[Snowflake] | None = ..., enabled: bool | None = ..., mode: OnboardingMode | None = ..., reason: str | None = ...) -> Onboarding
+```
+
+*(coroutine)*
+
+Edits this onboarding flow.
+
+You must have the `Permissions.manage_guild` and `Permissions.manage_roles` permissions in the guild to do this.
+
+#### Parameters
+
+prompts: List\[`OnboardingPrompt`\] | `None`  
+The new list of prompts for this flow.
+
+default_channels: List\[`Snowflake`\] | `None`  
+The new default channels that users are opted into.
+
+enabled: `bool` | `None`  
+Whether onboarding should be enabled. Setting this to `True` requires the guild to have `COMMUNITY` in `Guild.features` and at least 7 `default_channels`.
+
+mode: `OnboardingMode` | `None`  
+The new onboarding mode.
+
+reason: `str` | `None`  
+The reason for editing this onboarding flow. Shows up on the audit log.
+
+#### Returns
+
+`Onboarding`  
+The updated onboarding flow.
+
+#### Raises
+
+HTTPException  
+Editing the onboarding flow failed somehow.
+
+Forbidden  
+You don't have permissions to edit the onboarding flow.
+
+#### `add_prompt()`
+
+```python
+add_prompt(type: PromptType, title: str, options: list[PromptOption], single_select: bool, required: bool, in_onboarding: bool, *, reason: str | None = None)
+```
+
+*(coroutine)*
+
+Adds a new onboarding prompt.
+
+You must have the `Permissions.manage_guild` and `Permissions.manage_roles` permissions in the guild to do this.
+
+#### Parameters
+
+type: `PromptType`  
+The type of onboarding prompt.
+
+title: `str`  
+The prompt's title.
+
+options: List\[`PromptOption`\]  
+The list of options available in the prompt.
+
+single_select: `bool`  
+Whether the user is limited to selecting one option on this prompt.
+
+required: `bool`  
+Whether the user is required to answer this prompt.
+
+in_onboarding: `bool`  
+Whether this prompt is displayed in the initial onboarding flow.
+
+reason: `str` | `None`  
+The reason for adding this prompt. Shows up on the audit log.
+
+#### Returns
+
+`Onboarding`  
+The updated onboarding flow.
+
+#### Raises
+
+HTTPException  
+Editing the onboarding flow failed somehow.
+
+Forbidden  
+You don't have permissions to edit the onboarding flow.
+
+#### `append_prompt()`
+
+```python
+append_prompt(prompt: OnboardingPrompt, *, reason: str | None = None)
+```
+
+*(coroutine)*
+
+Append an onboarding prompt onto this flow.
+
+You must have the `Permissions.manage_guild` and `Permissions.manage_roles` permissions in the guild to do this.
+
+#### Parameters
+
+prompt: `OnboardingPrompt`  
+The onboarding prompt to append.
+
+reason: `str` | `None`  
+The reason for appending this prompt. Shows up on the audit log.
+
+#### Returns
+
+`Onboarding`  
+The updated onboarding flow.
+
+#### Raises
+
+HTTPException  
+Editing the onboarding flow failed somehow.
+
+Forbidden  
+You don't have permissions to edit the onboarding flow.
+
+#### `get_prompt()`
+
+```python
+get_prompt(id: int)
+```
+
+*(coroutine)*
+
+Get an onboarding prompt with the given ID.
+
+#### Parameters
+
+id: `int`  
+The ID of the prompt to get.
+
+#### Returns
+
+`OnboardingPrompt`  
+The matching prompt, or None if it didn't exist.
+
+#### `delete_prompt()`
+
+```python
+delete_prompt(id: int, *, reason: str | None = ...)
+```
+
+*(coroutine)*
+
+Delete an onboarding prompt with the given ID.
+
+You must have the `Permissions.manage_guild` and `Permissions.manage_roles` permissions in the guild to do this.
+
+#### Parameters
+
+id: `int`  
+The ID of the prompt to delete.
+
+reason: `str` | `None`  
+The reason for deleting this prompt. Shows up on the audit log.
+
+#### Returns
+
+`Onboarding`  
+The updated onboarding flow.
+
+#### Raises
+
+ValueError  
+No prompt with this ID exists.
+
+HTTPException  
+Editing the onboarding flow failed somehow.
+
+Forbidden  
+You don't have permissions to edit the onboarding flow.
+
+### `OnboardingPrompt`
+
+```python
+class OnboardingPrompt(type: PromptType, title: str, options: list[PromptOption], single_select: bool, required: bool, in_onboarding: bool, id: int | None = None)
+```
+
+Represents an onboarding prompt displayed in `Onboarding`.
+
+*Added in 2.5.*
+
+#### Attributes
+
+id: `int`  
+The id of the prompt.
+
+type: `PromptType`  
+The type of onboarding prompt.
+
+title: `str`  
+The prompt's title.
+
+options: List\[`PromptOption`\]  
+The list of options available in the prompt.
+
+single_select: `bool`  
+Whether the user is limited to selecting one option on this prompt.
+
+required: `bool`  
+Whether the user is required to answer this prompt.
+
+in_onboarding: `bool`  
+Whether this prompt is displayed in the initial onboarding flow.
+
+#### `to_dict()`
+
+```python
+to_dict() -> OnboardingPromptPayload
+```
+
+### `PromptOption`
+
+```python
+class PromptOption(title: str, channels: list[Snowflake] | None = None, roles: list[Snowflake] | None = None, description: str | None = None, emoji: GuildEmoji | PartialEmoji | None = None, id: int | None = None)
+```
+
+Represents an onboarding prompt option displayed in `OnboardingPrompt`.
+
+*Added in 2.5.*
+
+#### Attributes
+
+id: `int`  
+The id of the prompt option.
+
+channels: List\[`Snowflake`\]  
+The channels assigned to the user when they select this option.
+
+roles: List\[`Snowflake`\]  
+The roles assigned to the user when they select this option.
+
+emoji: `GuildEmoji` | `PartialEmoji`  
+The emoji displayed with the option.
+
+title: `str`  
+The option's title.
+
+description: `str` | `None`  
+The option's description.
+
+#### `to_dict()`
+
+```python
+to_dict() -> PromptOptionPayload
+```

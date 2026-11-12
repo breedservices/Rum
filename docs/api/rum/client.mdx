@@ -1,0 +1,1572 @@
+# `rum.client`
+
+## Classes
+
+### `Client`
+
+```python
+class Client(*, loop: asyncio.AbstractEventLoop | None = None, **options: Any)
+```
+
+Represents a client connection that connects to Discord. This class is used to interact with the Discord WebSocket and API.
+
+A number of options can be passed to the `Client`.
+
+#### Parameters
+
+max_messages: `int` | `None`  
+The maximum number of messages to store in the internal message cache. This defaults to `1000`. Passing in `None` disables the message cache.
+
+*Changed in 1.3 Allow disabling the message cache and change the default size to `1000`.*
+
+loop: `asyncio.AbstractEventLoop` | `None`  
+The `asyncio.AbstractEventLoop` to use for asynchronous operations. Defaults to `None`, in which case the default event loop is used via `asyncio.get_event_loop()` if it exists or one is created via `asyncio.new_event_loop()`.
+
+connector: Any | `None`  
+Deprecated. Kept for backward compatibility; ignored with the httpcore backend.
+
+proxy: `str` | `None`  
+Proxy URL.
+
+proxy_auth: Any | `None`  
+Deprecated. Kept for backward compatibility with the previous HTTP backend.
+
+shard_id: `int` | `None`  
+Integer starting at `0` and less than `.shard_count`.
+
+shard_count: `int` | `None`  
+The total number of shards.
+
+application_id: `int`  
+The client's application ID.
+
+intents: `Intents`  
+The intents that you want to enable for the session. This is a way of disabling and enabling certain gateway events from triggering and being sent. If not given, defaults to a regularly constructed `Intents` class.
+
+*Added in 1.5.*
+
+capabilities: `GatewayCapabilities`  
+Gateway capabilities to include with the IDENTIFY payload. Defaults to `GatewayCapabilities.none`. These are mostly undocumented and may not be supported for bot accounts.
+
+member_cache_flags: `MemberCacheFlags`  
+Allows for finer control over how the library caches members. If not given, defaults to cache as much as possible with the currently selected intents.
+
+*Added in 1.5.*
+
+chunk_guilds_at_startup: `bool`  
+Indicates if `.on_ready` should be delayed to chunk all guilds at start-up if necessary. This operation is incredibly slow for large amounts of guilds. The default is `True` if `Intents.members` is `True`.
+
+*Added in 1.5.*
+
+status: `.Status` | `None`  
+A status to start your presence with upon logging on to Discord.
+
+activity: `.BaseActivity` | `None`  
+An activity to start your presence with upon logging on to Discord.
+
+allowed_mentions: `AllowedMentions` | `None`  
+Control how the client handles mentions by default on every message sent.
+
+*Added in 1.4.*
+
+heartbeat_timeout: `float`  
+The maximum numbers of seconds before timing out and restarting the WebSocket in the case of not receiving a HEARTBEAT_ACK. Useful if processing the initial packets take too long to the point of disconnecting you. The default timeout is 60 seconds.
+
+guild_ready_timeout: `float`  
+The maximum number of seconds to wait for the GUILD_CREATE stream to end before preparing the member cache and firing READY. The default timeout is 2 seconds.
+
+*Added in 1.4.*
+
+assume_unsync_clock: `bool`  
+Whether to assume the system clock is unsynced. This applies to the ratelimit handling code. If this is set to `True`, the default, then the library uses the time to reset a rate limit bucket given by Discord. If this is `False` then your system clock is used to calculate how long to sleep for. If this is set to `False` it is recommended to sync your system clock to Google's NTP server.
+
+*Added in 1.3.*
+
+enable_debug_events: `bool`  
+Whether to enable events that are useful only for debugging gateway related information.
+
+Right now this involves `on_socket_raw_receive` and `on_socket_raw_send`. If this is `False` then those events will not be dispatched (due to performance considerations). To enable these events, this must be set to `True`. Defaults to `False`.
+
+*Added in 2.0.*
+
+cache_app_emojis: `bool`  
+Whether to automatically fetch and cache the application's emojis on startup and when fetching. Defaults to `False`.
+
+> [!WARNING]
+> There are no events related to application emojis - if any are created/deleted on the Developer Dashboard while the client is running, the cache will not be updated until you manually run `fetch_emojis`.
+
+*Added in 2.7.*
+
+cache_default_sounds: `bool`  
+Whether to automatically fetch and cache the default soundboard sounds on startup. Defaults to `True`.
+
+*Added in 2.8.*
+
+cache_channel_info: `bool`  
+Whether to automatically request and cache voice channel statuses on startup. Defaults to `False`.
+
+*Added in 2.9.*
+
+cache_provider: `discord.cache.DefaultCacheProvider` | `None`  
+A provider used to create in-memory caches (users, guilds, messages, UI stores, etc.). This can be used to plug in custom cache backends while keeping default behavior. If `None` (default), `discord.cache.DefaultCacheProvider` is used.
+
+#### Attributes
+
+ws  
+The WebSocket gateway the client is currently connected to. Could be `None`.
+
+loop: `asyncio.AbstractEventLoop`  
+The event loop that the client uses for asynchronous operations.
+
+#### `is_ws_ratelimited()`
+
+```python
+is_ws_ratelimited() -> bool
+```
+
+Whether the WebSocket is currently rate limited.
+
+This can be useful to know when deciding whether you should query members using HTTP or via the gateway.
+
+*Added in 1.6.*
+
+#### `is_ready()`
+
+```python
+is_ready() -> bool
+```
+
+Specifies if the client's internal cache is ready for use.
+
+#### `dispatch()`
+
+```python
+dispatch(event: str, *args: Any, **kwargs: Any) -> None
+```
+
+#### `on_error()`
+
+```python
+on_error(event_method: str, *args: Any, **kwargs: Any) -> None
+```
+
+*(coroutine)*
+
+The default error handler provided by the client.
+
+By default, this prints to `sys.stderr` however it could be overridden to have a different implementation. Check `discord.on_error` for more details.
+
+#### `on_view_error()`
+
+```python
+on_view_error(error: Exception, item: ViewItem, interaction: Interaction) -> None
+```
+
+*(coroutine)*
+
+The default view error handler provided by the client.
+
+This only fires for a view if you did not define its `discord.ui.BaseView.on_error`.
+
+#### Parameters
+
+error: `Exception`  
+The exception that was raised.
+
+item: `ViewItem`  
+The item that the user interacted with.
+
+interaction: `Interaction`  
+The interaction that was received.
+
+#### `on_modal_error()`
+
+```python
+on_modal_error(error: Exception, interaction: Interaction) -> None
+```
+
+*(coroutine)*
+
+The default modal error handler provided by the client. The default implementation prints the traceback to stderr.
+
+This only fires for a modal if you did not define its `discord.ui.BaseModal.on_error`.
+
+#### Parameters
+
+error: `Exception`  
+The exception that was raised.
+
+interaction: `Interaction`  
+The interaction that was received.
+
+#### `before_identify_hook()`
+
+```python
+before_identify_hook(shard_id: int | None, *, initial: bool = False) -> None
+```
+
+*(coroutine)*
+
+A hook that is called before IDENTIFYing a session. This is useful if you wish to have more control over the synchronization of multiple IDENTIFYing clients.
+
+The default implementation sleeps for 5 seconds.
+
+*Added in 1.4.*
+
+#### Parameters
+
+shard_id: `int`  
+The shard ID that requested being IDENTIFY'd
+
+initial: `bool`  
+Whether this IDENTIFY is the first initial IDENTIFY.
+
+#### `login()`
+
+```python
+login(token: str) -> None
+```
+
+*(coroutine)*
+
+Logs in the client with the specified credentials.
+
+#### Parameters
+
+token: `str`  
+The authentication token. Do not prefix this token with anything as the library will do it for you.
+
+#### Raises
+
+TypeError  
+The token was in invalid type.
+
+`LoginFailure`  
+The wrong credentials are passed.
+
+`HTTPException`  
+An unknown HTTP related error occurred, usually when it isn't 200 or the known incorrect credentials passing status code.
+
+#### `connect()`
+
+```python
+connect(*, reconnect: bool = True) -> None
+```
+
+*(coroutine)*
+
+Creates a WebSocket connection and lets the WebSocket listen to messages from Discord. This is a loop that runs the entire event system and miscellaneous aspects of the library. Control is not resumed until the WebSocket connection is terminated.
+
+#### Parameters
+
+reconnect: `bool`  
+If we should attempt reconnecting, either due to internet failure or a specific failure on Discord's part. Certain disconnects that lead to bad state will not be handled (such as invalid sharding payloads or bad tokens).
+
+#### Raises
+
+`GatewayNotFound`  
+The gateway to connect to Discord is not found. Usually if this is thrown then there is a Discord API outage.
+
+`ConnectionClosed`  
+The WebSocket connection has been terminated.
+
+#### `close()`
+
+```python
+close() -> None
+```
+
+*(coroutine)*
+
+Closes the connection to Discord.
+
+#### `clear()`
+
+```python
+clear() -> None
+```
+
+Clears the internal state of the bot.
+
+After this, the bot can be considered "re-opened", i.e. `is_closed` and `is_ready` both return `False` along with the bot's internal cache cleared.
+
+#### `start()`
+
+```python
+start(token: str, *, reconnect: bool = True) -> None
+```
+
+*(coroutine)*
+
+A shorthand coroutine for `login` + `connect`.
+
+#### Raises
+
+TypeError  
+An unexpected keyword argument was received.
+
+#### `run()`
+
+```python
+run(*args: Any, **kwargs: Any) -> None
+```
+
+A blocking call that abstracts away the event loop initialisation from you.
+
+If you want more control over the event loop then this function should not be used. Use `start` coroutine or `connect` + `login`.
+
+Roughly Equivalent to: :
+
+    try:
+        loop.run_until_complete(start(*args, **kwargs))
+    except KeyboardInterrupt:
+        loop.run_until_complete(close())
+        # cancel all tasks lingering
+    finally:
+        loop.close()
+
+> [!WARNING]
+> This function must be the last function to call due to the fact that it is blocking. That means that registration of events or anything being called after this function call will not execute until it returns.
+
+#### `is_closed()`
+
+```python
+is_closed() -> bool
+```
+
+Indicates if the WebSocket connection is closed.
+
+#### `fetch_application()`
+
+```python
+fetch_application(application_id: int, /) -> PartialAppInfo
+```
+
+*(coroutine)* Retrieves a `.PartialAppInfo` from an application ID.
+
+#### Parameters
+
+application_id: `int`  
+The application ID to retrieve information from.
+
+#### Returns
+
+`.PartialAppInfo`  
+The application information.
+
+#### Raises
+
+NotFound  
+An application with this ID does not exist.
+
+HTTPException  
+Retrieving the application failed.
+
+#### `get_channel()`
+
+```python
+get_channel(id: int, /) -> GuildChannel | Thread | PrivateChannel | None
+```
+
+Returns a channel or thread with the given ID.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.abc.GuildChannel` | `.Thread` | `.abc.PrivateChannel` | `None`  
+The returned channel or `None` if not found.
+
+#### `get_message()`
+
+```python
+get_message(id: int, /) -> Message | None
+```
+
+Returns a message the given ID.
+
+This is useful if you have a message_id but don't want to do an API call to access the message.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.Message` | `None`  
+The returned message or `None` if not found.
+
+#### `get_partial_messageable()`
+
+```python
+get_partial_messageable(id: int, *, type: ChannelType | None = None) -> PartialMessageable
+```
+
+Returns a partial messageable with the given channel ID.
+
+This is useful if you have a channel_id but don't want to do an API call to send messages to it.
+
+*Added in 2.0.*
+
+#### Parameters
+
+id: `int`  
+The channel ID to create a partial messageable for.
+
+type: `.ChannelType` | `None`  
+The underlying channel type for the partial messageable.
+
+#### Returns
+
+`.PartialMessageable`  
+The partial messageable
+
+#### `get_stage_instance()`
+
+```python
+get_stage_instance(id: int, /) -> StageInstance | None
+```
+
+Returns a stage instance with the given stage channel ID.
+
+*Added in 2.0.*
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.StageInstance` | `None`  
+The stage instance or `None` if not found.
+
+#### `get_guild()`
+
+```python
+get_guild(id: int, /) -> Guild | None
+```
+
+Returns a guild with the given ID.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.Guild` | `None`  
+The guild or `None` if not found.
+
+#### `get_user()`
+
+```python
+get_user(id: int, /) -> User | None
+```
+
+Returns a user with the given ID.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`discord.User` | `None`  
+The user or `None` if not found.
+
+#### `get_emoji()`
+
+```python
+get_emoji(id: int, /) -> GuildEmoji | AppEmoji | None
+```
+
+Returns an emoji with the given ID.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`.GuildEmoji` | `.AppEmoji` | `None`  
+The custom emoji or `None` if not found.
+
+#### `get_sticker()`
+
+```python
+get_sticker(id: int, /) -> GuildSticker | None
+```
+
+Returns a guild sticker with the given ID.
+
+*Added in 2.0.*
+
+> [!NOTE]
+> To retrieve standard stickers, use `.fetch_sticker`. or `.fetch_premium_sticker_packs`.
+
+#### Returns
+
+`.GuildSticker` | `None`  
+The sticker or `None` if not found.
+
+#### `get_poll()`
+
+```python
+get_poll(id: int, /) -> Poll | None
+```
+
+Returns a poll attached to the given message ID.
+
+#### Parameters
+
+id: `int`  
+The message ID of the poll to search for.
+
+#### Returns
+
+`.Poll` | `None`  
+The poll or `None` if not found.
+
+#### `get_all_channels()`
+
+```python
+get_all_channels() -> Generator[GuildChannel]
+```
+
+A generator that retrieves every `.abc.GuildChannel` the client can 'access'.
+
+This is equivalent to: :
+
+    for guild in client.guilds:
+        for channel in guild.channels:
+            yield channel
+
+> [!NOTE]
+> Just because you receive a `.abc.GuildChannel` does not mean that you can communicate in said channel. `.abc.GuildChannel.permissions_for` should be used for that.
+
+#### Yields
+
+`.abc.GuildChannel`  
+A channel the client can 'access'.
+
+#### `get_all_members()`
+
+```python
+get_all_members() -> Generator[Member]
+```
+
+Returns a generator with every `.Member` the client can see.
+
+This is equivalent to: :
+
+    for guild in client.guilds:
+        for member in guild.members:
+            yield member
+
+#### Yields
+
+`.Member`  
+A member the client can see.
+
+#### `get_or_fetch_user()`
+
+```python
+get_or_fetch_user(id: int, /) -> User | None
+```
+
+*(coroutine)*
+
+Looks up a user in the user cache or fetches if not found.
+
+#### Parameters
+
+id: `int`  
+The ID to search for.
+
+#### Returns
+
+`discord.User` | `None`  
+The user or `None` if not found.
+
+#### `get_or_fetch()`
+
+```python
+get_or_fetch(object_type: type[_FETCHABLE], object_id: int | None, default: _D = None) -> _FETCHABLE | _D | None
+```
+
+Shortcut method to get data from an object either by returning the cached version, or if it does not exist, attempting to fetch it from the API.
+
+#### Parameters
+
+object_type: Type\[`VoiceChannel` | `TextChannel` | `ForumChannel` | `StageChannel` | `CategoryChannel` | `Thread` | `User` | `Guild` | `GuildEmoji` | `AppEmoji`\]  
+Type of object to fetch or get.
+
+object_id: `int` | `None`  
+ID of object to get. If `None`, returns <span class="title-ref">default</span> if provided, else `None`.
+
+default: Any | `None`  
+A default to return instead of raising if fetch fails.
+
+#### Returns
+
+`VoiceChannel` | `TextChannel` | `ForumChannel` | `StageChannel` | `CategoryChannel` | `Thread` | `User` | `Guild` | `GuildEmoji` | `AppEmoji` | `None`  
+The object if found, or <span class="title-ref">default</span> if provided when not found.
+
+#### Raises
+
+`TypeError`  
+Raised when required parameters are missing or invalid types are provided.
+
+`InvalidArgument`  
+Raised when an unsupported or incompatible object type is used.
+
+#### `wait_until_ready()`
+
+```python
+wait_until_ready() -> None
+```
+
+*(coroutine)*
+
+Waits until the client's internal cache is all ready.
+
+#### `wait_for()`
+
+```python
+wait_for(event: str, *, check: Callable[..., bool] | None = None, timeout: float | None = None) -> Any
+```
+
+*(coroutine)*
+
+Waits for a WebSocket event to be dispatched.
+
+This could be used to wait for a user to reply to a message, or to react to a message, or to edit a message in a self-contained way.
+
+The `timeout` parameter is passed onto `asyncio.wait_for`. By default, it does not timeout. Note that this does propagate the `asyncio.TimeoutError` for you in case of timeout and is provided for ease of use.
+
+In case the event returns multiple arguments, a `tuple` containing those arguments is returned instead. Please check the `documentation <discord-api-events>` for a list of events and their parameters.
+
+This function returns the **first event that meets the requirements**.
+
+#### Parameters
+
+event: `str`  
+The event name, similar to the `event reference <discord-api-events>`, but without the `on_` prefix, to wait for.
+
+check: Callable\[..., `bool`\] | `None`  
+A predicate to check what to wait for. The arguments must meet the parameters of the event being waited for.
+
+timeout: `float` | `None`  
+The number of seconds to wait before timing out and raising `asyncio.TimeoutError`.
+
+#### Returns
+
+Any  
+Returns no arguments, a single argument, or a `tuple` of multiple arguments that mirrors the parameters passed in the `event reference <discord-api-events>`.
+
+#### Raises
+
+asyncio.TimeoutError  
+Raised if a timeout is provided and reached.
+
+#### Examples
+
+Waiting for a user reply: :
+
+    @client.event
+    async def on_message(message):
+        if message.content.startswith('$greet'):
+            channel = message.channel
+            await channel.send('Say hello!')
+
+            def check(m):
+                return m.content == 'hello' and m.channel == channel
+
+            msg = await client.wait_for('message', check=check)
+            await channel.send(f'Hello {msg.author}!')
+
+Waiting for a thumbs up reaction from the message author: :
+
+    @client.event
+    async def on_message(message):
+        if message.content.startswith('$thumb'):
+            channel = message.channel
+            await channel.send('Send me that 👍 reaction, mate')
+
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '👍'
+
+            try:
+                reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await channel.send('👎')
+            else:
+                await channel.send('👍')
+
+#### `add_listener()`
+
+```python
+add_listener(func: Coro, name: str = ...) -> None
+```
+
+The non decorator alternative to `.listen`.
+
+#### Parameters
+
+func: `coroutine <coroutine>`  
+The function to call.
+
+name: `str`  
+The name of the event to listen for. Defaults to `func.__name__`.
+
+#### Raises
+
+TypeError  
+The `func` parameter is not a coroutine function.
+
+ValueError  
+The `name` (event name) does not start with `on_`.
+
+#### Example
+
+``` python3
+async def on_ready(): pass
+async def my_message(message): pass
+
+client.add_listener(on_ready)
+client.add_listener(my_message, 'on_message')
+```
+
+#### `remove_listener()`
+
+```python
+remove_listener(func: Coro, name: str = ...) -> None
+```
+
+Removes a listener from the pool of listeners.
+
+#### Parameters
+
+func  
+The function that was used as a listener to remove.
+
+name: `str`  
+The name of the event we want to remove. Defaults to `func.__name__`.
+
+#### `listen()`
+
+```python
+listen(name: str = ..., once: bool = False) -> Callable[[Coro], Coro]
+```
+
+A decorator that registers another function as an external event listener. Basically this allows you to listen to multiple events from different places e.g. such as `.on_ready`
+
+The functions being listened to must be a `coroutine <coroutine>`.
+
+#### Raises
+
+TypeError  
+The function being listened to is not a coroutine.
+
+ValueError  
+The `name` (event name) does not start with `on_`.
+
+#### Example
+
+``` python3
+@client.listen()
+async def on_message(message):
+    print('one')
+
+# in some other file...
+
+@client.listen('on_message')
+async def my_message(message):
+    print('two')
+
+# listen to the first event only
+@client.listen('on_ready', once=True)
+async def on_ready():
+    print('ready!')
+```
+
+Would print one and two in an unspecified order.
+
+#### `event()`
+
+```python
+event(coro: Coro) -> Coro
+```
+
+A decorator that registers an event to listen to.
+
+You can find more info about the events on the `documentation below <discord-api-events>`.
+
+The events must be a `coroutine <coroutine>`, if not, `TypeError` is raised.
+
+> [!NOTE]
+> This replaces any default handlers. Developers are encouraged to use :py`discord.Client.listen` for adding additional handlers instead of :py`discord.Client.event` unless default method replacement is intended.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### Example
+
+``` python3
+@client.event
+async def on_ready():
+    print('Ready!')
+```
+
+#### `change_presence()`
+
+```python
+change_presence(*, activity: BaseActivity | None = None, status: Status | None = None)
+```
+
+*(coroutine)*
+
+Changes the client's presence.
+
+#### Parameters
+
+activity: `.BaseActivity` | `None`  
+The activity being done. `None` if no currently active activity is done.
+
+status: `.Status` | `None`  
+Indicates what status to change to. If `None`, then `.Status.online` is used.
+
+#### Raises
+
+`InvalidArgument`  
+If the `activity` parameter is not the proper type.
+
+#### Example
+
+``` python3
+game = discord.Game("with the API")
+await client.change_presence(status=discord.Status.idle, activity=game)
+```
+
+*Changed in 2.0 Removed the `afk` keyword-only parameter.*
+
+#### `fetch_guilds()`
+
+```python
+fetch_guilds(*, limit: int | None = 100, before: SnowflakeTime = None, after: SnowflakeTime = None, with_counts: bool = True) -> GuildIterator
+```
+
+Retrieves an `.AsyncIterator` that enables receiving your guilds.
+
+> [!NOTE]
+> Using this, you will only receive `.Guild.owner`, `.Guild.icon`, `.Guild.id`, and `.Guild.name` per `.Guild`.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `guilds` instead.
+
+#### Parameters
+
+limit: `int` | `None`  
+The number of guilds to retrieve. If `None`, it retrieves every guild you have access to. Note, however, that this would make it a slow operation. Defaults to `100`.
+
+before: `.abc.Snowflake` | `datetime.datetime`  
+Retrieves guilds before this date or object. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+after: `.abc.Snowflake` | `datetime.datetime`  
+Retrieve guilds after this date or object. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+with_counts: `bool`  
+Whether to include member count information in guilds. This fills the `.Guild.approximate_member_count` and `.Guild.approximate_presence_count` fields. Defaults to `True`.
+
+#### Yields
+
+`.Guild`  
+The guild with the guild data parsed.
+
+#### Raises
+
+`HTTPException`  
+Getting the guilds failed.
+
+#### Examples
+
+Usage :
+
+    async for guild in client.fetch_guilds(limit=150):
+        print(guild.name)
+
+Flattening into a list :
+
+    guilds = await client.fetch_guilds(limit=150).flatten()
+    # guilds is now a list of Guild...
+
+All parameters are optional.
+
+#### `fetch_template()`
+
+```python
+fetch_template(code: Template | str) -> Template
+```
+
+*(coroutine)*
+
+Gets a `.Template` from a discord.new URL or code.
+
+#### Parameters
+
+code: `.Template` | `str`  
+The Discord Template Code or URL (must be a discord.new URL).
+
+#### Returns
+
+`.Template`  
+The template from the URL/code.
+
+#### Raises
+
+`NotFound`  
+The template is invalid.
+
+`HTTPException`  
+Getting the template failed.
+
+#### `fetch_guild()`
+
+```python
+fetch_guild(guild_id: int, /, *, with_counts=True) -> Guild
+```
+
+*(coroutine)*
+
+Retrieves a `.Guild` from an ID.
+
+> [!NOTE]
+> Using this, you will **not** receive `.Guild.channels`, `.Guild.members`, `.Member.activity` and `.Member.voice` per `.Member`.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `get_guild` instead.
+
+#### Parameters
+
+guild_id: `int`  
+The guild's ID to fetch from.
+
+with_counts: `bool`  
+Whether to include count information in the guild. This fills the `.Guild.approximate_member_count` and `.Guild.approximate_presence_count` fields.
+
+*Added in 2.0.*
+
+#### Returns
+
+`.Guild`  
+The guild from the ID.
+
+#### Raises
+
+`Forbidden`  
+You do not have access to the guild.
+
+`HTTPException`  
+Getting the guild failed.
+
+#### `fetch_stage_instance()`
+
+```python
+fetch_stage_instance(channel_id: int, /) -> StageInstance
+```
+
+*(coroutine)*
+
+Gets a `.StageInstance` for a stage channel id.
+
+*Added in 2.0.*
+
+#### Parameters
+
+channel_id: `int`  
+The stage channel ID.
+
+#### Returns
+
+`.StageInstance`  
+The stage instance from the stage channel ID.
+
+#### Raises
+
+`NotFound`  
+The stage instance or channel could not be found.
+
+`HTTPException`  
+Getting the stage instance failed.
+
+#### `fetch_invite()`
+
+```python
+fetch_invite(url: Invite | str, *, with_counts: bool = True, with_expiration: bool = True, event_id: int | None = None) -> Invite
+```
+
+*(coroutine)*
+
+Gets an `.Invite` from a discord.gg URL or ID.
+
+> [!NOTE]
+> If the invite is for a guild you have not joined, the guild and channel attributes of the returned `.Invite` will be `.PartialInviteGuild` and `.PartialInviteChannel` respectively.
+
+#### Parameters
+
+url: `.Invite` | `str`  
+The Discord invite ID or URL (must be a discord.gg URL).
+
+with_counts: `bool`  
+Whether to include count information in the invite. This fills the `.Invite.approximate_member_count` and `.Invite.approximate_presence_count` fields.
+
+with_expiration: `bool`  
+Whether to include the expiration date of the invite. This fills the `.Invite.expires_at` field.
+
+*Added in 2.0.*
+
+event_id: `int` | `None`  
+The ID of the scheduled event to be associated with the event.
+
+See `Invite.set_scheduled_event` for more info on event invite linking.
+
+*Added in 2.0.*
+
+#### Returns
+
+`.Invite`  
+The invite from the URL/ID.
+
+#### Raises
+
+`NotFound`  
+The invite has expired or is invalid.
+
+`HTTPException`  
+Getting the invite failed.
+
+#### `delete_invite()`
+
+```python
+delete_invite(invite: Invite | str) -> None
+```
+
+*(coroutine)*
+
+Revokes an `.Invite`, URL, or ID to an invite.
+
+You must have the `.Permissions.manage_channels` permission in the associated guild to do this.
+
+#### Parameters
+
+invite: `.Invite` | `str`  
+The invite to revoke.
+
+#### Raises
+
+`Forbidden`  
+You do not have permissions to revoke invites.
+
+`NotFound`  
+The invite is invalid or expired.
+
+`HTTPException`  
+Revoking the invite failed.
+
+#### `fetch_widget()`
+
+```python
+fetch_widget(guild_id: int, /) -> Widget
+```
+
+*(coroutine)*
+
+Gets a `.Widget` from a guild ID.
+
+> [!NOTE]
+> The guild must have the widget enabled to get this information.
+
+#### Parameters
+
+guild_id: `int`  
+The ID of the guild.
+
+#### Returns
+
+`.Widget`  
+The guild's widget.
+
+#### Raises
+
+`Forbidden`  
+The widget for this guild is disabled.
+
+`HTTPException`  
+Retrieving the widget failed.
+
+#### `application_info()`
+
+```python
+application_info() -> AppInfo
+```
+
+*(coroutine)*
+
+Retrieves the bot's application information.
+
+#### Returns
+
+`.AppInfo`  
+The bot's application information.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the information failed somehow.
+
+#### `fetch_user()`
+
+```python
+fetch_user(user_id: int, /) -> User
+```
+
+*(coroutine)*
+
+Retrieves a `discord.User` based on their ID. You do not have to share any guilds with the user to get this information, however many operations do require that you do.
+
+> [!NOTE]
+> This method is an API call. If you have `discord.Intents.members` and member cache enabled, consider `get_user` instead.
+
+#### Parameters
+
+user_id: `int`  
+The user's ID to fetch from.
+
+#### Returns
+
+`discord.User`  
+The user you requested.
+
+#### Raises
+
+`NotFound`  
+A user with this ID does not exist.
+
+`HTTPException`  
+Fetching the user failed.
+
+#### `fetch_channel()`
+
+```python
+fetch_channel(channel_id: int, /) -> GuildChannel | PrivateChannel | Thread
+```
+
+*(coroutine)*
+
+Retrieves a `.abc.GuildChannel`, `.abc.PrivateChannel`, or `.Thread` with the specified ID.
+
+> [!NOTE]
+> This method is an API call. For general usage, consider `get_channel` instead.
+
+*Added in 1.2.*
+
+#### Returns
+
+`.abc.GuildChannel` | `.abc.PrivateChannel` | `.Thread`  
+The channel from the ID.
+
+#### Raises
+
+`InvalidData`  
+An unknown channel type was received from Discord.
+
+`HTTPException`  
+Retrieving the channel failed.
+
+`NotFound`  
+Invalid Channel ID.
+
+`Forbidden`  
+You do not have permission to fetch this channel.
+
+#### `fetch_webhook()`
+
+```python
+fetch_webhook(webhook_id: int, /) -> Webhook
+```
+
+*(coroutine)*
+
+Retrieves a `.Webhook` with the specified ID.
+
+#### Returns
+
+`.Webhook`  
+The webhook you requested.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the webhook failed.
+
+`NotFound`  
+Invalid webhook ID.
+
+`Forbidden`  
+You do not have permission to fetch this webhook.
+
+#### `fetch_sticker()`
+
+```python
+fetch_sticker(sticker_id: int, /) -> StandardSticker | GuildSticker
+```
+
+*(coroutine)*
+
+Retrieves a `.Sticker` with the specified ID.
+
+*Added in 2.0.*
+
+#### Returns
+
+`.StandardSticker` | `.GuildSticker`  
+The sticker you requested.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the sticker failed.
+
+`NotFound`  
+Invalid sticker ID.
+
+#### `fetch_premium_sticker_packs()`
+
+```python
+fetch_premium_sticker_packs() -> list[StickerPack]
+```
+
+*(coroutine)*
+
+Retrieves all available premium sticker packs.
+
+*Added in 2.0.*
+
+#### Returns
+
+List\[`.StickerPack`\]  
+All available premium sticker packs.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the sticker packs failed.
+
+#### `create_dm()`
+
+```python
+create_dm(user: Snowflake) -> DMChannel
+```
+
+*(coroutine)*
+
+Creates a `.DMChannel` with this user.
+
+This should be rarely called, as this is done transparently for most people.
+
+*Added in 2.0.*
+
+#### Parameters
+
+user: `discord.abc.Snowflake`  
+The user to create a DM with.
+
+#### Returns
+
+`.DMChannel`  
+The channel that was created.
+
+#### `add_view()`
+
+```python
+add_view(view: BaseView, *, message_id: int | None = None) -> None
+```
+
+Registers a `discord.ui.BaseView` for persistent listening.
+
+This method should be used for when a view is comprised of components that last longer than the lifecycle of the program.
+
+*Added in 2.0.*
+
+#### Parameters
+
+view: `discord.ui.BaseView`  
+The view to register for dispatching.
+
+message_id: `int` | `None`  
+The message ID that the view is attached to. This is currently used to refresh the view's state during message update events. If not given then message update events are not propagated for the view.
+
+#### Raises
+
+TypeError  
+A view was not passed.
+
+ValueError  
+The view is not persistent. A persistent view has no timeout and all their components have an explicitly provided `custom_id`.
+
+#### `fetch_role_connection_metadata_records()`
+
+```python
+fetch_role_connection_metadata_records() -> list[ApplicationRoleConnectionMetadata]
+```
+
+*(coroutine)*
+
+Fetches the bot's role connection metadata records.
+
+*Added in 2.4.*
+
+#### Returns
+
+List\[`.ApplicationRoleConnectionMetadata`\]  
+The bot's role connection metadata records.
+
+#### `update_role_connection_metadata_records()`
+
+```python
+update_role_connection_metadata_records(*role_connection_metadata) -> list[ApplicationRoleConnectionMetadata]
+```
+
+*(coroutine)*
+
+Updates the bot's role connection metadata records.
+
+*Added in 2.4.*
+
+#### Parameters
+
+\*role_connection_metadata: `ApplicationRoleConnectionMetadata`  
+The new metadata records to send to Discord.
+
+#### Returns
+
+List\[`.ApplicationRoleConnectionMetadata`\]  
+The updated role connection metadata records.
+
+#### `fetch_skus()`
+
+```python
+fetch_skus() -> list[SKU]
+```
+
+*(coroutine)*
+
+Fetches the bot's SKUs.
+
+*Added in 2.5.*
+
+#### Returns
+
+List\[`.SKU`\]  
+The bot's SKUs.
+
+#### `entitlements()`
+
+```python
+entitlements(user: Snowflake | None = None, skus: list[Snowflake] | None = None, before: SnowflakeTime | None = None, after: SnowflakeTime | None = None, limit: int | None = 100, guild: Snowflake | None = None, exclude_ended: bool = False) -> EntitlementIterator
+```
+
+Returns an `.AsyncIterator` that enables fetching the application's entitlements.
+
+*Added in 2.6.*
+
+#### Parameters
+
+user: `.abc.Snowflake` | None  
+Limit the fetched entitlements to entitlements owned by this user.
+
+skus: list\[`.abc.Snowflake`\] | None  
+Limit the fetched entitlements to entitlements that are for these SKUs.
+
+before: `.abc.Snowflake` | `datetime.datetime` | None  
+Retrieves guilds before this date or object. If a datetime is provided, it is recommended to use a UTC-aware datetime. If the datetime is naive, it is assumed to be local time.
+
+after: `.abc.Snowflake` | `datetime.datetime` | None  
+Retrieve guilds after this date or object. If a datetime is provided, it is recommended to use a UTC-aware datetime. If the datetime is naive, it is assumed to be local time.
+
+limit: `int` | `None`  
+The number of entitlements to retrieve. If `None`, retrieves every entitlement, which may be slow. Defaults to `100`.
+
+guild: `.abc.Snowflake` | None  
+Limit the fetched entitlements to entitlements owned by this guild.
+
+exclude_ended: `bool`  
+Whether to limit the fetched entitlements to those that have not ended. Defaults to `False`.
+
+#### Yields
+
+`.Entitlement`  
+The application's entitlements.
+
+#### Raises
+
+`HTTPException`  
+Retrieving the entitlements failed.
+
+#### Examples
+
+Usage :
+
+    async for entitlement in client.entitlements():
+        print(entitlement.user_id)
+
+Flattening into a list :
+
+    entitlements = await user.entitlements().flatten()
+
+All parameters are optional.
+
+#### `fetch_emojis()`
+
+```python
+fetch_emojis() -> list[AppEmoji]
+```
+
+*(coroutine)*
+
+Retrieves all custom `AppEmoji`s from the application.
+
+#### Raises
+
+HTTPException  
+An error occurred fetching the emojis.
+
+#### Returns
+
+List\[`AppEmoji`\]  
+The retrieved emojis.
+
+#### `fetch_emoji()`
+
+```python
+fetch_emoji(emoji_id: int, /) -> AppEmoji
+```
+
+*(coroutine)*
+
+Retrieves a custom `AppEmoji` from the application.
+
+#### Parameters
+
+emoji_id: `int`  
+The emoji's ID.
+
+#### Returns
+
+`AppEmoji`  
+The retrieved emoji.
+
+#### Raises
+
+NotFound  
+The emoji requested could not be found.
+
+HTTPException  
+An error occurred fetching the emoji.
+
+#### `create_emoji()`
+
+```python
+create_emoji(*, name: str, image: bytes) -> AppEmoji
+```
+
+*(coroutine)*
+
+Creates a custom `AppEmoji` for the application.
+
+There is currently a limit of 2000 emojis per application.
+
+#### Parameters
+
+name: `str`  
+The emoji name. Must be at least 2 characters.
+
+image: `bytes`  
+The `bytes-like object` representing the image data to use. Only JPEG, PNG, GIF, WebP and AVIF images are supported.
+
+#### Raises
+
+HTTPException  
+An error occurred creating an emoji.
+
+#### Returns
+
+`AppEmoji`  
+The created emoji.
+
+#### `delete_emoji()`
+
+```python
+delete_emoji(emoji: Snowflake) -> None
+```
+
+*(coroutine)*
+
+Deletes the custom `AppEmoji` from the application.
+
+#### Parameters
+
+emoji: `abc.Snowflake`  
+The emoji you are deleting.
+
+#### Raises
+
+HTTPException  
+An error occurred deleting the emoji.
+
+#### `get_sound()`
+
+```python
+get_sound(sound_id: int) -> SoundboardSound | None
+```
+
+Gets a `.Sound` from the bot's sound cache.
+
+*Added in 2.7.*
+
+#### Parameters
+
+sound_id: `int`  
+The ID of the sound to get.
+
+#### Returns
+
+`.SoundboardSound` | `None`  
+The sound with the given ID.
+
+#### `fetch_default_sounds()`
+
+```python
+fetch_default_sounds() -> list[SoundboardSound]
+```
+
+*(coroutine)*
+
+Fetches the bot's default sounds.
+
+*Added in 2.7.*
+
+#### Returns
+
+List\[`.SoundboardSound`\]  
+The bot's default sounds.

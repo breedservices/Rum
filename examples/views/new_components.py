@@ -49,7 +49,6 @@ from rum.ui import (
     DesignerView,
     MediaGallery,
     Section,
-    Select,
     Separator,
     TextDisplay,
     Thumbnail,

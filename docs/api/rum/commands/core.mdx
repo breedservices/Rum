@@ -1,0 +1,816 @@
+# `rum.commands.core`
+
+## Classes
+
+### `ApplicationCommand`
+
+```python
+class ApplicationCommand(func: Callable, **kwargs) -> None
+```
+
+Abstract base class for generic types.
+
+On Python 3.12 and newer, generic classes implicitly inherit from Generic when they declare a parameter list after the class's name:
+
+    class Mapping[KT, VT]:
+        def __getitem__(self, key: KT) -> VT:
+            ...
+        # Etc.
+
+On older versions of Python, however, generic classes have to explicitly inherit from Generic.
+
+After a class has been declared to be generic, it can then be used as follows:
+
+    def lookup_name[KT, VT](mapping: Mapping[KT, VT], key: KT, default: VT) -> VT:
+        try:
+            return mapping[key]
+        except KeyError:
+            return default
+
+#### `prepare()`
+
+```python
+prepare(ctx: ApplicationContext) -> None
+```
+
+#### `is_on_cooldown()`
+
+```python
+is_on_cooldown(ctx: ApplicationContext) -> bool
+```
+
+Checks whether the command is currently on cooldown.
+
+> [!NOTE]
+> This uses the current time instead of the interaction time.
+
+#### Parameters
+
+ctx: `.ApplicationContext`  
+The invocation context to use when checking the command's cooldown status.
+
+#### Returns
+
+`bool`  
+A boolean indicating if the command is on cooldown.
+
+#### `reset_cooldown()`
+
+```python
+reset_cooldown(ctx: ApplicationContext) -> None
+```
+
+Resets the cooldown on this command.
+
+#### Parameters
+
+ctx: `.ApplicationContext`  
+The invocation context to reset the cooldown under.
+
+#### `get_cooldown_retry_after()`
+
+```python
+get_cooldown_retry_after(ctx: ApplicationContext) -> float
+```
+
+Retrieves the amount of seconds before this command can be tried again.
+
+> [!NOTE]
+> This uses the current time instead of the interaction time.
+
+#### Parameters
+
+ctx: `.ApplicationContext`  
+The invocation context to retrieve the cooldown from.
+
+#### Returns
+
+`float`  
+The amount of time left on this command's cooldown in seconds. If this is `0.0` then the command isn't on cooldown.
+
+#### `invoke()`
+
+```python
+invoke(ctx: ApplicationContext) -> None
+```
+
+#### `can_run()`
+
+```python
+can_run(ctx: ApplicationContext) -> bool
+```
+
+#### `dispatch_error()`
+
+```python
+dispatch_error(ctx: ApplicationContext, error: Exception) -> None
+```
+
+#### `error()`
+
+```python
+error(coro)
+```
+
+A decorator that registers a coroutine as a local error handler.
+
+A local error handler is an `.on_command_error` event limited to a single command. However, the `.on_command_error` is still invoked afterwards as the catch-all.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the local error handler.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `has_error_handler()`
+
+```python
+has_error_handler() -> bool
+```
+
+Checks whether the command has an error handler registered.
+
+#### `before_invoke()`
+
+```python
+before_invoke(coro)
+```
+
+A decorator that registers a coroutine as a pre-invoke hook. A pre-invoke hook is called directly before the command is called. This makes it a useful function to set up database connections or any type of set up required.
+
+This pre-invoke hook takes a sole parameter, an `.ApplicationContext`. See `.Bot.before_invoke` for more info.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the pre-invoke hook.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `after_invoke()`
+
+```python
+after_invoke(coro)
+```
+
+A decorator that registers a coroutine as a post-invoke hook. A post-invoke hook is called directly after the command is called. This makes it a useful function to clean-up database connections or any type of clean up required.
+
+This post-invoke hook takes a sole parameter, an `.ApplicationContext`. See `.Bot.after_invoke` for more info.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the post-invoke hook.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `call_before_hooks()`
+
+```python
+call_before_hooks(ctx: ApplicationContext) -> None
+```
+
+#### `call_after_hooks()`
+
+```python
+call_after_hooks(ctx: ApplicationContext) -> None
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `ContextMenuCommand`
+
+```python
+class ContextMenuCommand(*args, **kwargs) -> ContextMenuCommand
+```
+
+A class that implements the protocol for context menu commands.
+
+These are not created manually, instead they are created via the decorator or functional interface.
+
+*Added in 2.0.*
+
+#### Attributes
+
+name: `str`  
+The name of the command.
+
+callback: `coroutine <coroutine>`  
+The coroutine that is executed when the command is called.
+
+guild_ids: List\[`int`\] | `None`  
+The ids of the guilds where this command will be registered.
+
+guild_only: `bool`  
+Whether the command should only be usable inside a guild.
+
+<div class="deprecated">
+
+2.6 Use the `contexts` parameter instead.
+
+</div>
+
+nsfw: `bool`  
+Whether the command should be restricted to 18+ channels and users. Apps intending to be listed in the App Directory cannot have NSFW commands.
+
+default_member_permissions: `discord.Permissions`  
+The default permissions a member needs to be able to run the command.
+
+cog: `Cog` | `None`  
+The cog that this command belongs to. `None` if there isn't one.
+
+checks: List\[Callable\[\[`.ApplicationContext`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.ApplicationContext` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.ApplicationCommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_application_command_error` event.
+
+cooldown: `discord.ext.commands.Cooldown` | `None`  
+The cooldown applied when the command is invoked. `None` if the command doesn't have a cooldown.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this command. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+integration_types: Set\[`IntegrationType`\]  
+The installation contexts where this command is available. Not applicable for guild commands.
+
+contexts: Set\[`InteractionContextType`\]  
+The interaction contexts where this command is available. Not applicable for guild commands.
+
+#### `validate_parameters()`
+
+```python
+validate_parameters()
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, str | int]
+```
+
+### `MessageCommand`
+
+```python
+class MessageCommand(*args, **kwargs) -> MessageCommand
+```
+
+A class that implements the protocol for message context menu commands.
+
+These are not created manually, instead they are created via the decorator or functional interface.
+
+#### Attributes
+
+name: `str`  
+The name of the command.
+
+callback: `coroutine <coroutine>`  
+The coroutine that is executed when the command is called.
+
+guild_ids: List\[`int`\] | `None`  
+The ids of the guilds where this command will be registered.
+
+guild_only: `bool`  
+Whether the command should only be usable inside a guild.
+
+<div class="deprecated">
+
+2.6 Use the `contexts` parameter instead.
+
+</div>
+
+nsfw: `bool`  
+Whether the command should be restricted to 18+ channels and users. Apps intending to be listed in the App Directory cannot have NSFW commands.
+
+default_member_permissions: `discord.Permissions`  
+The default permissions a member needs to be able to run the command.
+
+cog: `Cog` | `None`  
+The cog that this command belongs to. `None` if there isn't one.
+
+checks: List\[Callable\[\[`.ApplicationContext`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.ApplicationContext` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.ApplicationCommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_application_command_error` event.
+
+cooldown: `discord.ext.commands.Cooldown` | `None`  
+The cooldown applied when the command is invoked. `None` if the command doesn't have a cooldown.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this command. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+integration_types: Set\[`IntegrationType`\]  
+The installation contexts where this command is available. Not applicable for guild commands.
+
+contexts: Set\[`InteractionContextType`\]  
+The interaction contexts where this command is available. Not applicable for guild commands.
+
+#### `copy()`
+
+```python
+copy()
+```
+
+Creates a copy of this command.
+
+#### Returns
+
+`MessageCommand`  
+A new instance of this command.
+
+### `SlashCommand`
+
+```python
+class SlashCommand(*args, **kwargs) -> SlashCommand
+```
+
+A class that implements the protocol for a slash command.
+
+These are not created manually, instead they are created via the decorator or functional interface.
+
+*Added in 2.0.*
+
+#### Attributes
+
+name: `str`  
+The name of the command.
+
+callback: `coroutine <coroutine>`  
+The coroutine that is executed when the command is called.
+
+description: `str` | `None`  
+The description for the command.
+
+guild_ids: List\[`int`\] | `None`  
+The ids of the guilds where this command will be registered.
+
+options: List\[`Option`\]  
+The parameters for this command.
+
+parent: `SlashCommandGroup` | `None`  
+The parent group that this command belongs to. `None` if there isn't one.
+
+mention: `str`  
+Returns a string that allows you to mention the slash command.
+
+guild_only: `bool`  
+Whether the command should only be usable inside a guild.
+
+<div class="deprecated">
+
+2.6 Use the `contexts` parameter instead.
+
+</div>
+
+nsfw: `bool`  
+Whether the command should be restricted to 18+ channels and users. Apps intending to be listed in the App Directory cannot have NSFW commands.
+
+default_member_permissions: `discord.Permissions`  
+The default permissions a member needs to be able to run the command.
+
+cog: `Cog` | `None`  
+The cog that this command belongs to. `None` if there isn't one.
+
+checks: List\[Callable\[\[`.ApplicationContext`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.ApplicationContext` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.ApplicationCommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_application_command_error` event.
+
+cooldown: `discord.ext.commands.Cooldown` | `None`  
+The cooldown applied when the command is invoked. `None` if the command doesn't have a cooldown.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this command. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+description_localizations: Dict\[`str`, `str`\]  
+The description localizations for this command. The values of this should be `"locale": "description"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+integration_types: Set\[`IntegrationType`\]  
+The type of installation this command should be available to. For instance, if set to `IntegrationType.user_install`, the command will only be available to users with the application installed on their account. Not applicable for guild commands.
+
+contexts: Set\[`InteractionContextType`\]  
+The location where this command can be used. Cannot be set if this is a guild command.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict
+```
+
+#### `invoke_autocomplete_callback()`
+
+```python
+invoke_autocomplete_callback(ctx: AutocompleteContext)
+```
+
+#### `copy()`
+
+```python
+copy()
+```
+
+Creates a copy of this command.
+
+#### Returns
+
+`SlashCommand`  
+A new instance of this command.
+
+### `SlashCommandGroup`
+
+```python
+class SlashCommandGroup(*args, **kwargs) -> Self
+```
+
+A class that implements the protocol for a slash command group.
+
+These can be created manually, but they should be created via the decorator or functional interface.
+
+#### Attributes
+
+name: `str`  
+The name of the command.
+
+description: `str` | `None`  
+The description for the command.
+
+guild_ids: List\[`int`\] | `None`  
+The ids of the guilds where this command will be registered.
+
+parent: `SlashCommandGroup` | `None`  
+The parent group that this group belongs to. `None` if there isn't one.
+
+guild_only: `bool`  
+Whether the command should only be usable inside a guild.
+
+<div class="deprecated">
+
+2.6 Use the `contexts` parameter instead.
+
+</div>
+
+nsfw: `bool`  
+Whether the command should be restricted to 18+ channels and users. Apps intending to be listed in the App Directory cannot have NSFW commands.
+
+default_member_permissions: `discord.Permissions`  
+The default permissions a member needs to be able to run the command.
+
+checks: List\[Callable\[\[`.ApplicationContext`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.ApplicationContext` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.ApplicationCommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_application_command_error` event.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this command. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+description_localizations: Dict\[`str`, `str`\]  
+The description localizations for this command. The values of this should be `"locale": "description"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+integration_types: Set\[`IntegrationType`\]  
+The type of installation this command should be available to. For instance, if set to `IntegrationType.user_install`, the command will only be available to users with the application installed on their account. Not applicable for guild commands.
+
+contexts: Set\[`InteractionContextType`\]  
+The location where this command can be used. Not applicable for guild commands.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict
+```
+
+#### `add_command()`
+
+```python
+add_command(command: SlashCommand | SlashCommandGroup) -> None
+```
+
+Adds a `.SlashCommand` or `.SlashCommandGroup` as a subcommand.
+
+This is usually not called, instead the `command` or other shortcut decorators are used instead.
+
+*Added in 2.9.*
+
+#### Parameters
+
+command: `.SlashCommand` | `.SlashCommandGroup`  
+The command to add.
+
+#### `command()`
+
+```python
+command(cls: type[T] = <class 'rum.commands.core.SlashCommand'>, **kwargs) -> Callable[[Callable], SlashCommand]
+```
+
+A shortcut decorator for adding a subcommand to this slash command group.
+
+#### Returns
+
+Callable\[..., `SlashCommand`\]  
+A decorator that converts the provided function into a `.SlashCommand`, adds it to this group, then returns it.
+
+#### `create_subgroup()`
+
+```python
+create_subgroup(name: str, description: str | None = None, guild_ids: list[int] | None = None, **kwargs) -> SlashCommandGroup
+```
+
+Creates a new subgroup under this slash command group.
+
+#### Parameters
+
+name: `str`  
+The name of the group to create.
+
+description: `str` | `None`  
+The description of the group to create.
+
+guild_ids: List\[`int`\] | `None`  
+A list of the IDs of each guild this group should be added to, making it a guild command. This will be a global command if `None` is passed.
+
+guild_only: `bool`  
+Whether the command should only be usable inside a guild.
+
+nsfw: `bool`  
+Whether the command should be restricted to 18+ channels and users. Apps intending to be listed in the App Directory cannot have NSFW commands.
+
+default_member_permissions: `discord.Permissions`  
+The default permissions a member needs to be able to run the command.
+
+checks: List\[Callable\[\[`.ApplicationContext`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.ApplicationContext` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.ApplicationCommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_application_command_error` event.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this command. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+description_localizations: Dict\[`str`, `str`\]  
+The description localizations for this command. The values of this should be `"locale": "description"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+#### Returns
+
+SlashCommandGroup  
+The slash command group that was created.
+
+#### `subgroup()`
+
+```python
+subgroup(name: str | None = None, description: str | None = None, guild_ids: list[int] | None = None) -> Callable[[type[SlashCommandGroup]], SlashCommandGroup]
+```
+
+A shortcut decorator that initializes the provided subclass of `.SlashCommandGroup` as a subgroup.
+
+*Added in 2.0.*
+
+#### Parameters
+
+name: `str` | `None`  
+The name of the group to create. This will resolve to the name of the decorated class if `None` is passed.
+
+description: `str` | `None`  
+The description of the group to create.
+
+guild_ids: List\[`int`\] | `None`  
+A list of the IDs of each guild this group should be added to, making it a guild command. This will be a global command if `None` is passed.
+
+#### Returns
+
+Callable\[\[Type\[SlashCommandGroup\]\], SlashCommandGroup\]  
+The slash command group that was created.
+
+#### `invoke_autocomplete_callback()`
+
+```python
+invoke_autocomplete_callback(ctx: AutocompleteContext) -> None
+```
+
+#### `call_before_hooks()`
+
+```python
+call_before_hooks(ctx: ApplicationContext) -> None
+```
+
+#### `call_after_hooks()`
+
+```python
+call_after_hooks(ctx: ApplicationContext) -> None
+```
+
+#### `walk_commands()`
+
+```python
+walk_commands() -> Generator[SlashCommand | SlashCommandGroup]
+```
+
+An iterator that recursively walks through all slash commands and groups in this group.
+
+#### Yields
+
+`.SlashCommand` | `.SlashCommandGroup`  
+A nested slash command or slash command group from the group.
+
+#### `copy()`
+
+```python
+copy()
+```
+
+Creates a copy of this command group.
+
+#### Returns
+
+`SlashCommandGroup`  
+A new instance of this command group.
+
+### `UserCommand`
+
+```python
+class UserCommand(*args, **kwargs) -> UserCommand
+```
+
+A class that implements the protocol for user context menu commands.
+
+These are not created manually, instead they are created via the decorator or functional interface.
+
+#### Attributes
+
+name: `str`  
+The name of the command.
+
+callback: `coroutine <coroutine>`  
+The coroutine that is executed when the command is called.
+
+guild_ids: List\[`int`\] | `None`  
+The ids of the guilds where this command will be registered.
+
+guild_only: `bool`  
+Whether the command should only be usable inside a guild.
+
+<div class="deprecated">
+
+2.6 Use the `contexts` parameter instead.
+
+</div>
+
+nsfw: `bool`  
+Whether the command should be restricted to 18+ channels and users. Apps intending to be listed in the App Directory cannot have NSFW commands.
+
+default_member_permissions: `discord.Permissions`  
+The default permissions a member needs to be able to run the command.
+
+cog: `Cog` | `None`  
+The cog that this command belongs to. `None` if there isn't one.
+
+checks: List\[Callable\[\[`.ApplicationContext`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.ApplicationContext` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.ApplicationCommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_application_command_error` event.
+
+cooldown: `discord.ext.commands.Cooldown` | `None`  
+The cooldown applied when the command is invoked. `None` if the command doesn't have a cooldown.
+
+name_localizations: Dict\[`str`, `str`\]  
+The name localizations for this command. The values of this should be `"locale": "name"`. See [here](https://docs.discord.com/developers/reference#locales) for a list of valid locales.
+
+integration_types: Set\[`IntegrationType`\]  
+The installation contexts where this command is available. Not applicable for guild commands.
+
+contexts: Set\[`InteractionContextType`\]  
+The interaction contexts where this command is available. Not applicable for guild commands.
+
+#### `copy()`
+
+```python
+copy()
+```
+
+Creates a copy of this command.
+
+#### Returns
+
+`UserCommand`  
+A new instance of this command.
+
+## Functions
+
+### `application_command()`
+
+```python
+application_command(*, cls: type[C] = <class 'rum.commands.core.SlashCommand'>, checks: list[Callable[[ApplicationContext], bool]] | None = ..., cog: Cog | None = ..., contexts: set[InteractionContextType] | None = ..., cooldown: Cooldown | None = ..., default_member_permissions: Permissions | None = ..., description: str | None = ..., description_localizations: dict[str, str] | None = ..., guild_ids: list[int] | None = ..., guild_only: bool | None = ..., integration_types: set[IntegrationType] | None = ..., name: str | None = ..., name_localizations: dict[str, str] | None = ..., nsfw: bool | None = ..., options: list[Option] | None = ..., parent: SlashCommandGroup | None = ..., **kwargs: Any) -> Callable[..., C]
+```
+
+A decorator that transforms a function into an `.ApplicationCommand`. More specifically, usually one of `.SlashCommand`, `.UserCommand`, or `.MessageCommand`. The exact class depends on the `cls` parameter. By default, the `description` attribute is received automatically from the docstring of the function and is cleaned up with the use of `inspect.cleandoc`. If the docstring is `bytes`, then it is decoded into `str` using utf-8 encoding. The `name` attribute also defaults to the function name unchanged.
+
+*Added in 2.0.*
+
+#### Parameters
+
+cls: `.ApplicationCommand`  
+The class to construct with. By default, this is `.SlashCommand`. You usually do not change this.
+
+attrs  
+Keyword arguments to pass into the construction of the class denoted by `cls`.
+
+#### Returns
+
+Callable\[..., `.ApplicationCommand`\]  
+A decorator that converts the provided method into an `.ApplicationCommand`, or subclass of it.
+
+#### Raises
+
+TypeError  
+If the function is not a coroutine or is already a command.
+
+### `command()`
+
+```python
+command(**kwargs)
+```
+
+An alias for `application_command`.
+
+> [!NOTE]
+> This decorator is overridden by `ext.commands.command`.
+
+*Added in 2.0.*
+
+#### Returns
+
+Callable\[..., `.ApplicationCommand`\]  
+A decorator that converts the provided method into an `.ApplicationCommand`.
+
+### `hooked_wrapped_callback()`
+
+```python
+hooked_wrapped_callback(command, ctx, coro)
+```
+
+### `message_command()`
+
+```python
+message_command(*, checks: list[Callable[[ApplicationContext], bool]] | None = ..., cog: Cog | None = ..., contexts: set[InteractionContextType] | None = ..., cooldown: Cooldown | None = ..., default_member_permissions: Permissions | None = ..., guild_ids: list[int] | None = ..., guild_only: bool | None = ..., integration_types: set[IntegrationType] | None = ..., name: str | None = ..., name_localizations: dict[str, str] | None = ..., nsfw: bool | None = ..., **kwargs: Never) -> Callable[..., MessageCommand]
+```
+
+Decorator for message commands that invokes `application_command`.
+
+*Added in 2.0.*
+
+#### Returns
+
+Callable\[..., `.MessageCommand`\]  
+A decorator that converts the provided method into a `.MessageCommand`.
+
+### `slash_command()`
+
+```python
+slash_command(*, checks: list[Callable[[ApplicationContext], bool]] | None = ..., cog: Cog | None = ..., contexts: set[InteractionContextType] | None = ..., cooldown: Cooldown | None = ..., default_member_permissions: Permissions | None = ..., description: str | None = ..., description_localizations: dict[str, str] | None = ..., guild_ids: list[int] | None = ..., guild_only: bool | None = ..., integration_types: set[IntegrationType] | None = ..., name: str | None = ..., name_localizations: dict[str, str] | None = ..., nsfw: bool | None = ..., options: list[Option] | None = ..., parent: SlashCommandGroup | None = ..., **kwargs: Never) -> Callable[..., SlashCommand]
+```
+
+Decorator for slash commands that invokes `application_command`.
+
+*Added in 2.0.*
+
+#### Returns
+
+Callable\[..., `.SlashCommand`\]  
+A decorator that converts the provided method into a `.SlashCommand`.
+
+### `unwrap_function()`
+
+```python
+unwrap_function(function: Callable[..., Any]) -> Callable[..., Any]
+```
+
+### `user_command()`
+
+```python
+user_command(*, checks: list[Callable[[ApplicationContext], bool]] | None = ..., cog: Cog | None = ..., contexts: set[InteractionContextType] | None = ..., cooldown: Cooldown | None = ..., default_member_permissions: Permissions | None = ..., guild_ids: list[int] | None = ..., guild_only: bool | None = ..., integration_types: set[IntegrationType] | None = ..., name: str | None = ..., name_localizations: dict[str, str] | None = ..., nsfw: bool | None = ..., **kwargs: Never) -> Callable[..., UserCommand]
+```
+
+Decorator for user commands that invokes `application_command`.
+
+*Added in 2.0.*
+
+#### Returns
+
+Callable\[..., `.UserCommand`\]  
+A decorator that converts the provided method into a `.UserCommand`.
+
+### `validate_chat_input_description()`
+
+```python
+validate_chat_input_description(description: Any, locale: str | None = None)
+```
+
+### `validate_chat_input_name()`
+
+```python
+validate_chat_input_name(name: Any, locale: str | None = None)
+```
+
+### `wrap_callback()`
+
+```python
+wrap_callback(coro)
+```

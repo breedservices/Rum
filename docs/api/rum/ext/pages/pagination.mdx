@@ -1,0 +1,612 @@
+# `rum.ext.pages.pagination`
+
+## Classes
+
+### `Page`
+
+```python
+class Page(content: str | None = None, embeds: list[list[rum.Embed] | rum.Embed] | None = None, custom_view: rum.ui.View | None = None, files: list[rum.File] | None = None, **kwargs)
+```
+
+Represents a page shown in the paginator.
+
+Allows for directly referencing and modifying each page as a class instance.
+
+#### Parameters
+
+content: `str`  
+The content of the page. Corresponds to the `discord.Message.content` attribute.
+
+embeds: List\[List\[`discord.Embed`\] | `discord.Embed`\] | `None`  
+The embeds of the page. Corresponds to the `discord.Message.embeds` attribute.
+
+files: List\[`discord.File`\] | `None`  
+A list of local files to be shown with the page.
+
+custom_view: `discord.ui.View` | `None`  
+The custom view shown when the page is visible. Overrides the <span class="title-ref">custom_view</span> attribute of the main paginator.
+
+#### `callback()`
+
+```python
+callback(interaction: rum.Interaction | None = None)
+```
+
+*(coroutine)*
+
+The coroutine associated with a specific page. If <span class="title-ref">Paginator.page_action()</span> is used, this coroutine is called.
+
+#### Parameters
+
+interaction: `discord.Interaction` | `None`  
+The interaction associated with the callback, if any.
+
+#### `update_files()`
+
+```python
+update_files() -> list[rum.File] | None
+```
+
+Updates `discord.File` objects so that they can be sent multiple times. This is called internally each time the page is sent.
+
+### `PageGroup`
+
+```python
+class PageGroup(pages: list[str] | list[Page] | list[list[rum.Embed] | rum.Embed], label: str, description: str | None = None, emoji: str | rum.GuildEmoji | rum.AppEmoji | rum.PartialEmoji = None, default: bool | None = None, show_disabled: bool | None = None, show_indicator: bool | None = None, author_check: bool | None = None, disable_on_timeout: bool | None = None, use_default_buttons: bool | None = None, default_button_row: int = 0, loop_pages: bool | None = None, custom_view: rum.ui.View | None = None, timeout: float | None = None, custom_buttons: list[PaginatorButton] | None = None, trigger_on_display: bool | None = None)
+```
+
+Creates a group of pages which the user can switch between.
+
+Each group of pages can have its own options, custom buttons, custom views, etc.
+
+> [!NOTE]
+> If multiple `PageGroup` objects have different options, they should all be set explicitly when creating each instance.
+
+#### Parameters
+
+pages: List\[`str`\] | List\[`Page`\] | List\[List\[`discord.Embed`\] | `discord.Embed`\]  
+The list of `Page` objects, strings, embeds, or list of embeds to include in the page group.
+
+label: `str`  
+The label shown on the corresponding PaginatorMenu dropdown option. Also used as the SelectOption value.
+
+description: `str` | `None`  
+The description shown on the corresponding PaginatorMenu dropdown option.
+
+emoji: `str` | `discord.GuildEmoji` | `discord.AppEmoji` | `discord.PartialEmoji`  
+The emoji shown on the corresponding PaginatorMenu dropdown option.
+
+default: `bool` | `None`  
+Whether the page group should be the default page group initially shown when the paginator response is sent. Only one `PageGroup` can be the default page group.
+
+show_disabled: `bool`  
+Whether to show disabled buttons.
+
+show_indicator: `bool`  
+Whether to show the page indicator when using the default buttons.
+
+author_check: `bool`  
+Whether only the original user of the command can change pages.
+
+disable_on_timeout: `bool`  
+Whether the buttons get disabled when the paginator view times out.
+
+use_default_buttons: `bool`  
+Whether to use the default buttons (i.e. `first`, `prev`, `page_indicator`, `next`, `last`)
+
+default_button_row: `int`  
+The row where the default paginator buttons are displayed. Has no effect if custom buttons are used.
+
+loop_pages: `bool`  
+Whether to loop the pages when clicking prev/next while at the first/last page in the list.
+
+custom_view: `discord.ui.View` | `None`  
+A custom view whose items are appended below the pagination buttons.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the paginator before no longer accepting input.
+
+custom_buttons: List\[`PaginatorButton`\] | `None`  
+A list of PaginatorButtons to initialize the Paginator with. If `use_default_buttons` is `True`, this parameter is ignored.
+
+trigger_on_display: `bool`  
+Whether to automatically trigger the callback associated with a <span class="title-ref">Page</span> whenever it is displayed. Has no effect if no callback exists for a <span class="title-ref">Page</span>.
+
+### `Paginator`
+
+```python
+class Paginator(pages: list[PageGroup] | list[Page] | list[str] | list[list[rum.Embed] | rum.Embed], show_disabled: bool = True, show_indicator=True, show_menu=False, menu_placeholder: str = 'Select Page Group', author_check=True, disable_on_timeout=True, use_default_buttons=True, default_button_row: int = 0, loop_pages=False, custom_view: rum.ui.View | None = None, timeout: float | None = 180.0, custom_buttons: list[PaginatorButton] | None = None, trigger_on_display: bool | None = None) -> None
+```
+
+Creates a paginator which can be sent as a message and uses buttons for navigation.
+
+#### Parameters
+
+pages: List\[`PageGroup`\] | List\[`Page`\] | List\[`str`\] | List\[List\[`discord.Embed`\] | `discord.Embed`\]  
+The list of `PageGroup` objects, `Page` objects, strings, embeds, or list of embeds to paginate. If a list of `PageGroup` objects is provided and <span class="title-ref">show_menu</span> is `False`, only the first page group will be displayed.
+
+show_disabled: `bool`  
+Whether to show disabled buttons.
+
+show_indicator: `bool`  
+Whether to show the page indicator when using the default buttons.
+
+show_menu: `bool`  
+Whether to show a select menu that allows the user to switch between groups of pages.
+
+menu_placeholder: `str`  
+The placeholder text to show in the page group menu when no page group has been selected yet. Defaults to "Select Page Group" if not provided.
+
+author_check: `bool`  
+Whether only the original user of the command can change pages.
+
+disable_on_timeout: `bool`  
+Whether the buttons get disabled when the paginator view times out.
+
+use_default_buttons: `bool`  
+Whether to use the default buttons (i.e. `first`, `prev`, `page_indicator`, `next`, `last`)
+
+default_button_row: `int`  
+The row where the default paginator buttons are displayed. Has no effect if custom buttons are used.
+
+loop_pages: `bool`  
+Whether to loop the pages when clicking prev/next while at the first/last page in the list.
+
+custom_view: `discord.ui.View` | `None`  
+A custom view whose items are appended below the pagination components. If the currently displayed page has a <span class="title-ref">custom_view</span> assigned, it will replace these view components when that page is displayed.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the paginator before no longer accepting input.
+
+custom_buttons: List\[`PaginatorButton`\] | `None`  
+A list of PaginatorButtons to initialize the Paginator with. If `use_default_buttons` is `True`, this parameter is ignored.
+
+trigger_on_display: `bool`  
+Whether to automatically trigger the callback associated with a <span class="title-ref">Page</span> whenever it is displayed. Has no effect if no callback exists for a <span class="title-ref">Page</span>.
+
+#### Attributes
+
+menu: List\[`PaginatorMenu`\] | `None`  
+The page group select menu associated with this paginator.
+
+page_groups: List\[`PageGroup`\] | `None`  
+List of `PageGroup` objects the user can switch between.
+
+default_page_group: `int` | `None`  
+The index of the default page group shown when the paginator is initially sent. Defined by setting `default` to `True` on a `PageGroup`.
+
+current_page: `int`  
+A zero-indexed value showing the current page number.
+
+page_count: `int`  
+A zero-indexed value showing the total number of pages.
+
+buttons: Dict\[`str`, Dict\[`str`, `PaginatorButton` | `bool`\]\]  
+A dictionary containing the `PaginatorButton` objects included in this paginator.
+
+user: `discord.User` | `discord.Member` | `None`  
+The user or member that invoked the paginator.
+
+message: `discord.Message` | `discord.WebhookMessage`  
+The message the paginator is attached to.
+
+#### `update()`
+
+```python
+update(pages: None | (list[PageGroup] | list[Page] | list[str] | list[list[rum.Embed] | rum.Embed]) = None, show_disabled: bool | None = None, show_indicator: bool | None = None, show_menu: bool | None = None, author_check: bool | None = None, menu_placeholder: str | None = None, disable_on_timeout: bool | None = None, use_default_buttons: bool | None = None, default_button_row: int | None = None, loop_pages: bool | None = None, custom_view: rum.ui.View | None = ..., timeout: float | None = None, custom_buttons: list[PaginatorButton] | None = None, trigger_on_display: bool | None = None, interaction: rum.Interaction | None = None, current_page: int = 0)
+```
+
+Updates the existing `Paginator` instance with the provided options.
+
+#### Parameters
+
+pages: List\[`PageGroup`\] | List\[`Page`\] | List\[`str`\] | List\[List\[`discord.Embed`\] | `discord.Embed`\] | `None`  
+The list of `PageGroup` objects, `Page` objects, strings, embeds, or list of embeds to paginate.
+
+show_disabled: `bool`  
+Whether to show disabled buttons.
+
+show_indicator: `bool`  
+Whether to show the page indicator when using the default buttons.
+
+show_menu: `bool`  
+Whether to show a select menu that allows the user to switch between groups of pages.
+
+author_check: `bool`  
+Whether only the original user of the command can change pages.
+
+menu_placeholder: `str`  
+The placeholder text to show in the page group menu when no page group has been selected yet. Defaults to "Select Page Group" if not provided.
+
+disable_on_timeout: `bool`  
+Whether the buttons get disabled when the paginator view times out.
+
+use_default_buttons: `bool`  
+Whether to use the default buttons (i.e. `first`, `prev`, `page_indicator`, `next`, `last`)
+
+default_button_row: `int` | `None`  
+The row where the default paginator buttons are displayed. Has no effect if custom buttons are used.
+
+loop_pages: `bool`  
+Whether to loop the pages when clicking prev/next while at the first/last page in the list.
+
+custom_view: `discord.ui.View` | `None`  
+A custom view whose items are appended below the pagination components.
+
+timeout: `float` | `None`  
+Timeout in seconds from last interaction with the paginator before no longer accepting input.
+
+custom_buttons: List\[`PaginatorButton`\] | `None`  
+A list of PaginatorButtons to initialize the Paginator with. If `use_default_buttons` is `True`, this parameter is ignored.
+
+trigger_on_display: `bool`  
+Whether to automatically trigger the callback associated with a <span class="title-ref">Page</span> whenever it is displayed. Has no effect if no callback exists for a <span class="title-ref">Page</span>.
+
+interaction: `discord.Interaction` | `None`  
+The interaction to use when updating the paginator. If not provided, the paginator will be updated by using its stored `message` attribute instead.
+
+current_page: `int`  
+The initial page number to display when updating the paginator.
+
+#### `on_timeout()`
+
+```python
+on_timeout() -> None
+```
+
+Disables all buttons when the view times out.
+
+#### `disable()`
+
+```python
+disable(include_custom: bool = False, page: None | (str | Page | list[rum.Embed] | rum.Embed) = None) -> None
+```
+
+Stops the paginator, disabling all of its components.
+
+#### Parameters
+
+include_custom: `bool`  
+Whether to disable components added via custom views.
+
+page: `str` | List\[`discord.Embed`\] | `discord.Embed` | `None`  
+The page content to show after disabling the paginator.
+
+#### `cancel()`
+
+```python
+cancel(include_custom: bool = False, page: None | (str | Page | list[rum.Embed] | rum.Embed) = None) -> None
+```
+
+Cancels the paginator, removing all of its components from the message.
+
+#### Parameters
+
+include_custom: `bool`  
+Whether to remove components added via custom views.
+
+page: `str` | List\[`discord.Embed`\] | `discord.Embed` | `None`  
+The page content to show after canceling the paginator.
+
+#### `goto_page()`
+
+```python
+goto_page(page_number: int = 0, *, interaction: rum.Interaction | None = None) -> None
+```
+
+Updates the paginator message to show the specified page number.
+
+#### Parameters
+
+page_number: `int`  
+The page to display.
+
+> [!NOTE]
+> Page numbers are zero-indexed when referenced internally, but appear as one-indexed when shown to the user.
+
+interaction: `discord.Interaction` | `None`  
+The interaction to use when editing the message. If not provided, the message will be edited using the paginator's stored `message` attribute instead.
+
+#### Returns
+
+`discord.Message`  
+The message associated with the paginator.
+
+#### `interaction_check()`
+
+```python
+interaction_check(interaction: rum.Interaction) -> bool
+```
+
+*(coroutine)*
+
+A callback that is called when an interaction happens within the view that checks whether the view should process item callbacks for the interaction.
+
+This is useful to override if, for example, you want to ensure that the interaction author is a given user.
+
+The default implementation of this returns `True`.
+
+If this returns `False`, `on_check_failure` is called.
+
+> [!NOTE]
+> If an exception occurs within the body then the check is considered a failure and `on_error` is called.
+
+#### Parameters
+
+interaction: `discord.Interaction`  
+The interaction that occurred.
+
+#### Returns
+
+`bool`  
+Whether the view children's callbacks should be called.
+
+#### `add_menu()`
+
+```python
+add_menu()
+```
+
+Adds the default `PaginatorMenu` instance to the paginator.
+
+#### `add_default_buttons()`
+
+```python
+add_default_buttons()
+```
+
+Adds the full list of default buttons that can be used with the paginator. Includes `first`, `prev`, `page_indicator`, `next`, and `last`.
+
+#### `add_button()`
+
+```python
+add_button(button: PaginatorButton)
+```
+
+Adds a `PaginatorButton` to the paginator.
+
+#### `remove_button()`
+
+```python
+remove_button(button_type: str)
+```
+
+Removes a `PaginatorButton` from the paginator.
+
+#### `update_buttons()`
+
+```python
+update_buttons() -> dict
+```
+
+Updates the display state of the buttons (disabled/hidden)
+
+#### Returns
+
+Dict\[`str`, Dict\[`str`, `PaginatorButton` | `bool`\]\]  
+The dictionary of buttons that were updated.
+
+#### `update_custom_view()`
+
+```python
+update_custom_view(custom_view: rum.ui.View)
+```
+
+Updates the custom view shown on the paginator.
+
+#### `get_page_group_content()`
+
+```python
+get_page_group_content(page_group: PageGroup) -> list[Page]
+```
+
+Returns a converted list of <span class="title-ref">Page</span> objects for the given page group based on the content of its pages.
+
+#### `get_page_content()`
+
+```python
+get_page_content(page: Page | str | rum.Embed | list[rum.Embed]) -> Page
+```
+
+Converts a page into a `Page` object based on its content.
+
+#### `page_action()`
+
+```python
+page_action(interaction: rum.Interaction | None = None) -> None
+```
+
+Triggers the callback associated with the current page, if any.
+
+#### Parameters
+
+interaction: `discord.Interaction` | `None`  
+The interaction that was used to trigger the page action.
+
+#### `send()`
+
+```python
+send(ctx: Context, target: rum.abc.Messageable | None = None, target_message: str | None = None, reference: None | (rum.Message | rum.MessageReference | rum.PartialMessage) = None, allowed_mentions: rum.AllowedMentions | None = None, mention_author: bool | None = None, delete_after: float | None = None) -> rum.Message
+```
+
+Sends a message with the paginated items.
+
+#### Parameters
+
+ctx: `discord.ext.commands.Context`  
+A command's invocation context.
+
+target: `discord.abc.Messageable` | `None`  
+A target where the paginated message should be sent, if different from the original `Context`
+
+target_message: `str` | `None`  
+An optional message shown when the paginator message is sent elsewhere.
+
+reference: `discord.Message` | `discord.MessageReference` | `discord.PartialMessage` | `None`  
+A reference to the `discord.Message` to which you are replying with the paginator. This can be created using `discord.Message.to_reference` or passed directly as a `discord.Message`. You can control whether this mentions the author of the referenced message using the `discord.AllowedMentions.replied_user` attribute of `allowed_mentions` or by setting `mention_author`.
+
+allowed_mentions: `discord.AllowedMentions` | `None`  
+Controls the mentions being processed in this message. If this is passed, then the object is merged with `discord.Client.allowed_mentions`. The merging behaviour only overrides attributes that have been explicitly passed to the object, otherwise it uses the attributes set in `discord.Client.allowed_mentions`. If no object is passed at all then the defaults given by `discord.Client.allowed_mentions` are used instead.
+
+mention_author: `bool` | `None`  
+If set, overrides the `discord.AllowedMentions.replied_user` attribute of `allowed_mentions`.
+
+delete_after: `float` | `None`  
+If set, deletes the paginator after the specified time.
+
+#### Returns
+
+`discord.Message`  
+The message that was sent with the paginator.
+
+#### `edit()`
+
+```python
+edit(message: rum.Message, suppress: bool | None = None, suppress_embeds: bool = None, allowed_mentions: rum.AllowedMentions | None = None, delete_after: float | None = None, user: User | Member | None = None) -> rum.Message | None
+```
+
+Edits an existing message to replace it with the paginator contents.
+
+> [!NOTE]
+> If invoked from an interaction, you will still need to respond to the interaction.
+
+#### Parameters
+
+message: `discord.Message`  
+The message to edit with the paginator.
+
+suppress: `bool`  
+Whether to suppress embeds for the message. This removes all the embeds if set to `True`. If set to `False` this brings the embeds back if they were suppressed. Using this parameter requires `.Permissions.manage_messages`.
+
+<div class="deprecated">
+
+2.8
+
+</div>
+
+suppress_embeds: `bool`  
+Whether to suppress embeds for the message. This removes all the embeds if set to `True`. If set to `False` this brings the embeds back if they were suppressed. Using this parameter requires `.Permissions.manage_messages`.
+
+*Added in 2.8.*
+
+allowed_mentions: `discord.AllowedMentions` | `None`  
+Controls the mentions being processed in this message. If this is passed, then the object is merged with `discord.Client.allowed_mentions`. The merging behaviour only overrides attributes that have been explicitly passed to the object, otherwise it uses the attributes set in `discord.Client.allowed_mentions`. If no object is passed at all then the defaults given by `discord.Client.allowed_mentions` are used instead.
+
+delete_after: `float` | `None`  
+If set, deletes the paginator after the specified time.
+
+user: `discord.User` | `discord.Member` | `None`  
+If set, changes the user that this paginator belongs to.
+
+#### Returns
+
+`discord.Message` | `None`  
+The message that was edited. Returns `None` if the operation failed.
+
+#### `respond()`
+
+```python
+respond(interaction: rum.Interaction | BridgeContext, ephemeral: bool = False, target: rum.abc.Messageable | None = None, target_message: str = 'Paginator sent!') -> rum.Message | rum.WebhookMessage
+```
+
+Sends an interaction response or followup with the paginated items.
+
+#### Parameters
+
+interaction: `discord.Interaction` | `BridgeContext`  
+The interaction or BridgeContext which invoked the paginator. If passing a BridgeContext object, you cannot make this an ephemeral paginator.
+
+ephemeral: `bool`  
+Whether the paginator message and its components are ephemeral. If `target` is specified, the ephemeral message content will be `target_message` instead.
+
+> [!WARNING]
+> If your paginator is ephemeral, it cannot have a timeout longer than 15 minutes (and cannot be persistent).
+
+target: `discord.abc.Messageable` | `None`  
+A target where the paginated message should be sent, if different from the original `discord.Interaction`
+
+target_message: `str`  
+The content of the interaction response shown when the paginator message is sent elsewhere.
+
+#### Returns
+
+`discord.Message` | `discord.WebhookMessage`  
+The `discord.Message` or `discord.WebhookMessage` that was sent with the paginator.
+
+### `PaginatorButton`
+
+```python
+class PaginatorButton(button_type: str, label: str = None, emoji: str | rum.GuildEmoji | rum.AppEmoji | rum.PartialEmoji = None, style: rum.ButtonStyle = <ButtonStyle.success: 3>, disabled: bool = False, custom_id: str = None, row: int = 0, loop_label: str = None)
+```
+
+Creates a button used to navigate the paginator.
+
+#### Parameters
+
+button_type: `str`  
+The type of button being created. Must be one of `first`, `prev`, `next`, `last`, or `page_indicator`.
+
+label: `str`  
+The label shown on the button. Defaults to a capitalized version of `button_type` (e.g. "Next", "Prev", etc.)
+
+emoji: `str` | `discord.GuildEmoji` | `discord.AppEmoji` | `discord.PartialEmoji`  
+The emoji shown on the button in front of the label.
+
+disabled: `bool`  
+Whether to initially show the button as disabled.
+
+loop_label: `str`  
+The label shown on the button when `loop_pages` is set to `True` in the Paginator class.
+
+#### Attributes
+
+paginator: `Paginator`  
+The paginator class where this button is being used. Assigned to the button when `Paginator.add_button` is called.
+
+#### `callback()`
+
+```python
+callback(interaction: rum.Interaction)
+```
+
+*(coroutine)*
+
+The coroutine that is called when the navigation button is clicked.
+
+#### Parameters
+
+interaction: `discord.Interaction`  
+The interaction created by clicking the navigation button.
+
+### `PaginatorMenu`
+
+```python
+class PaginatorMenu(page_groups: list[PageGroup], placeholder: str | None = None, custom_id: str | None = None)
+```
+
+Creates a select menu used to switch between page groups, which can each have their own set of buttons.
+
+#### Parameters
+
+placeholder: `str`  
+The placeholder text that is shown if nothing is selected.
+
+#### Attributes
+
+paginator: `Paginator`  
+The paginator class where this menu is being used. Assigned to the menu when `Paginator.add_menu` is called.
+
+#### `callback()`
+
+```python
+callback(interaction: rum.Interaction)
+```
+
+*(coroutine)*
+
+The coroutine that is called when a menu option is selected.
+
+#### Parameters
+
+interaction: `discord.Interaction`  
+The interaction created by selecting the menu option.

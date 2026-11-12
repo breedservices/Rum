@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # reply.py
 import os
+
 import rum
 
 intents = rum.Intents.default()

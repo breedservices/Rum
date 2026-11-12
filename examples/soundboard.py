@@ -115,8 +115,8 @@ class SoundboardCog(rum.Cog):
             )
 
             await ctx.respond(f"Added new sound: {new_sound.emoji} {new_sound.name}")
-        except Exception as e:
-            await ctx.respond(f"Failed to add sound: {str(e)}")
+        except Exception as e:  # noqa: BLE001
+            await ctx.respond(f"Failed to add sound: {e!s}")
 
     @rum.slash_command()
     @rum.default_permissions(manage_guild=True)
@@ -149,8 +149,8 @@ class SoundboardCog(rum.Cog):
                 volume=new_volume or sound.volume,
             )
             await ctx.respond(f"Updated sound: {sound.emoji} {sound.name}")
-        except Exception as e:
-            await ctx.respond(f"Failed to edit sound: {str(e)}")
+        except Exception as e:  # noqa: BLE001
+            await ctx.respond(f"Failed to edit sound: {e!s}")
 
     @rum.slash_command()
     async def play_sound(
@@ -191,8 +191,8 @@ class SoundboardCog(rum.Cog):
             if voice_client.is_connected():
                 await voice_client.disconnect()
 
-        except Exception as e:
-            await ctx.respond(f"Failed to play sound: {str(e)}")
+        except Exception as e:  # noqa: BLE001
+            await ctx.respond(f"Failed to play sound: {e!s}")
 
 
 bot.add_cog(SoundboardCog(bot))

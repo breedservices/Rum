@@ -1,0 +1,215 @@
+# `rum.ui.section`
+
+## Classes
+
+### `Section`
+
+```python
+class Section(*items: ViewItem, accessory: ViewItem = None, id: int | None = None)
+```
+
+Represents a UI section. Sections must have 1-3 (inclusive) items and an accessory set.
+
+*Added in 2.7.*
+
+#### Parameters
+
+\*items: `ViewItem`  
+The initial items contained in this section, up to 3. Currently only supports `discord.ui.TextDisplay`. Sections must have at least 1 item before being sent.
+
+accessory: `ViewItem` | `None`  
+The section's accessory. This is displayed in the top right of the section. Currently only supports `discord.ui.Button` and `discord.ui.Thumbnail`. Sections must have an accessory attached before being sent.
+
+id: `int` | `None`  
+The section's ID.
+
+#### Attributes
+
+items: List\[`ViewItem`\]  
+The list of items in this section.
+
+accessory: `ViewItem`  
+The section's accessory, displayed in the top right of the section.
+
+#### `add_item()`
+
+```python
+add_item(item: ViewItem) -> Self
+```
+
+Adds an item to the section.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to add to the section.
+
+#### Raises
+
+TypeError  
+An `ViewItem` was not passed.
+
+ValueError  
+Maximum number of items has been exceeded (3).
+
+#### `remove_item()`
+
+```python
+remove_item(item: ViewItem | str | int) -> Self
+```
+
+Removes an item from the section. If an `int` or `str` is passed, the item will be removed by Item `id` or `custom_id` respectively.
+
+#### Parameters
+
+item: `ViewItem` | `int` | `str`  
+The item, item `id`, or item `custom_id` to remove from the section.
+
+#### `get_item()`
+
+```python
+get_item(id: int | str) -> ViewItem | None
+```
+
+Get an item from this section. Alias for <span class="title-ref">utils.get(section.walk_items(), ...)</span>. If an `int` is provided, it will be retrieved by `id`, otherwise it will check the accessory's `custom_id`.
+
+#### Parameters
+
+id: `str` | `int`  
+The id or custom_id of the item to get.
+
+#### Returns
+
+`ViewItem` | `None`  
+The item with the matching `id` if it exists.
+
+#### `add_text()`
+
+```python
+add_text(content: str, *, id: int | None = None) -> Self
+```
+
+Adds a `TextDisplay` to the section.
+
+#### Parameters
+
+content: `str`  
+The content of the text display.
+
+id: `int` | `None`  
+The text display's ID.
+
+#### Raises
+
+ValueError  
+Maximum number of items has been exceeded (3).
+
+#### `set_accessory()`
+
+```python
+set_accessory(item: ViewItem) -> Self
+```
+
+Set an item as the section's `accessory`.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to set as accessory. Currently only supports `discord.ui.Button` and `discord.ui.Thumbnail`.
+
+#### Raises
+
+TypeError  
+An `ViewItem` was not passed.
+
+#### `set_thumbnail()`
+
+```python
+set_thumbnail(url: str, *, description: str | None = None, spoiler: bool = False, id: int | None = None) -> Self
+```
+
+Sets a `Thumbnail` with the provided URL as the section's `accessory`.
+
+#### Parameters
+
+url: `str`  
+The url of the thumbnail.
+
+description: `str` | `None`  
+The thumbnail's description, up to 1024 characters.
+
+spoiler: `bool` | `None`  
+Whether the thumbnail has the spoiler overlay. Defaults to `False`.
+
+id: `int` | `None`  
+The thumbnail's ID.
+
+#### `copy_text()`
+
+```python
+copy_text() -> str
+```
+
+Returns the text of all `discord.ui.TextDisplay` items in this section. Equivalent to the <span class="title-ref">Copy Text</span> option on Discord clients.
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: SectionComponent) -> None
+```
+
+#### `disable_all_items()`
+
+```python
+disable_all_items(*, exclusions: list[ViewItem] | None = None) -> Self
+```
+
+Disables all buttons and select menus in the section. At the moment, this only disables `accessory` if it is a button.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.items</span> to not disable from the view.
+
+#### `enable_all_items()`
+
+```python
+enable_all_items(*, exclusions: list[ViewItem] | None = None) -> Self
+```
+
+Enables all buttons and select menus in the section. At the moment, this only enables `accessory` if it is a button.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.items</span> to not enable from the view.
+
+#### `walk_items()`
+
+```python
+walk_items() -> Iterator[ViewItem]
+```
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> SectionComponentPayload
+```
+
+#### `from_component()`
+
+```python
+from_component(component: SectionComponent) -> S
+```

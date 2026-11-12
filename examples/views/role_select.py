@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # role_select.py
 import os
+
 import rum
 
 # Role selects (dropdowns) are a new type of select menu/dropdown Discord has added so people can select server roles from a dropdown.

@@ -1,0 +1,184 @@
+# `rum.ext.commands.cooldowns`
+
+## Classes
+
+### `BucketType`
+
+```python
+class BucketType(value)
+```
+
+### `Cooldown`
+
+```python
+class Cooldown(rate: float, per: float) -> None
+```
+
+Represents a cooldown for a command.
+
+#### Attributes
+
+rate: `int`  
+The total number of tokens available per `per` seconds.
+
+per: `float`  
+The length of the cooldown period in seconds.
+
+#### `get_tokens()`
+
+```python
+get_tokens(current: float | None = None) -> int
+```
+
+Returns the number of available tokens before rate limiting is applied.
+
+#### Parameters
+
+current: `float` | `None`  
+The time in seconds since Unix epoch to calculate tokens at. If not supplied then `time.time()` is used.
+
+#### Returns
+
+`int`  
+The number of tokens available before the cooldown is to be applied.
+
+#### `get_retry_after()`
+
+```python
+get_retry_after(current: float | None = None) -> float
+```
+
+Returns the time in seconds until the cooldown will be reset.
+
+#### Parameters
+
+current: `float` | `None`  
+The current time in seconds since Unix epoch. If not supplied, then `time.time()` is used.
+
+#### Returns
+
+`float`  
+The number of seconds to wait before this cooldown will be reset.
+
+#### `update_rate_limit()`
+
+```python
+update_rate_limit(current: float | None = None) -> float | None
+```
+
+Updates the cooldown rate limit.
+
+#### Parameters
+
+current: `float` | `None`  
+The time in seconds since Unix epoch to update the rate limit at. If not supplied, then `time.time()` is used.
+
+#### Returns
+
+`float` | `None`  
+The retry-after time in seconds if rate limited.
+
+#### `reset()`
+
+```python
+reset() -> None
+```
+
+Reset the cooldown to its initial state.
+
+#### `copy()`
+
+```python
+copy() -> Cooldown
+```
+
+Creates a copy of this cooldown.
+
+#### Returns
+
+`Cooldown`  
+A new instance of this cooldown.
+
+### `CooldownMapping`
+
+```python
+class CooldownMapping(original: Cooldown | None, type: Callable[[Message], Any]) -> None
+```
+
+#### `copy()`
+
+```python
+copy() -> CooldownMapping
+```
+
+#### `from_cooldown()`
+
+```python
+from_cooldown(rate, per, type) -> C
+```
+
+#### `create_bucket()`
+
+```python
+create_bucket(message: Message) -> Cooldown
+```
+
+#### `get_bucket()`
+
+```python
+get_bucket(message: Message, current: float | None = None) -> Cooldown
+```
+
+#### `update_rate_limit()`
+
+```python
+update_rate_limit(message: Message, current: float | None = None) -> float | None
+```
+
+### `DynamicCooldownMapping`
+
+```python
+class DynamicCooldownMapping(factory: Callable[[Message], Cooldown], type: Callable[[Message], Any]) -> None
+```
+
+#### `copy()`
+
+```python
+copy() -> DynamicCooldownMapping
+```
+
+#### `create_bucket()`
+
+```python
+create_bucket(message: Message) -> Cooldown
+```
+
+### `MaxConcurrency`
+
+```python
+class MaxConcurrency(number: int, *, per: BucketType, wait: bool) -> None
+```
+
+#### `copy()`
+
+```python
+copy() -> MC
+```
+
+#### `get_key()`
+
+```python
+get_key(message: Message) -> Any
+```
+
+#### `acquire()`
+
+```python
+acquire(message: Message) -> None
+```
+
+#### `release()`
+
+```python
+release(message: Message) -> None
+```

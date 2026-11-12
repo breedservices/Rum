@@ -1,0 +1,75 @@
+# `rum.audit_logs`
+
+## Classes
+
+### `AuditLogChanges`
+
+```python
+class AuditLogChanges(entry: AuditLogEntry, data: list[AuditLogChangePayload], *, state: ConnectionState)
+```
+
+### `AuditLogDiff`
+
+```python
+class AuditLogDiff()
+```
+
+### `AuditLogEntry`
+
+```python
+class AuditLogEntry(*, users: dict[int, User], data: AuditLogEntryPayload, guild: Guild)
+```
+
+Represents an Audit Log entry.
+
+You retrieve these via `Guild.audit_logs`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two entries are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two entries are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the entry's hash.
+
+</div>
+
+</div>
+
+*Changed in 1.7 Audit log entries are now comparable and hashable.*
+
+#### Attributes
+
+action: `AuditLogAction`  
+The action that was done.
+
+user: `abc.User` | `None`  
+The user who initiated this action. Usually a `Member`, unless gone then it's a `User`.
+
+id: `int`  
+The entry ID.
+
+target: Any  
+The target that got changed. The exact type of this depends on the action being done.
+
+reason: `str` | `None`  
+The reason this action was done.
+
+extra: Any  
+Extra information that this entry has that might be useful. For most actions, this is `None`. However, in some cases it contains extra information. See `AuditLogAction` for which actions have this field filled out.

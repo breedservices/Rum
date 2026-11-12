@@ -1,0 +1,29 @@
+# `rum.sinks.mp4`
+
+## Classes
+
+### `MP4Sink`
+
+```python
+class MP4Sink(*, filters=None)
+```
+
+A special sink for .mp4 files.
+
+*Added in 2.0.*
+
+#### `format_audio()`
+
+```python
+format_audio(audio)
+```
+
+Formats the recorded audio.
+
+#### Raises
+
+MP4SinkError  
+Audio may only be formatted after recording is finished.
+
+MP4SinkError  
+Formatting the audio failed.

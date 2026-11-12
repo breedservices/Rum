@@ -25,6 +25,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import asyncio
+import os
 
 import rum
 from rum.ext import commands
@@ -49,7 +50,7 @@ async def hello(ctx: rum.ApplicationContext):
 
 async def main():
     async with bot:
-        await bot.start("TOKEN")
+        await bot.start(os.environ.get("BOT_TOKEN", "TOKEN"))
 
 
 asyncio.run(main())

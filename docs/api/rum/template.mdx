@@ -1,0 +1,141 @@
+# `rum.template`
+
+## Classes
+
+### `Template`
+
+```python
+class Template(*, state: ConnectionState, data: TemplatePayload) -> None
+```
+
+Represents a Discord template.
+
+*Added in 1.4.*
+
+#### Attributes
+
+code: `str`  
+The template code.
+
+uses: `int`  
+How many times the template has been used.
+
+name: `str`  
+The name of the template.
+
+description: `str`  
+The description of the template.
+
+creator: `User`  
+The creator of the template.
+
+created_at: `datetime.datetime`  
+An aware datetime in UTC representing when the template was created.
+
+updated_at: `datetime.datetime`  
+An aware datetime in UTC representing when the template was last updated. This is referred to as "last synced" in the official Discord client.
+
+source_guild: `Guild`  
+The source guild.
+
+is_dirty: `bool` | `None`  
+Whether the template has unsynced changes.
+
+*Added in 2.0.*
+
+#### `sync()`
+
+```python
+sync() -> Template
+```
+
+*(coroutine)*
+
+Sync the template to the guild's current state.
+
+You must have the `Permissions.manage_guild` permission in the source guild to do this.
+
+*Added in 1.7.*
+
+*Changed in 2.0 The template is no longer synced in-place, instead it is returned.*
+
+#### Returns
+
+`Template`  
+The newly synced template.
+
+#### Raises
+
+HTTPException  
+Syncing the template failed.
+
+Forbidden  
+You don't have permissions to sync the template.
+
+NotFound  
+This template does not exist.
+
+#### `edit()`
+
+```python
+edit(*, name: str = ..., description: str | None = ...) -> Template
+```
+
+*(coroutine)*
+
+Edit the template metadata.
+
+You must have the `Permissions.manage_guild` permission in the source guild to do this.
+
+*Added in 1.7.*
+
+*Changed in 2.0 The template is no longer edited in-place, instead it is returned.*
+
+#### Parameters
+
+name: `str`  
+The template's new name.
+
+description: `str` | `None`  
+The template's new description.
+
+#### Returns
+
+`Template`  
+The newly edited template.
+
+#### Raises
+
+HTTPException  
+Editing the template failed.
+
+Forbidden  
+You don't have permissions to edit the template.
+
+NotFound  
+This template does not exist.
+
+#### `delete()`
+
+```python
+delete() -> None
+```
+
+*(coroutine)*
+
+Delete the template.
+
+You must have the `Permissions.manage_guild` permission in the source guild to do this.
+
+*Added in 1.7.*
+
+#### Raises
+
+HTTPException  
+Deleting the template failed.
+
+Forbidden  
+You don't have permissions to delete the template.
+
+NotFound  
+This template does not exist.

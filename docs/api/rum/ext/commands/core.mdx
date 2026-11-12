@@ -1,0 +1,1000 @@
+# `rum.ext.commands.core`
+
+## Classes
+
+### `Command`
+
+```python
+class Command(*args: Any, **kwargs: Any) -> CommandT
+```
+
+A class that implements the protocol for a bot text command.
+
+These are not created manually, instead they are created via the decorator or functional interface.
+
+#### Attributes
+
+name: `str`  
+The name of the command.
+
+callback: `coroutine <coroutine>`  
+The coroutine that is executed when the command is called.
+
+help: `str` | `None`  
+The long help text for the command.
+
+brief: `str` | `None`  
+The short help text for the command.
+
+usage: `str` | `None`  
+A replacement for arguments in the default help text.
+
+aliases: List\[`str`\] | Tuple\[`str`\]  
+The list of aliases the command can be invoked under.
+
+enabled: `bool`  
+A boolean that indicates if the command is currently enabled. If the command is invoked while it is disabled, then `.DisabledCommand` is raised to the `.on_command_error` event. Defaults to `True`.
+
+parent: `Group` | `None`  
+The parent group that this command belongs to. `None` if there isn't one.
+
+cog: `Cog` | `None`  
+The cog that this command belongs to. `None` if there isn't one.
+
+checks: List\[Callable\[\[`.Context`\], `bool`\]\]  
+A list of predicates that verifies if the command could be executed with the given `.Context` as the sole parameter. If an exception is necessary to be thrown to signal failure, then one inherited from `.CommandError` should be used. Note that if the checks fail then `.CheckFailure` exception is raised to the `.on_command_error` event.
+
+description: `str`  
+The message prefixed into the default help command.
+
+hidden: `bool`  
+If `True`, the default help command does not show this in the help output.
+
+rest_is_raw: `bool`  
+If `False` and a keyword-only argument is provided then the keyword only argument is stripped and handled as if it was a regular argument that handles `.MissingRequiredArgument` and default values in a regular matter rather than passing the rest completely raw. If `True` then the keyword-only argument will pass in the rest of the arguments in a completely raw matter. Defaults to `False`.
+
+invoked_subcommand: `Command` | `None`  
+The subcommand that was invoked, if any.
+
+require_var_positional: `bool`  
+If `True` and a variadic positional argument is specified, requires the user to specify at least one argument. Defaults to `False`.
+
+*Added in 1.5.*
+
+ignore_extra: `bool`  
+If `True`, ignores extraneous strings passed to a command if all its requirements are met (e.g. `?foo a b c` when only expecting `a` and `b`). Otherwise `.on_command_error` and local error handlers are called with `.TooManyArguments`. Defaults to `True`.
+
+cooldown_after_parsing: `bool`  
+If `True`, cooldown processing is done after argument parsing, which calls converters. If `False` then cooldown processing is done first and then the converters are called second. Defaults to `False`.
+
+extras: `dict`  
+A dict of user provided extras to attach to the Command.
+
+> [!NOTE]
+> This object may be copied by the library.
+
+*Added in 2.0.*
+
+cooldown: `Cooldown` | `None`  
+The cooldown applied when the command is invoked. `None` if the command doesn't have a cooldown.
+
+*Added in 2.0.*
+
+#### `add_check()`
+
+```python
+add_check(func: Check) -> None
+```
+
+Adds a check to the command.
+
+This is the non-decorator interface to `.check`.
+
+*Added in 1.3.*
+
+#### Parameters
+
+func  
+The function that will be used as a check.
+
+#### `remove_check()`
+
+```python
+remove_check(func: Check) -> None
+```
+
+Removes a check from the command.
+
+This function is idempotent and will not raise an exception if the function is not in the command's checks.
+
+*Added in 1.3.*
+
+#### Parameters
+
+func  
+The function to remove from the checks.
+
+#### `update()`
+
+```python
+update(**kwargs: Any) -> None
+```
+
+Updates `Command` instance with updated attribute.
+
+This works similarly to the `.command` decorator in terms of parameters in that they are passed to the `Command` or subclass constructors, sans the name and callback.
+
+#### `copy()`
+
+```python
+copy() -> CommandT
+```
+
+Creates a copy of this command.
+
+#### Returns
+
+`Command`  
+A new instance of this command.
+
+#### `dispatch_error()`
+
+```python
+dispatch_error(ctx: Context, error: Exception) -> None
+```
+
+#### `transform()`
+
+```python
+transform(ctx: Context, param: inspect.Parameter) -> Any
+```
+
+#### `call_before_hooks()`
+
+```python
+call_before_hooks(ctx: Context) -> None
+```
+
+#### `call_after_hooks()`
+
+```python
+call_after_hooks(ctx: Context) -> None
+```
+
+#### `prepare()`
+
+```python
+prepare(ctx: Context) -> None
+```
+
+#### `is_on_cooldown()`
+
+```python
+is_on_cooldown(ctx: Context) -> bool
+```
+
+Checks whether the command is currently on cooldown.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context to use when checking the command's cooldown status.
+
+#### Returns
+
+`bool`  
+A boolean indicating if the command is on cooldown.
+
+#### `reset_cooldown()`
+
+```python
+reset_cooldown(ctx: Context) -> None
+```
+
+Resets the cooldown on this command.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context to reset the cooldown under.
+
+#### `get_cooldown_retry_after()`
+
+```python
+get_cooldown_retry_after(ctx: Context) -> float
+```
+
+Retrieves the amount of seconds before this command can be tried again.
+
+*Added in 1.4.*
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context to retrieve the cooldown from.
+
+#### Returns
+
+`float`  
+The amount of time left on this command's cooldown in seconds. If this is `0.0` then the command isn't on cooldown.
+
+#### `invoke()`
+
+```python
+invoke(ctx: Context) -> None
+```
+
+#### `reinvoke()`
+
+```python
+reinvoke(ctx: Context, *, call_hooks: bool = False) -> None
+```
+
+#### `error()`
+
+```python
+error(coro: ErrorT) -> ErrorT
+```
+
+A decorator that registers a coroutine as a local error handler.
+
+A local error handler is an `.on_command_error` event limited to a single command. However, the `.on_command_error` is still invoked afterwards as the catch-all.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the local error handler.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `has_error_handler()`
+
+```python
+has_error_handler() -> bool
+```
+
+Checks whether the command has an error handler registered.
+
+*Added in 1.7.*
+
+#### `before_invoke()`
+
+```python
+before_invoke(coro: HookT) -> HookT
+```
+
+A decorator that registers a coroutine as a pre-invoke hook.
+
+A pre-invoke hook is called directly before the command is called. This makes it a useful function to set up database connections or any type of set up required.
+
+This pre-invoke hook takes a sole parameter, a `.Context`.
+
+See `.Bot.before_invoke` for more info.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the pre-invoke hook.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `after_invoke()`
+
+```python
+after_invoke(coro: HookT) -> HookT
+```
+
+A decorator that registers a coroutine as a post-invoke hook.
+
+A post-invoke hook is called directly after the command is called. This makes it a useful function to clean-up database connections or any type of clean up required.
+
+This post-invoke hook takes a sole parameter, a `.Context`.
+
+See `.Bot.after_invoke` for more info.
+
+#### Parameters
+
+coro: `coroutine <coroutine>`  
+The coroutine to register as the post-invoke hook.
+
+#### Raises
+
+TypeError  
+The coroutine passed is not actually a coroutine.
+
+#### `can_run()`
+
+```python
+can_run(ctx: Context) -> bool
+```
+
+*(coroutine)*
+
+Checks if the command can be executed by checking all the predicates inside the `Command.checks` attribute. This also checks whether the command is disabled.
+
+*Changed in 1.3 Checks whether the command is disabled or not.*
+
+#### Parameters
+
+ctx: `.Context`  
+The ctx of the command currently being invoked.
+
+#### Returns
+
+`bool`  
+A boolean indicating if the command can be invoked.
+
+#### Raises
+
+`CommandError`  
+Any command error that was raised during a check call will be propagated by this function.
+
+### `Group`
+
+```python
+class Group(*args: Any, **attrs: Any) -> None
+```
+
+A class that implements a grouping protocol for commands to be executed as subcommands.
+
+This class is a subclass of `.Command` and thus all options valid in `.Command` are valid in here as well.
+
+#### Attributes
+
+invoke_without_command: `bool`  
+Indicates if the group callback should begin parsing and invocation only if no subcommand was found. Useful for making it an error handling function to tell the user that no subcommand was found or to have different functionality in case no subcommand was found. If this is `False`, then the group callback will always be invoked first. This means that the checks and the parsing dictated by its parameters will be executed. Defaults to `False`.
+
+case_insensitive: `bool`  
+Indicates if the group's commands should be case-insensitive. Defaults to `False`.
+
+#### `copy()`
+
+```python
+copy() -> GroupT
+```
+
+Creates a copy of this `Group`.
+
+#### Returns
+
+`Group`  
+A new instance of this group.
+
+#### `invoke()`
+
+```python
+invoke(ctx: Context) -> None
+```
+
+#### `reinvoke()`
+
+```python
+reinvoke(ctx: Context, *, call_hooks: bool = False) -> None
+```
+
+### `GroupMixin`
+
+```python
+class GroupMixin(*args: Any, **kwargs: Any) -> None
+```
+
+A mixin that implements common functionality for classes that behave similar to `.Group` and are allowed to register commands.
+
+#### Attributes
+
+all_commands: `dict`  
+A mapping of command name to `.Command` objects.
+
+case_insensitive: `bool`  
+Whether the commands should be case-insensitive. Defaults to `False`.
+
+#### `recursively_remove_all_commands()`
+
+```python
+recursively_remove_all_commands() -> None
+```
+
+#### `add_command()`
+
+```python
+add_command(command: Command[CogT, Any, Any]) -> None
+```
+
+Adds a `.Command` into the internal list of commands.
+
+This is usually not called, instead the `.GroupMixin.command` or `.GroupMixin.group` shortcut decorators are used instead.
+
+*Changed in 1.4 Raise `.CommandRegistrationError` instead of generic `.ClientException`.*
+
+#### Parameters
+
+command: `Command`  
+The command to add.
+
+#### Raises
+
+`.CommandRegistrationError`  
+If the command or its alias is already registered by different command.
+
+TypeError  
+If the command passed is not a subclass of `.Command`.
+
+#### `remove_command()`
+
+```python
+remove_command(name: str) -> Command[CogT, Any, Any] | None
+```
+
+Remove a `.Command` from the internal list of commands.
+
+This could also be used as a way to remove aliases.
+
+#### Parameters
+
+name: `str`  
+The name of the command to remove.
+
+#### Returns
+
+`.Command` | `None`  
+The command that was removed. If the name is not valid then `None` is returned instead.
+
+#### `walk_commands()`
+
+```python
+walk_commands() -> Generator[Command[CogT, Any, Any]]
+```
+
+An iterator that recursively walks through all commands and subcommands.
+
+*Changed in 1.4 Duplicates due to aliases are no longer returned.*
+
+#### Yields
+
+`.Command` | `.Group`  
+A command or group from the internal list of commands.
+
+#### `get_command()`
+
+```python
+get_command(name: str) -> Command[CogT, Any, Any] | None
+```
+
+Get a `.Command` from the internal list of commands.
+
+This could also be used as a way to get aliases.
+
+The name could be fully qualified (e.g. `'foo bar'`) will get the subcommand `bar` of the group command `foo`. If a subcommand is not found then `None` is returned just as usual.
+
+#### Parameters
+
+name: `str`  
+The name of the command to get.
+
+#### Returns
+
+`Command` | `None`  
+The command that was requested. If not found, returns `None`.
+
+#### `command()`
+
+```python
+command(name: str = ..., cls: type[CommandT] = ..., *args: Any, **kwargs: Any) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]]], CommandT]
+```
+
+A shortcut decorator that invokes `.command` and adds it to the internal command list via `.GroupMixin.add_command`.
+
+#### Returns
+
+Callable\[..., `Command`\]  
+A decorator that converts the provided method into a Command, adds it to the bot, then returns it.
+
+#### `group()`
+
+```python
+group(name: str = ..., cls: type[GroupT] = ..., *args: Any, **kwargs: Any) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]]], GroupT]
+```
+
+A shortcut decorator that invokes `.group` and adds it to the internal command list via `.GroupMixin.add_command`.
+
+#### Returns
+
+Callable\[..., `Group`\]  
+A decorator that converts the provided method into a Group, adds it to the bot, then returns it.
+
+## Functions
+
+### `after_invoke()`
+
+```python
+after_invoke(coro) -> Callable[[T], T]
+```
+
+A decorator that registers a coroutine as a post-invoke hook.
+
+This allows you to refer to one after invoke hook for several commands that do not have to be within the same cog.
+
+*Added in 1.4.*
+
+### `before_invoke()`
+
+```python
+before_invoke(coro) -> Callable[[T], T]
+```
+
+A decorator that registers a coroutine as a pre-invoke hook.
+
+This allows you to refer to one before invoke hook for several commands that do not have to be within the same cog.
+
+*Added in 1.4.*
+
+#### Example
+
+``` python3
+async def record_usage(ctx):
+    print(ctx.author, 'used', ctx.command, 'at', ctx.message.created_at)
+
+@bot.command()
+@commands.before_invoke(record_usage)
+async def who(ctx): # Output: <User> used who at <Time>
+    await ctx.send('I am a bot')
+
+class What(commands.Cog):
+
+    @commands.before_invoke(record_usage)
+    @commands.command()
+    async def when(self, ctx): # Output: <User> used when at <Time>
+        await ctx.send(f'and I have existed since {ctx.bot.user.created_at}')
+
+    @commands.command()
+    async def where(self, ctx): # Output: <Nothing>
+        await ctx.send('on Discord')
+
+    @commands.command()
+    async def why(self, ctx): # Output: <Nothing>
+        await ctx.send('because someone made me')
+
+bot.add_cog(What())
+```
+
+### `bot_has_any_role()`
+
+```python
+bot_has_any_role(*items: int) -> Callable[[T], T]
+```
+
+Similar to `.has_any_role` except checks if the bot itself has any of the roles listed.
+
+This check raises one of two special exceptions, `.BotMissingAnyRole` if the bot is missing all roles, or `.NoPrivateMessage` if it is used in a private message. Both inherit from `.CheckFailure`.
+
+*Changed in 1.1
+
+Raise `.BotMissingAnyRole` or `.NoPrivateMessage` instead of generic `.CheckFailure`.*
+
+### `bot_has_guild_permissions()`
+
+```python
+bot_has_guild_permissions(**perms: bool) -> Callable[[T], T]
+```
+
+Similar to `.has_guild_permissions`, but checks the bot members guild permissions.
+
+*Added in 1.3.*
+
+### `bot_has_permissions()`
+
+```python
+bot_has_permissions(**perms: bool) -> Callable[[T], T]
+```
+
+Similar to `.has_permissions` except checks if the bot itself has the permissions listed.
+
+This check raises a special exception, `.BotMissingPermissions` that is inherited from `.CheckFailure`.
+
+### `bot_has_role()`
+
+```python
+bot_has_role(item: int) -> Callable[[T], T]
+```
+
+Similar to `.has_role` except checks if the bot itself has the role.
+
+This check raises one of two special exceptions, `.BotMissingRole` if the bot is missing the role, or `.NoPrivateMessage` if it is used in a private message. Both inherit from `.CheckFailure`.
+
+*Changed in 1.1
+
+Raise `.BotMissingRole` or `.NoPrivateMessage` instead of generic `.CheckFailure`.*
+
+### `check()`
+
+```python
+check(predicate: Check) -> Callable[[T], T]
+```
+
+A decorator that adds a check to the `.Command` or its subclasses. These checks could be accessed via `.Command.checks`.
+
+These checks should be predicates that take in a single parameter taking a `.Context`. If the check returns a `False`-like value then during invocation a `.CheckFailure` exception is raised and sent to the `.on_command_error` event.
+
+If an exception should be thrown in the predicate then it should be a subclass of `.CommandError`. Any exception not subclassed from it will be propagated while those subclassed will be sent to `.on_command_error`.
+
+A special attribute named `predicate` is bound to the value returned by this decorator to retrieve the predicate passed to the decorator. This allows the following introspection and chaining to be done:
+
+``` python3
+def owner_or_permissions(**perms):
+    original = commands.has_permissions(**perms).predicate
+    async def extended_check(ctx):
+        if ctx.guild is None:
+            return False
+        return ctx.guild.owner_id == ctx.author.id or await original(ctx)
+    return commands.check(extended_check)
+```
+
+> [!NOTE]
+> The function returned by `predicate` is **always** a coroutine, even if the original function was not a coroutine.
+
+*Changed in 1.3 The `predicate` attribute was added.*
+
+#### Examples
+
+Creating a basic check to see if the command invoker is you.
+
+``` python3
+def check_if_it_is_me(ctx):
+    return ctx.message.author.id == 85309593344815104
+
+@bot.command()
+@commands.check(check_if_it_is_me)
+async def only_for_me(ctx):
+    await ctx.send('I know you!')
+```
+
+Transforming common checks into its own decorator:
+
+``` python3
+def is_me():
+    def predicate(ctx):
+        return ctx.message.author.id == 85309593344815104
+    return commands.check(predicate)
+
+@bot.command()
+@is_me()
+async def only_me(ctx):
+    await ctx.send('Only you!')
+```
+
+#### Parameters
+
+predicate: Callable\[\[`Context`\], `bool`\]  
+The predicate to check if the command should be invoked.
+
+### `check_any()`
+
+```python
+check_any(*checks: Check) -> Callable[[T], T]
+```
+
+A `check` that is added that checks if any of the checks passed will pass, i.e. using logical OR.
+
+If all checks fail then `.CheckAnyFailure` is raised to signal the failure. It inherits from `.CheckFailure`.
+
+> [!NOTE]
+> The `predicate` attribute for this function **is** a coroutine.
+
+*Added in 1.3.*
+
+#### Examples
+
+Creating a basic check to see if it's the bot owner or the server owner:
+
+``` python3
+def is_guild_owner():
+    def predicate(ctx):
+        return ctx.guild is not None and ctx.guild.owner_id == ctx.author.id
+    return commands.check(predicate)
+
+@bot.command()
+@commands.check_any(commands.is_owner(), is_guild_owner())
+async def only_for_owners(ctx):
+    await ctx.send('Hello mister owner!')
+```
+
+#### Parameters
+
+\*checks: Callable\[\[`Context`\], `bool`\]  
+An argument list of checks that have been decorated with the `check` decorator.
+
+#### Raises
+
+TypeError  
+A check passed has not been decorated with the `check` decorator.
+
+### `command()`
+
+```python
+command(name: str = ..., cls: type[CommandT] = ..., **attrs: Any) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]] | Callable[Concatenate[CogT, ContextT, P], Coro[T]]], Command[CogT, P, T] | CommandT]
+```
+
+A decorator that transforms a function into a `.Command` or if called with `.group`, `.Group`.
+
+By default the `help` attribute is received automatically from the docstring of the function and is cleaned up with the use of `inspect.cleandoc`. If the docstring is `bytes`, then it is decoded into `str` using utf-8 encoding.
+
+All checks added using the `.check` & co. decorators are added into the function. There is no way to supply your own checks through this decorator.
+
+#### Parameters
+
+name: `str`  
+The name to create the command with. By default, this uses the function name unchanged.
+
+cls  
+The class to construct with. By default, this is `.Command`. You usually do not change this.
+
+attrs  
+Keyword arguments to pass into the construction of the class denoted by `cls`.
+
+#### Raises
+
+TypeError  
+If the function is not a coroutine or is already a command.
+
+### `cooldown()`
+
+```python
+cooldown(rate: int, per: float, type: BucketType | Callable[[Message], Any] = <BucketType.default: 0>) -> Callable[[T], T]
+```
+
+A decorator that adds a cooldown to a command
+
+A cooldown allows a command to only be used a specific amount of times in a specific time frame. These cooldowns can be based either on a per-guild, per-channel, per-user, per-role or global basis. Denoted by the third argument of `type` which must be of enum type `.BucketType`.
+
+If a cooldown is triggered, then `.CommandOnCooldown` is triggered in `.on_command_error` and the local error handler.
+
+A command can only have a single cooldown.
+
+#### Parameters
+
+rate: `int`  
+The number of times a command can be used before triggering a cooldown.
+
+per: `float`  
+The amount of seconds to wait for a cooldown when it's been triggered.
+
+type: `.BucketType` | Callable\[\[`.Message`\], Any\]  
+The type of cooldown to have. If callable, should return a key for the mapping.
+
+*Changed in 1.7 Callables are now supported for custom bucket types.*
+
+### `dm_only()`
+
+```python
+dm_only() -> Callable[[T], T]
+```
+
+A `.check` that indicates this command must only be used in a DM context. Only private messages are allowed when using the command.
+
+This check raises a special exception, `.PrivateMessageOnly` that is inherited from `.CheckFailure`.
+
+*Added in 1.1.*
+
+### `dynamic_cooldown()`
+
+```python
+dynamic_cooldown(cooldown: BucketType | Callable[[Message], Any], type: BucketType = <BucketType.default: 0>) -> Callable[[T], T]
+```
+
+A decorator that adds a dynamic cooldown to a command
+
+This differs from `.cooldown` in that it takes a function that accepts a single parameter of type `.discord.Message` and must return a `.Cooldown` or `None`. If `None` is returned then that cooldown is effectively bypassed.
+
+A cooldown allows a command to only be used a specific amount of times in a specific time frame. These cooldowns can be based either on a per-guild, per-channel, per-user, per-role or global basis. Denoted by the third argument of `type` which must be of enum type `.BucketType`.
+
+If a cooldown is triggered, then `.CommandOnCooldown` is triggered in `.on_command_error` and the local error handler.
+
+A command can only have a single cooldown.
+
+*Added in 2.0.*
+
+#### Parameters
+
+cooldown: Callable\[\[`.discord.Message`\], `.Cooldown` | `None`\]  
+A function that takes a message and returns a cooldown that will apply to this invocation or `None` if the cooldown should be bypassed.
+
+type: `.BucketType`  
+The type of cooldown to have.
+
+### `get_signature_parameters()`
+
+```python
+get_signature_parameters(function: Callable[..., Any], globalns: dict[str, Any]) -> dict[str, inspect.Parameter]
+```
+
+### `group()`
+
+```python
+group(name: str = ..., cls: type[GroupT] = ..., **attrs: Any) -> Callable[[Callable[Concatenate[ContextT, P], Coro[Any]] | Callable[Concatenate[CogT, ContextT, P], Coro[T]]], Group[CogT, P, T] | GroupT]
+```
+
+A decorator that transforms a function into a `.Group`.
+
+This is similar to the `.command` decorator but the `cls` parameter is set to `Group` by default.
+
+*Changed in 1.1 The `cls` parameter can now be passed.*
+
+### `guild_only()`
+
+```python
+guild_only() -> Callable[[T], T]
+```
+
+A `.check` that indicates this command must only be used in a guild context only. Basically, no private messages are allowed when using the command.
+
+This check raises a special exception, `.NoPrivateMessage` that is inherited from `.CheckFailure`.
+
+### `has_any_role()`
+
+```python
+has_any_role(*items: int | str) -> Callable[[T], T]
+```
+
+A `.check` that is added that checks if the member invoking the command has **any** of the roles specified. This means that if they have one out of the three roles specified, then this check will return <span class="title-ref">True</span>.
+
+Similar to `.has_role`, the names or IDs passed in must be exact.
+
+This check raises one of two special exceptions, `.MissingAnyRole` if the user is missing all roles, or `.NoPrivateMessage` if it is used in a private message. Both inherit from `.CheckFailure`.
+
+*Changed in 1.1
+
+Raise `.MissingAnyRole` or `.NoPrivateMessage` instead of generic `.CheckFailure`.*
+
+#### Parameters
+
+items: List\[`str` | `int`\]  
+An argument list of names or IDs to check that the member has roles wise.
+
+#### Example
+
+``` python3
+@bot.command()
+@commands.has_any_role('Library Devs', 'Moderators', 492212595072434186)
+async def cool(ctx):
+    await ctx.send('You are cool indeed')
+```
+
+### `has_guild_permissions()`
+
+```python
+has_guild_permissions(**perms: bool) -> Callable[[T], T]
+```
+
+Similar to `.has_permissions`, but operates on guild wide permissions instead of the current channel permissions.
+
+If this check is called in a DM context, it will raise an exception, `.NoPrivateMessage`.
+
+*Added in 1.3.*
+
+### `has_permissions()`
+
+```python
+has_permissions(**perms: bool) -> Callable[[T], T]
+```
+
+A `.check` that is added that checks if the member has all of the permissions necessary.
+
+Note that this check operates on the current channel permissions, not the guild wide permissions.
+
+The permissions passed in must be exactly like the properties shown under `.discord.Permissions`.
+
+This check raises a special exception, `.MissingPermissions` that is inherited from `.CheckFailure`.
+
+If the command is executed within a DM, it returns `True`.
+
+#### Parameters
+
+\*\*perms: Dict\[`str`, `bool`\]  
+An argument list of permissions to check for.
+
+#### Example
+
+``` python3
+@bot.command()
+@commands.has_permissions(manage_messages=True)
+async def test(ctx):
+    await ctx.send('You can manage messages.')
+```
+
+### `has_role()`
+
+```python
+has_role(item: int | str) -> Callable[[T], T]
+```
+
+A `.check` that is added that checks if the member invoking the command has the role specified via the name or ID specified.
+
+If a string is specified, you must give the exact name of the role, including caps and spelling.
+
+If an integer is specified, you must give the exact snowflake ID of the role.
+
+If the message is invoked in a private message context then the check will return `False`.
+
+This check raises one of two special exceptions, `.MissingRole` if the user is missing a role, or `.NoPrivateMessage` if it is used in a private message. Both inherit from `.CheckFailure`.
+
+*Changed in 1.1
+
+Raise `.MissingRole` or `.NoPrivateMessage` instead of generic `.CheckFailure`.*
+
+#### Parameters
+
+item: `int` | `str`  
+The name or ID of the role to check.
+
+### `hooked_wrapped_callback()`
+
+```python
+hooked_wrapped_callback(command, ctx, coro)
+```
+
+### `is_nsfw()`
+
+```python
+is_nsfw() -> Callable[[T], T]
+```
+
+A `.check` that checks if the channel is a NSFW channel.
+
+This check raises a special exception, `.NSFWChannelRequired` that is derived from `.CheckFailure`.
+
+*Changed in 1.1
+
+Raise `.NSFWChannelRequired` instead of generic `.CheckFailure`. DM channels will also now pass this check.*
+
+### `is_owner()`
+
+```python
+is_owner() -> Callable[[T], T]
+```
+
+A `.check` that checks if the person invoking this command is the owner of the bot.
+
+This is powered by `.Bot.is_owner`.
+
+This check raises a special exception, `.NotOwner` that is derived from `.CheckFailure`.
+
+### `max_concurrency()`
+
+```python
+max_concurrency(number: int, per: BucketType = <BucketType.default: 0>, *, wait: bool = False) -> Callable[[T], T]
+```
+
+A decorator that adds a maximum concurrency to a command
+
+This enables you to only allow a certain number of command invocations at the same time, for example if a command takes too long or if only one user can use it at a time. This differs from a cooldown in that there is no set waiting period or token bucket -- only a set number of people can run the command.
+
+*Added in 1.3.*
+
+#### Parameters
+
+number: `int`  
+The maximum number of invocations of this command that can be running at the same time.
+
+per: `.BucketType`  
+The bucket that this concurrency is based on, e.g. `BucketType.guild` would allow it to be used up to `number` times per guild.
+
+wait: `bool`  
+Whether the command should wait for the queue to be over. If this is set to `False` then instead of waiting until the command can run again, the command raises `.MaxConcurrencyReached` to its error handler. If this is set to `True` then the command waits until it can be executed.
+
+### `unwrap_function()`
+
+```python
+unwrap_function(function: Callable[..., Any]) -> Callable[..., Any]
+```
+
+### `wrap_callback()`
+
+```python
+wrap_callback(coro)
+```

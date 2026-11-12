@@ -1,4 +1,0 @@
--r all.txt
-setuptools>=72.2.0
-twine>=5.1.1
-uv>=0.5.0

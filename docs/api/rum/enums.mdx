@@ -1,0 +1,571 @@
+# `rum.enums`
+
+## Classes
+
+### `ActivityType`
+
+```python
+class ActivityType(value)
+```
+
+Activity type
+
+### `ApplicationEventWebhookStatus`
+
+```python
+class ApplicationEventWebhookStatus(value)
+```
+
+Represents the application event webhook status.
+
+### `ApplicationRoleConnectionMetadataType`
+
+```python
+class ApplicationRoleConnectionMetadataType(value)
+```
+
+Application role connection metadata type
+
+### `ApplicationType`
+
+```python
+class ApplicationType(value)
+```
+
+Application type
+
+### `AuditLogAction`
+
+```python
+class AuditLogAction(value)
+```
+
+Audit log action
+
+### `AuditLogActionCategory`
+
+```python
+class AuditLogActionCategory(value)
+```
+
+Audit log action category
+
+### `AutoModActionType`
+
+```python
+class AutoModActionType(value)
+```
+
+Automod action type
+
+### `AutoModEventType`
+
+```python
+class AutoModEventType(value)
+```
+
+Automod event type
+
+### `AutoModKeywordPresetType`
+
+```python
+class AutoModKeywordPresetType(value)
+```
+
+Automod keyword preset type
+
+### `AutoModTriggerType`
+
+```python
+class AutoModTriggerType(value)
+```
+
+Automod trigger type
+
+### `ButtonStyle`
+
+```python
+class ButtonStyle(value)
+```
+
+Button style
+
+### `ChannelType`
+
+```python
+class ChannelType(value)
+```
+
+Channel type
+
+### `ComponentType`
+
+```python
+class ComponentType(value)
+```
+
+Component type
+
+### `ContentFilter`
+
+```python
+class ContentFilter(value)
+```
+
+Content Filter
+
+### `EmbeddedActivity`
+
+```python
+class EmbeddedActivity(value)
+```
+
+Embedded activity
+
+### `EntitlementOwnerType`
+
+```python
+class EntitlementOwnerType(value)
+```
+
+The entitlement owner type
+
+### `EntitlementType`
+
+```python
+class EntitlementType(value)
+```
+
+The entitlement type
+
+### `Enum`
+
+```python
+class Enum(value)
+```
+
+#### `try_value()`
+
+```python
+try_value(value)
+```
+
+### `EnumMeta`
+
+```python
+class EnumMeta(name, bases, attrs, *, comparable: bool = False)
+```
+
+type(object) -\> the object's type type(name, bases, dict, \*\*kwds) -\> a new type
+
+### `ExpireBehaviour`
+
+```python
+class ExpireBehaviour(value)
+```
+
+Expire Behaviour
+
+### `ExpireBehaviour`
+
+```python
+class ExpireBehaviour(value)
+```
+
+Expire Behaviour
+
+### `InputTextStyle`
+
+```python
+class InputTextStyle(value)
+```
+
+Input text style
+
+### `IntegrationType`
+
+```python
+class IntegrationType(value)
+```
+
+The application's integration type.
+
+### `InteractionContextType`
+
+```python
+class InteractionContextType(value)
+```
+
+The interaction's context type
+
+### `InteractionResponseType`
+
+```python
+class InteractionResponseType(value)
+```
+
+Interaction response type
+
+### `InteractionType`
+
+```python
+class InteractionType(value)
+```
+
+Interaction type
+
+### `InviteTarget`
+
+```python
+class InviteTarget(value)
+```
+
+Invite target
+
+### `InviteTargetUsersJobStatusCode`
+
+```python
+class InviteTargetUsersJobStatusCode(value)
+```
+
+### `MessageReferenceType`
+
+```python
+class MessageReferenceType(value)
+```
+
+The type of the message reference object
+
+### `MessageType`
+
+```python
+class MessageType(value)
+```
+
+Message type
+
+### `NSFWLevel`
+
+```python
+class NSFWLevel(value)
+```
+
+NSFW level
+
+### `NotificationLevel`
+
+```python
+class NotificationLevel(value)
+```
+
+Notification level
+
+### `OnboardingMode`
+
+```python
+class OnboardingMode(value)
+```
+
+Guild Onboarding Mode
+
+### `PollLayoutType`
+
+```python
+class PollLayoutType(value)
+```
+
+The poll's layout type.
+
+### `PromptType`
+
+```python
+class PromptType(value)
+```
+
+Guild Onboarding Prompt Type
+
+### `ReactionType`
+
+```python
+class ReactionType(value)
+```
+
+The reaction type
+
+### `RoleType`
+
+```python
+class RoleType(*values)
+```
+
+Represents the type of role.
+
+This is NOT provided by Discord but is rather computed from `Role.tags`.
+
+*Added in 2.8.*
+
+#### Attributes
+
+NORMAL: `int`  
+The role is a normal role.
+
+APPLICATION: `int`  
+The role is an application (bot) role.
+
+BOOSTER: `int`  
+The role is a guild's booster role.
+
+GUILD_PRODUCT: `int`  
+The role is a guild product role.
+
+> [!NOTE]
+> This is not possible to determine at times because role tags seem to be missing altogether, notably when a guild product role is fetched. In such cases `Role.type` will be `RoleType.NORMAL` and `Role.tags` will be `None`.
+
+PREMIUM_SUBSCRIPTION_BASE: `int`  
+The role is a base subscription role.
+
+> [!NOTE]
+> This is not possible to determine currently, will be `.INTEGRATION` if it's a base subscription.
+
+PREMIUM_SUBSCRIPTION_TIER: `int`  
+The role is a subscription role.
+
+DRAFT_PREMIUM_SUBSCRIPTION_TIER: `int`  
+The role is a draft subscription role.
+
+INTEGRATION: `int`  
+The role is an integration role, such as Twitch or YouTube, or a base subscription role.
+
+CONNECTION: `int`  
+The role is a guild connections role.
+
+UNKNOWN: `int`  
+The role type is unknown.
+
+### `SKUType`
+
+```python
+class SKUType(value)
+```
+
+The SKU type
+
+### `ScheduledEventLocationType`
+
+```python
+class ScheduledEventLocationType(value)
+```
+
+Scheduled event location type
+
+### `ScheduledEventPrivacyLevel`
+
+```python
+class ScheduledEventPrivacyLevel(value)
+```
+
+Scheduled event privacy level
+
+### `ScheduledEventStatus`
+
+```python
+class ScheduledEventStatus(value)
+```
+
+Scheduled event status
+
+### `SelectDefaultValueType`
+
+```python
+class SelectDefaultValueType(value)
+```
+
+Represents the default value type of a select menu.
+
+### `SeparatorSpacingSize`
+
+```python
+class SeparatorSpacingSize(value)
+```
+
+A separator component's spacing size.
+
+### `SharedClientThemeBaseType`
+
+```python
+class SharedClientThemeBaseType(value)
+```
+
+### `SlashCommandOptionType`
+
+```python
+class SlashCommandOptionType(value)
+```
+
+Slash command option type
+
+#### `from_datatype()`
+
+```python
+from_datatype(datatype)
+```
+
+### `SortOrder`
+
+```python
+class SortOrder(value)
+```
+
+Forum Channel Sort Order
+
+### `SpeakingState`
+
+```python
+class SpeakingState(value)
+```
+
+Speaking state
+
+### `StagePrivacyLevel`
+
+```python
+class StagePrivacyLevel(value)
+```
+
+Stage privacy level
+
+### `Status`
+
+```python
+class Status(value)
+```
+
+Status
+
+### `StickerFormatType`
+
+```python
+class StickerFormatType(value)
+```
+
+Sticker format Type
+
+### `StickerType`
+
+```python
+class StickerType(value)
+```
+
+Sticker type
+
+### `SubscriptionStatus`
+
+```python
+class SubscriptionStatus(value)
+```
+
+The status of a subscription.
+
+### `TeamMembershipState`
+
+```python
+class TeamMembershipState(value)
+```
+
+Team membership state
+
+### `TeamRole`
+
+```python
+class TeamRole(value)
+```
+
+Role of a team member.
+
+### `ThreadArchiveDuration`
+
+```python
+class ThreadArchiveDuration(*values)
+```
+
+The time set until a thread is automatically archived.
+
+### `UserFlags`
+
+```python
+class UserFlags(value)
+```
+
+User flags
+
+### `VerificationLevel`
+
+```python
+class VerificationLevel(value)
+```
+
+Verification level
+
+### `VideoQualityMode`
+
+```python
+class VideoQualityMode(value)
+```
+
+Video quality mode
+
+### `VoiceChannelEffectAnimationType`
+
+```python
+class VoiceChannelEffectAnimationType(value)
+```
+
+Voice channel effect animation type.
+
+*Added in 2.7.*
+
+### `VoiceRegion`
+
+```python
+class VoiceRegion(*args: Any, **kwargs: Any) -> Any
+```
+
+Specifies the region a voice server belongs to.
+
+<div class="deprecated">
+
+2.9 The list of voice regions is dynamic, so this enum is deprecated. Use `Guild.fetch_voice_regions` to retrieve available regions as a list of `VoiceServerRegion` objects. This enum will be removed in version 3.0.
+
+</div>
+
+### `WebhookType`
+
+```python
+class WebhookType(value)
+```
+
+Webhook Type
+
+## Functions
+
+### `create_unknown_value()`
+
+```python
+create_unknown_value(cls: type[T], val: Any) -> T
+```
+
+### `deprecated()`
+
+```python
+deprecated(message: str) -> Callable[[T], T]
+```
+
+### `try_enum()`
+
+```python
+try_enum(cls: type[T], val: Any) -> T
+```
+
+A function that tries to turn the value into enum `cls`.
+
+If it fails it returns a proxy invalid value instead.

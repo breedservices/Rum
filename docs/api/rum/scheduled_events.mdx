@@ -1,0 +1,356 @@
+# `rum.scheduled_events`
+
+## Classes
+
+### `ScheduledEvent`
+
+```python
+class ScheduledEvent(*, state: ConnectionState, guild: Guild, creator: Member | None, data: ScheduledEventPayload)
+```
+
+Represents a Discord Guild Scheduled Event.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two scheduled events are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two scheduled events are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Returns the scheduled event's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the scheduled event's name.
+
+</div>
+
+</div>
+
+*Added in 2.0.*
+
+#### Attributes
+
+guild: `Guild`  
+The guild where the scheduled event is happening.
+
+name: `str`  
+The name of the scheduled event.
+
+description: `str` | `None`  
+The description of the scheduled event.
+
+start_time: `datetime.datetime`  
+The time when the event will start
+
+end_time: `datetime.datetime` | `None`  
+The time when the event is supposed to end.
+
+status: `ScheduledEventStatus`  
+The status of the scheduled event.
+
+location: `ScheduledEventLocation`  
+The location of the event. See `ScheduledEventLocation` for more information.
+
+subscriber_count: `int` | `None`  
+The number of users that have marked themselves as interested in the event.
+
+creator_id: `int` | `None`  
+The ID of the user who created the event. It may be `None` because events created before October 25th, 2021 haven't had their creators tracked.
+
+creator: `User` | `None`  
+The resolved user object of who created the event.
+
+privacy_level: `ScheduledEventPrivacyLevel`  
+The privacy level of the event. Currently, the only possible value is `ScheduledEventPrivacyLevel.guild_only`, which is default, so there is no need to use this attribute.
+
+#### `edit()`
+
+```python
+edit(*, reason: str | None = None, name: str = ..., description: str = ..., status: int | ScheduledEventStatus = ..., location: str | int | VoiceChannel | StageChannel | ScheduledEventLocation = ..., start_time: datetime.datetime = ..., end_time: datetime.datetime = ..., cover: bytes | None = ..., image: bytes | None = ..., privacy_level: ScheduledEventPrivacyLevel = <ScheduledEventPrivacyLevel.guild_only: 2>) -> ScheduledEvent | None
+```
+
+*(coroutine)*
+
+Edits the Scheduled Event's data
+
+All parameters are optional unless `location.type` is `ScheduledEventLocationType.external`, then `end_time` is required.
+
+Will return a new `.ScheduledEvent` object if applicable.
+
+#### Parameters
+
+name: `str`  
+The new name of the event.
+
+description: `str`  
+The new description of the event.
+
+location: `.ScheduledEventLocation`  
+The location of the event.
+
+status: `ScheduledEventStatus`  
+The status of the event. It is recommended, however, to use `.start`, `.complete`, and `cancel` to edit statuses instead.
+
+start_time: `datetime.datetime`  
+The new starting time for the event.
+
+end_time: `datetime.datetime`  
+The new ending time of the event.
+
+privacy_level: `ScheduledEventPrivacyLevel`  
+The privacy level of the event. Currently, the only possible value is `ScheduledEventPrivacyLevel.guild_only`, which is default, so there is no need to change this parameter.
+
+reason: `str` | `None`  
+The reason to show in the audit log.
+
+image: `bytes` | `None`  
+The cover image of the scheduled event.
+
+cover: `bytes` | `None`  
+The cover image of the scheduled event.
+
+<div class="deprecated">
+
+2.7 Use the <span class="title-ref">image</span> argument instead.
+
+</div>
+
+#### Returns
+
+`.ScheduledEvent` | `None`  
+The newly updated scheduled event object. This is only returned when certain fields are updated.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Events permission.
+
+HTTPException  
+The operation failed.
+
+#### `delete()`
+
+```python
+delete() -> None
+```
+
+*(coroutine)*
+
+Deletes the scheduled event.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Events permission.
+
+HTTPException  
+The operation failed.
+
+#### `start()`
+
+```python
+start(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Starts the scheduled event. Shortcut from `.edit`.
+
+> [!NOTE]
+> This method can only be used if `.status` is `ScheduledEventStatus.scheduled`.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason to show in the audit log.
+
+#### Returns
+
+`.ScheduledEvent` | `None`  
+The newly updated scheduled event object.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Events permission.
+
+HTTPException  
+The operation failed.
+
+#### `complete()`
+
+```python
+complete(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Ends/completes the scheduled event. Shortcut from `.edit`.
+
+> [!NOTE]
+> This method can only be used if `.status` is `ScheduledEventStatus.active`.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason to show in the audit log.
+
+#### Returns
+
+`.ScheduledEvent` | `None`  
+The newly updated scheduled event object.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Events permission.
+
+HTTPException  
+The operation failed.
+
+#### `cancel()`
+
+```python
+cancel(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Cancels the scheduled event. Shortcut from `.edit`.
+
+> [!NOTE]
+> This method can only be used if `.status` is `ScheduledEventStatus.scheduled`.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason to show in the audit log.
+
+#### Returns
+
+`.ScheduledEvent` | `None`  
+The newly updated scheduled event object.
+
+#### Raises
+
+Forbidden  
+You do not have the Manage Events permission.
+
+HTTPException  
+The operation failed.
+
+#### `subscribers()`
+
+```python
+subscribers(*, limit: int | None = 100, as_member: bool = False, before: Snowflake | datetime.datetime | None = None, after: Snowflake | datetime.datetime | None = None) -> ScheduledEventSubscribersIterator
+```
+
+Returns an `AsyncIterator` representing the users or members subscribed to the event.
+
+The `after` and `before` parameters must represent member or user objects and meet the `abc.Snowflake` abc.
+
+> [!NOTE]
+> Even is `as_member` is set to `True`, if the user is outside the guild, it will be a `User` object.
+
+#### Parameters
+
+limit: `int` | `None`  
+The maximum number of results to return.
+
+as_member: `bool` | `None`  
+Whether to fetch `Member` objects instead of user objects. There may still be `User` objects if the user is outside the guild.
+
+before: `abc.Snowflake` | `datetime.datetime` | `None`  
+Retrieves users before this date or object. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+after: `abc.Snowflake` | `datetime.datetime` | `None`  
+Retrieves users after this date or object. If a datetime is provided, it is recommended to use a UTC aware datetime. If the datetime is naive, it is assumed to be local time.
+
+#### Yields
+
+`User` | `Member`  
+The subscribed `Member`. If `as_member` is set to `False` or the user is outside the guild, it will be a `User` object.
+
+#### Raises
+
+HTTPException  
+Fetching the subscribed users failed.
+
+#### Examples
+
+Usage :
+
+    async for user in event.subscribers(limit=100):
+        print(user.name)
+
+Flattening into a list: :
+
+    users = await event.subscribers(limit=100).flatten()
+    # users is now a list of User...
+
+Getting members instead of user objects: :
+
+    async for member in event.subscribers(limit=100, as_member=True):
+        print(member.display_name)
+
+### `ScheduledEventLocation`
+
+```python
+class ScheduledEventLocation(*, state: ConnectionState, value: str | int | StageChannel | VoiceChannel)
+```
+
+Represents a scheduled event's location.
+
+Setting the `value` to its corresponding type will set the location type automatically:
+
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 67%" />
+</colgroup>
+<thead>
+<tr>
+<th><blockquote>
+<p>Type of Input</p>
+</blockquote></th>
+<th><blockquote>
+<p>Location Type</p>
+</blockquote></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="2"><code>StageChannel</code> | <code>ScheduledEventLocationType.stage_instance</code> | <code>VoiceChannel</code> | <code>ScheduledEventLocationType.voice</code> | <code>str</code> | <code>ScheduledEventLocationType.external</code> |</td>
+</tr>
+</tbody>
+</table>
+
+*Added in 2.0.*
+
+#### Attributes
+
+value: `str` | `StageChannel` | `VoiceChannel` | `Object`  
+The actual location of the scheduled event.
+
+type: `ScheduledEventLocationType`  
+The type of location.

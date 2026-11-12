@@ -1,0 +1,106 @@
+# `rum.ui.checkbox_group`
+
+## Classes
+
+### `CheckboxGroup`
+
+```python
+class CheckboxGroup(*, custom_id: str | None = None, options: list[CheckboxGroupOption] | None = None, min_values: int | None = None, max_values: int | None = None, required: bool = True, id: int | None = None)
+```
+
+Represents a UI Checkbox Group component.
+
+*Added in 2.8.*
+
+#### Parameters
+
+custom_id: `str` | `None`  
+The ID of the checkbox group that gets received during an interaction.
+
+options: List\[`discord.CheckboxGroupOption`\]  
+A list of options that can be selected in this group.
+
+min_values: `int` | `None`  
+The minimum number of options that must be selected. Defaults to 0 and must be between 0 and 10, inclusive.
+
+max_values: `int` | `None`  
+The maximum number of options that can be selected. Must be between 1 and 10, inclusive.
+
+required: `bool`  
+Whether an option selection is required or not. Defaults to `True`.
+
+id: `int` | `None`  
+The checkbox group's ID.
+
+#### `add_option()`
+
+```python
+add_option(*, label: str, value: str = ..., description: str | None = None, default: bool = False) -> Self
+```
+
+Adds an option to the checkbox group.
+
+To append a pre-existing `discord.CheckboxGroupOption` use the `append_option` method instead.
+
+#### Parameters
+
+label: `str`  
+The label of the option. This is displayed to users. Can only be up to 100 characters.
+
+value: `str`  
+The value of the option. This is not displayed to users. If not given, defaults to the label. Can only be up to 100 characters.
+
+description: `str` | `None`  
+An additional description of the option, if any. Can only be up to 100 characters.
+
+default: `bool`  
+Whether this option is selected by default.
+
+#### Raises
+
+ValueError  
+The number of options exceeds 10.
+
+#### `append_option()`
+
+```python
+append_option(option: CheckboxGroupOption) -> Self
+```
+
+Appends an option to the checkbox group.
+
+#### Parameters
+
+option: `discord.CheckboxGroupOption`  
+The option to append to the checkbox group.
+
+#### Raises
+
+ValueError  
+The number of options exceeds 10.
+
+#### `clear_options()`
+
+```python
+clear_options() -> Self
+```
+
+Remove all options from the checkbox group.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> CheckboxGroupComponentPayload
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(data) -> None
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction, data: CheckboxGroupComponentPayload) -> None
+```

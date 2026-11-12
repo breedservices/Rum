@@ -1,0 +1,492 @@
+# `rum.role`
+
+## Classes
+
+### `Role`
+
+```python
+class Role(*, guild: Guild, state: ConnectionState, data: RolePayload)
+```
+
+Represents a Discord role in a `Guild`.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two roles are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two roles are not equal.
+
+</div>
+
+<div class="describe">
+
+x \> y
+
+Checks if a role is higher than another in the hierarchy.
+
+</div>
+
+<div class="describe">
+
+x \< y
+
+Checks if a role is lower than another in the hierarchy.
+
+</div>
+
+<div class="describe">
+
+x \>= y
+
+Checks if a role is higher or equal to another in the hierarchy.
+
+</div>
+
+<div class="describe">
+
+x \<= y
+
+Checks if a role is lower or equal to another in the hierarchy.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the role's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the role's name.
+
+</div>
+
+</div>
+
+#### Attributes
+
+id: `int`  
+The ID for the role.
+
+name: `str`  
+The name of the role.
+
+guild: `Guild`  
+The guild the role belongs to.
+
+hoist: `bool`  
+Indicates if the role will be displayed separately from other members.
+
+position: `int`  
+The position of the role. This number is usually positive. The bottom role has a position of 0.
+
+> [!WARNING]
+> Multiple roles can have the same position number. As a consequence of this, comparing via role position is prone to subtle bugs if checking for role hierarchy. The recommended and correct way to compare for roles in the hierarchy is using the comparison operators on the role objects themselves.
+
+managed: `bool`  
+Indicates if the role is managed by the guild. This is true if any of `Role.is_integration`, `Role.is_premium_subscriber`, `Role.is_bot_managed` or `Role.is_guild_connections_role` is `True`.
+
+mentionable: `bool`  
+Indicates if the role can be mentioned by users.
+
+tags: `RoleTags` | `None`  
+The role tags associated with this role. Tags indicate whether the role is a special role, such as but not limited to a bot role or the booster role.
+
+unicode_emoji: `str` | `None`  
+The role's unicode emoji. Only available to guilds that contain `ROLE_ICONS` in `Guild.features`.
+
+*Added in 2.0.*
+
+flags: `RoleFlags`  
+Extra attributes of the role.
+
+*Added in 2.6.*
+
+colours: `RoleColours`  
+The role's colours.
+
+*Added in 2.7.*
+
+#### `is_default()`
+
+```python
+is_default() -> bool
+```
+
+Checks if the role is the default role.
+
+#### `is_bot_managed()`
+
+```python
+is_bot_managed() -> bool
+```
+
+Whether the role is associated with a bot.
+
+<div class="deprecated">
+
+2.8 Use `Role.type` instead.
+
+</div>
+
+*Added in 1.6.*
+
+#### `is_premium_subscriber()`
+
+```python
+is_premium_subscriber() -> bool
+```
+
+Whether the role is the premium subscriber, AKA "boost", role for the guild.
+
+<div class="deprecated">
+
+2.8 Use `Role.type` instead.
+
+</div>
+
+*Added in 1.6.*
+
+#### `is_integration()`
+
+```python
+is_integration() -> bool
+```
+
+Whether the guild manages the role through some form of integrations such as Twitch or through guild subscriptions.
+
+<div class="deprecated">
+
+2.8 Use `Role.type` instead.
+
+</div>
+
+*Added in 1.6.*
+
+#### `is_assignable()`
+
+```python
+is_assignable() -> bool
+```
+
+Whether the role is able to be assigned or removed by the bot. This checks whether all of the following conditions are true:
+
+- The role is not the guild's `Guild.default_role`
+- The role is not managed
+- The bot has the `Permissions.manage_roles` permission
+- The bot's top role is above this role
+
+*Added in 2.0.*
+
+*Changed in 2.7.1 Added check for `Permissions.manage_roles` permission.*
+
+#### `is_available_for_purchase()`
+
+```python
+is_available_for_purchase() -> bool
+```
+
+Whether the role is available for purchase.
+
+Returns `True` if the role is available for purchase, and `False` if it is not available for purchase or if the role is not linked to a guild subscription.
+
+<div class="deprecated">
+
+2.8 Use `Role.type` instead.
+
+</div>
+
+*Added in 2.7.*
+
+#### `is_guild_connections_role()`
+
+```python
+is_guild_connections_role() -> bool
+```
+
+Whether the role is a guild connections role.
+
+<div class="deprecated">
+
+2.8 Use `Role.type` instead.
+
+</div>
+
+*Added in 2.7.*
+
+#### `edit()`
+
+```python
+edit(*, name: str = ..., permissions: Permissions = ..., colour: Colour | int = ..., color: Colour | int = ..., colours: RoleColours = ..., colors: RoleColours = ..., holographic: bool = ..., hoist: bool = ..., mentionable: bool = ..., position: int = ..., reason: str | None = ..., icon: bytes | None = ..., unicode_emoji: str | None = ...) -> Role
+```
+
+*(coroutine)*
+
+Edits the role.
+
+You must have the `Permissions.manage_roles` permission to use this.
+
+All fields are optional.
+
+*Changed in 1.4 Can now pass `int` to `colour` keyword-only parameter.*
+
+*Changed in 2.0 Edits are no longer in-place, the newly edited role is returned instead. Added `icon` and `unicode_emoji`.*
+
+#### Parameters
+
+name: `str`  
+The new role name to change to.
+
+permissions: `Permissions`  
+The new permissions to change to.
+
+colour: `Colour` | `int`  
+The new colour to change to. (aliased to color as well)
+
+hoist: `bool`  
+Indicates if the role should be shown separately in the member list.
+
+mentionable: `bool`  
+Indicates if the role should be mentionable by others.
+
+position: `int`  
+The new role's position. This must be below your top role's position, or it will fail.
+
+reason: `str` | `None`  
+The reason for editing this role. Shows up on the audit log.
+
+icon: `bytes` | `None`  
+A `bytes-like object` representing the icon. Only PNG/JPEG/WebP is supported. If this argument is passed, `unicode_emoji` is set to None. Only available to guilds that contain `ROLE_ICONS` in `Guild.features`. Could be `None` to denote removal of the icon.
+
+unicode_emoji: `str` | `None`  
+The role's unicode emoji. If this argument is passed, `icon` is set to None. Only available to guilds that contain `ROLE_ICONS` in `Guild.features`.
+
+#### Returns
+
+`Role`  
+The newly edited role.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to change the role.
+
+HTTPException  
+Editing the role failed.
+
+InvalidArgument  
+An invalid position was given or the default role was asked to be moved.
+
+#### `delete()`
+
+```python
+delete(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the role.
+
+You must have the `Permissions.manage_roles` permission to use this.
+
+#### Parameters
+
+reason: `str` | `None`  
+The reason for deleting this role. Shows up on the audit log.
+
+#### Raises
+
+Forbidden  
+You do not have permissions to delete the role.
+
+HTTPException  
+Deleting the role failed.
+
+#### `fetch_permissions()`
+
+```python
+fetch_permissions() -> Permissions
+```
+
+Fetches the role's permissions from Discord, combining this role with `@everyone`.
+
+#### Returns
+
+`Permissions`  
+The role's permissions in the guild.
+
+#### Raises
+
+~discord.Forbidden  
+You do not have proper permissions to get the information.
+
+~discord.HTTPException  
+An error occurred while fetching the information.
+
+### `RoleColours`
+
+```python
+class RoleColours(primary: Colour, secondary: Colour | None = None, tertiary: Colour | None = None)
+```
+
+Represents a role's gradient colours.
+
+*Added in 2.7.*
+
+#### Attributes
+
+primary: `Colour`  
+The primary colour of the role.
+
+secondary: `Colour` | `None`  
+The secondary colour of the role.
+
+tertiary: `Colour` | `None`  
+The tertiary colour of the role. At the moment, only `HOLOGRAPHIC_TERTIARY` is allowed.
+
+HOLOGRAPHIC_PRIMARY: `Colour`  
+The primary colour used for holographic roles.
+
+HOLOGRAPHIC_SECONDARY: `Colour`  
+The secondary colour used for holographic roles.
+
+HOLOGRAPHIC_TERTIARY: `Colour`  
+The tertiary colour used for holographic roles.
+
+#### `default()`
+
+```python
+default() -> RoleColours
+```
+
+Returns a default `RoleColours` object with no colours set.
+
+#### `holographic()`
+
+```python
+holographic() -> RoleColours
+```
+
+Returns a `RoleColours` that makes the role look holographic.
+
+Currently holographic roles are only supported with colours defined in `HOLOGRAPHIC_PRIMARY`, `HOLOGRAPHIC_SECONDARY`, and `HOLOGRAPHIC_TERTIARY`.
+
+### `RoleTags`
+
+```python
+class RoleTags(data: RoleTagPayload)
+```
+
+Represents tags on a role.
+
+A role tag is a piece of extra information attached to a managed role that gives it context for the reason the role is managed.
+
+Role tags are a fairly complex topic, since it's usually hard to determine which role tag combination represents which role type. In order to make your life easier, rum provides a `RoleTags.type` attribute that attempts to determine the role type based on the role tags. Its value is not provided by Discord but is rather computed based on the role tags. If you find an issue, please report it on [GitHub](https://github.com/breedservices/Rum/issues/new?template=bug_report.yml). Read [this](https://lulalaby.notion.site/special-roles-role-tags) if you need detailed information about how role tags work.
+
+*Added in 1.6.*
+
+*Changed in 2.8 The type of the role is now determined by the `RoleTags.type` attribute.*
+
+#### Attributes
+
+bot_id: `int` | `None`  
+The bot's user ID that manages this role.
+
+integration_id: `int` | `None`  
+The integration ID that manages the role.
+
+subscription_listing_id: `int` | `None`  
+The subscription SKU and listing ID of the role.
+
+*Added in 2.7.*
+
+#### `is_bot_managed()`
+
+```python
+is_bot_managed() -> bool
+```
+
+Whether the role is associated with a bot.
+
+<div class="deprecated">
+
+2.8 Use `RoleTags.type == RoleType.APPLICATION` instead.
+
+</div>
+
+#### `is_premium_subscriber()`
+
+```python
+is_premium_subscriber() -> bool
+```
+
+Whether the role is the premium subscriber, AKA "boost", role for the guild.
+
+<div class="deprecated">
+
+2.8 Use `RoleTags.type == RoleType.BOOSTER` instead.
+
+</div>
+
+#### `is_integration()`
+
+```python
+is_integration() -> bool
+```
+
+Whether the guild manages the role through some form of integrations such as Twitch or through guild subscriptions.
+
+<div class="deprecated">
+
+2.8 Use `RoleTags.type in (RoleType.INTEGRATION, RoleType.PREMIUM_SUBSCRIPTION_TIER, RoleType.DRAFT_PREMIUM_SUBSCRIPTION_TIER)` instead.
+
+</div>
+
+#### `is_available_for_purchase()`
+
+```python
+is_available_for_purchase() -> bool
+```
+
+Whether the role is available for purchase.
+
+Returns `True` if the role is available for purchase, and `False` if it is not available for purchase or if the role is not linked to a guild subscription.
+
+<div class="deprecated">
+
+2.8 Use `RoleTags.type == RoleType.PREMIUM_SUBSCRIPTION_TIER` instead.
+
+</div>
+
+*Added in 2.7.*
+
+#### `is_guild_connections_role()`
+
+```python
+is_guild_connections_role() -> bool
+```
+
+Whether the role is a guild connections role.
+
+<div class="deprecated">
+
+2.8 Use `RoleTags.type == RoleType.CONNECTION` instead.
+
+</div>
+
+*Added in 2.7.*

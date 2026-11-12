@@ -36,6 +36,7 @@ from wsproto.connection import Connection as WSConnection
 from wsproto.events import Message
 from wsproto.utilities import generate_accept_token
 
+from rum import AutoShardedClient, Intents
 from rum.gateway import DiscordWebSocket, _WebSocketAdapter, _ZstdStream
 from rum.http import HTTPClient
 
@@ -155,3 +156,54 @@ async def test_the_gateway_decompresses_a_zstd_message():
     finally:
         await client.close()
         server.close()
+
+
+@pytest.mark.asyncio
+async def test_the_bot_gateway_reports_the_identify_concurrency():
+    """The bot gateway call reports how many shards may identify at once."""
+    client = HTTPClient()
+
+    async def request(route, **kwargs):
+        return {
+            "shards": 512,
+            "url": "wss://gateway.discord.gg",
+            "session_start_limit": {"max_concurrency": 16},
+        }
+
+    client.request = request
+    try:
+        shards, gateway, max_concurrency = await client.get_bot_gateway()
+    finally:
+        await client.close()
+
+    assert shards == 512
+    assert max_concurrency == 16
+    assert gateway.startswith("wss://gateway.discord.gg?encoding=json")
+
+
+@pytest.mark.asyncio
+async def test_shards_identify_in_buckets(monkeypatch):
+    """Shards identify in groups of max_concurrency, five seconds apart."""
+    client = AutoShardedClient(intents=Intents.default(), shard_count=None)
+    launched = []
+    sleeps = []
+
+    async def get_bot_gateway():
+        return 5, "wss://gateway.discord.gg", 2
+
+    async def launch_shard(gateway, shard_id, *, initial=False):
+        launched.append((shard_id, initial))
+
+    async def sleep(delay):
+        sleeps.append(delay)
+
+    monkeypatch.setattr(client.http, "get_bot_gateway", get_bot_gateway)
+    monkeypatch.setattr(client, "launch_shard", launch_shard)
+    monkeypatch.setattr(asyncio, "sleep", sleep)
+
+    await client.launch_shards()
+
+    assert [shard_id for shard_id, _ in launched] == [0, 1, 2, 3, 4]
+    assert launched[0][1] is True
+    assert all(initial is False for _, initial in launched[1:])
+    assert sleeps == [5.0, 5.0]

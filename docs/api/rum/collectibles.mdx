@@ -1,0 +1,78 @@
+# `rum.collectibles`
+
+## Classes
+
+### `Collectibles`
+
+```python
+class Collectibles(data: rum.types.collectibles.Collectibles, state: ConnectionState) -> None
+```
+
+Represents a user or member's equipped collectibles.
+
+*Added in 2.8.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two sets of collectibles are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two sets of collectibles are not equal.
+
+</div>
+
+</div>
+
+#### Attributes
+
+nameplate: `Nameplate`  
+The user's nameplate.
+
+### `Nameplate`
+
+```python
+class Nameplate(data: rum.types.collectibles.Nameplate, state: ConnectionState) -> None
+```
+
+Represents a Discord Nameplate.
+
+*Added in 2.7.*
+
+*Changed in 2.8 Nameplates are now comparable.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two nameplates are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two nameplates are not equal.
+
+</div>
+
+</div>
+
+#### Attributes
+
+sku_id: `int`  
+The SKU ID of the nameplate.
+
+palette: `str`  
+The color palette of the nameplate.

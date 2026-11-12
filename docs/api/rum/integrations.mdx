@@ -1,0 +1,249 @@
+# `rum.integrations`
+
+## Classes
+
+### `BotIntegration`
+
+```python
+class BotIntegration(*, data: IntegrationPayload, guild: Guild) -> None
+```
+
+Represents a bot integration on discord.
+
+*Added in 2.0.*
+
+#### Attributes
+
+id: `int`  
+The integration ID.
+
+name: `str`  
+The integration name.
+
+guild: `Guild`  
+The guild of the integration.
+
+type: `str`  
+The integration type (i.e. Twitch).
+
+enabled: `bool`  
+Whether the integration is currently enabled.
+
+user: `User`  
+The user that added this integration.
+
+account: `IntegrationAccount`  
+The integration account information.
+
+application: `IntegrationApplication`  
+The application tied to this integration.
+
+### `Integration`
+
+```python
+class Integration(*, data: IntegrationPayload, guild: Guild) -> None
+```
+
+Represents a guild integration.
+
+*Added in 1.4.*
+
+#### Attributes
+
+id: `int`  
+The integration ID.
+
+name: `str`  
+The integration name.
+
+guild: `Guild`  
+The guild of the integration.
+
+type: `str`  
+The integration type (i.e. Twitch).
+
+enabled: `bool`  
+Whether the integration is currently enabled.
+
+account: `IntegrationAccount`  
+The account linked to this integration.
+
+user: `User`  
+The user that added this integration.
+
+#### `delete()`
+
+```python
+delete(*, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the integration.
+
+You must have the `Permissions.manage_guild` permission to do this.
+
+#### Parameters
+
+reason: `str`  
+The reason the integration was deleted. Shows up on the audit log.
+
+*Added in 2.0.*
+
+#### Raises
+
+Forbidden  
+You do not have permission to delete the integration.
+
+HTTPException  
+Deleting the integration failed.
+
+### `IntegrationAccount`
+
+```python
+class IntegrationAccount(data: IntegrationAccountPayload) -> None
+```
+
+Represents an integration account.
+
+*Added in 1.4.*
+
+#### Attributes
+
+id: `str`  
+The account ID.
+
+name: `str`  
+The account name.
+
+### `IntegrationApplication`
+
+```python
+class IntegrationApplication(*, data: IntegrationApplicationPayload, state)
+```
+
+Represents an application for a bot integration.
+
+*Added in 2.0.*
+
+#### Attributes
+
+id: `int`  
+The ID for this application.
+
+name: `str`  
+The application's name.
+
+icon: `str` | `None`  
+The application's icon hash.
+
+description: `str`  
+The application's description. Can be an empty string.
+
+summary: `str`  
+The summary of the application. Can be an empty string.
+
+user: `User` | `None`  
+The bot user on this application.
+
+### `StreamIntegration`
+
+```python
+class StreamIntegration(*, data: IntegrationPayload, guild: Guild) -> None
+```
+
+Represents a stream integration for Twitch or YouTube.
+
+*Added in 2.0.*
+
+#### Attributes
+
+id: `int`  
+The integration ID.
+
+name: `str`  
+The integration name.
+
+guild: `Guild`  
+The guild of the integration.
+
+type: `str`  
+The integration type (i.e. Twitch).
+
+enabled: `bool`  
+Whether the integration is currently enabled.
+
+syncing: `bool`  
+Where the integration is currently syncing.
+
+enable_emoticons: `bool` | `None`  
+Whether emoticons should be synced for this integration (currently twitch only).
+
+expire_behaviour: `ExpireBehaviour`  
+The behaviour of expiring subscribers. Aliased to `expire_behavior` as well.
+
+expire_grace_period: `int`  
+The grace period (in days) for expiring subscribers.
+
+user: `User`  
+The user for the integration.
+
+account: `IntegrationAccount`  
+The integration account information.
+
+synced_at: `datetime.datetime`  
+An aware UTC datetime representing when the integration was last synced.
+
+#### `edit()`
+
+```python
+edit(*, expire_behaviour: ExpireBehaviour = ..., expire_grace_period: int = ..., enable_emoticons: bool = ...) -> None
+```
+
+*(coroutine)*
+
+Edits the integration.
+
+You must have the `Permissions.manage_guild` permission to do this.
+
+#### Parameters
+
+expire_behaviour: `ExpireBehaviour`  
+The behaviour when an integration subscription lapses. Aliased to `expire_behavior` as well.
+
+expire_grace_period: `int`  
+The period (in days) where the integration will ignore lapsed subscriptions.
+
+enable_emoticons: `bool`  
+Where emoticons should be synced for this integration (currently twitch only).
+
+#### Raises
+
+Forbidden  
+You do not have permission to edit the integration.
+
+HTTPException  
+Editing the guild failed.
+
+InvalidArgument  
+`expire_behaviour` did not receive a `ExpireBehaviour`.
+
+#### `sync()`
+
+```python
+sync() -> None
+```
+
+*(coroutine)*
+
+Syncs the integration.
+
+You must have the `Permissions.manage_guild` permission to do this.
+
+#### Raises
+
+Forbidden  
+You do not have permission to sync the integration.
+
+HTTPException  
+Syncing the integration failed.

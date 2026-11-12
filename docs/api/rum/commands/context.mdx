@@ -1,0 +1,212 @@
+# `rum.commands.context`
+
+## Classes
+
+### `ApplicationContext`
+
+```python
+class ApplicationContext(bot: Bot, interaction: Interaction)
+```
+
+Represents a Discord application command interaction context.
+
+This class is not created manually and is instead passed to application commands as the first parameter.
+
+*Added in 2.0.*
+
+#### Attributes
+
+bot: `.Bot`  
+The bot that the command belongs to.
+
+interaction: `.Interaction`  
+The interaction object that invoked the command.
+
+#### `invoke()`
+
+```python
+invoke(command: ApplicationCommand[CogT, P, T], /, *args: P.args, **kwargs: P.kwargs) -> T
+```
+
+*(coroutine)*
+
+Calls a command with the arguments given. This is useful if you want to just call the callback that a `.ApplicationCommand` holds internally.
+
+> [!NOTE]
+> This does not handle converters, checks, cooldowns, pre-invoke, or after-invoke hooks in any matter. It calls the internal callback directly as-if it was a regular function. You must take care in passing the proper arguments when using this function.
+
+#### Parameters
+
+command: `.ApplicationCommand`  
+The command that is going to be called.
+
+\*args  
+The arguments to use.
+
+\*\*kwargs  
+The keyword arguments to use.
+
+#### Raises
+
+TypeError  
+The command argument to invoke is missing.
+
+#### `respond()`
+
+```python
+respond(*args, **kwargs) -> Interaction | WebhookMessage
+```
+
+*(coroutine)*
+
+Sends either a response or a message using the followup webhook determined by whether the interaction has been responded to or not.
+
+#### Parameters
+
+content: `str` | `None`  
+The content of the message to send.
+
+embeds: List\[`Embed`\]  
+A list of embeds to send with the content. Maximum of 10. This cannot be mixed with the `embed` parameter.
+
+embed: `Embed`  
+The rich embed for the content to send. This cannot be mixed with `embeds` parameter.
+
+tts: `bool`  
+Indicates if the message should be sent using text-to-speech.
+
+view: `discord.ui.BaseView`  
+The view to send with the message.
+
+ephemeral: `bool`  
+Indicates if the message should only be visible to the user who started the interaction. If a view is sent with an ephemeral message, and it has no timeout set then the timeout is set to 15 minutes.
+
+allowed_mentions: `AllowedMentions`  
+Controls the mentions being processed in this message. See `.abc.Messageable.send` for more information.
+
+delete_after: `float`  
+If provided, the number of seconds to wait in the background before deleting the message we just sent.
+
+file: `File`  
+The file to upload.
+
+files: List\[`File`\]  
+A list of files to upload. Must be a maximum of 10.
+
+poll: `Poll`  
+The poll to send.
+
+*Added in 2.6.*
+
+silent: `bool`  
+Whether to suppress push and desktop notifications for the message.
+
+*Added in 2.8.*
+
+suppress_embeds: `bool`  
+Whether to suppress embeds for the message.
+
+*Added in 2.8.*
+
+#### Returns
+
+`discord.Interaction` | `discord.WebhookMessage`:  
+The response, its type depending on whether it's an interaction response or a followup.
+
+#### `delete()`
+
+```python
+delete(*, delay: float | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the original interaction response message.
+
+This is a higher level interface to `Interaction.delete_original_response`.
+
+#### Parameters
+
+delay: `float` | `None`  
+If provided, the number of seconds to wait before deleting the message.
+
+#### Raises
+
+HTTPException  
+Deleting the message failed.
+
+Forbidden  
+You do not have proper permissions to delete the message.
+
+#### `is_guild_authorised()`
+
+```python
+is_guild_authorised() -> bool
+```
+
+Checks if the invoked command is guild-installed. This is a shortcut for `Interaction.is_guild_authorised`.
+
+There is an alias for this called `.is_guild_authorized`.
+
+*Added in 2.7.*
+
+#### `is_user_authorised()`
+
+```python
+is_user_authorised() -> bool
+```
+
+Checks if the invoked command is user-installed. This is a shortcut for `Interaction.is_user_authorised`.
+
+There is an alias for this called `.is_user_authorized`.
+
+*Added in 2.7.*
+
+#### `is_guild_authorized()`
+
+```python
+is_guild_authorized() -> bool
+```
+
+An alias for `.is_guild_authorised`.
+
+*Added in 2.7.*
+
+#### `is_user_authorized()`
+
+```python
+is_user_authorized() -> bool
+```
+
+An alias for `.is_user_authorised`.
+
+*Added in 2.7.*
+
+### `AutocompleteContext`
+
+```python
+class AutocompleteContext(bot: Bot, interaction: Interaction)
+```
+
+Represents context for a slash command's option autocomplete.
+
+This class is not created manually and is instead passed to an `.Option`'s autocomplete callback.
+
+*Added in 2.0.*
+
+#### Attributes
+
+bot: `.Bot`  
+The bot that the command belongs to.
+
+interaction: `.Interaction`  
+The interaction object that invoked the autocomplete.
+
+focused: `.Option`  
+The option the user is currently typing.
+
+value: `.str`  
+The content of the focused option.
+
+options: Dict\[`str`, Any\]  
+A name to value mapping of the options that the user has selected before this option.

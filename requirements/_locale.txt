@@ -1,3 +1,0 @@
--r all.txt
-uv>=0.5.0
-setuptools>=72.2.0

@@ -1,0 +1,114 @@
+# `rum.ext.bridge.context`
+
+## Classes
+
+### `BridgeApplicationContext`
+
+```python
+class BridgeApplicationContext(*args, **kwargs)
+```
+
+The application context class for compatibility commands. This class is a subclass of `BridgeContext` and `.ApplicationContext`. This class is meant to be used with `BridgeCommand`.
+
+*Added in 2.0.*
+
+### `BridgeContext`
+
+```python
+class BridgeContext()
+```
+
+The base context class for compatibility commands. This class is an `abstract base class` (also known as an `abc`), which is subclassed by `BridgeExtContext` and `BridgeApplicationContext`. The methods in this class are meant to give parity between the two contexts, while still allowing for all of their functionality.
+
+When this is passed to a command, it will either be passed as `BridgeExtContext`, or `BridgeApplicationContext`. Since they are two separate classes, it's easy to use the `BridgeContext.is_app` attribute. to make different functionality for each context. For example, if you want to respond to a command with the command type that it was invoked with, you can do the following:
+
+``` python3
+@bot.bridge_command()
+async def example(ctx: BridgeContext):
+    if ctx.is_app:
+        command_type = "Application command"
+    else:
+        command_type = "Traditional (prefix-based) command"
+    await ctx.send(f"This command was invoked with a(n) {command_type}.")
+```
+
+*Added in 2.0.*
+
+#### `invoke()`
+
+```python
+invoke(*args, **kwds)
+```
+
+Helper for @overload to raise when called.
+
+#### `respond()`
+
+```python
+respond(*args, **kwargs) -> Interaction | WebhookMessage | Message
+```
+
+*(coroutine)*
+
+Responds to the command with the respective response type to the current context. In `BridgeExtContext`, this will be `.Context.reply` while in `BridgeApplicationContext`, this will be `.ApplicationContext.respond`.
+
+#### `reply()`
+
+```python
+reply(*args, **kwargs) -> Interaction | WebhookMessage | Message
+```
+
+*(coroutine)*
+
+Alias for `.BridgeContext.respond`.
+
+#### `defer()`
+
+```python
+defer(*args, **kwargs) -> None
+```
+
+*(coroutine)*
+
+Defers the command with the respective approach to the current context. In `BridgeExtContext`, this will be `discord.abc.Messageable.trigger_typing` while in `BridgeApplicationContext`, this will be `.ApplicationContext.defer`.
+
+> [!NOTE]
+> There is no `trigger_typing` alias for this method. `trigger_typing` will always provide the same functionality across contexts.
+
+#### `edit()`
+
+```python
+edit(*args, **kwargs) -> InteractionMessage | Message
+```
+
+*(coroutine)*
+
+Edits the original response message with the respective approach to the current context. In `BridgeExtContext`, this will have a custom approach where `.respond` caches the message to be edited here. In `BridgeApplicationContext`, this will be `.ApplicationContext.edit`.
+
+### `BridgeExtContext`
+
+```python
+class BridgeExtContext(*args, **kwargs)
+```
+
+The ext.commands context class for compatibility commands. This class is a subclass of `BridgeContext` and `.Context`. This class is meant to be used with `BridgeCommand`.
+
+*Added in 2.0.*
+
+#### `delete()`
+
+```python
+delete(*, delay: float | None = None, reason: str | None = None) -> None
+```
+
+*(coroutine)*
+
+Deletes the original response message, if it exists.
+
+#### Parameters
+
+delay: `float` | `None`  
+If provided, the number of seconds to wait before deleting the message.
+
+reason: `str` | `None`  
+The reason for deleting the message. Shows up on the audit log.

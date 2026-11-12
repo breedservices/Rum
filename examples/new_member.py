@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #
 # new_member.py
 import os
+
 import rum
 
 intents = rum.Intents.default()

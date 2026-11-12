@@ -457,19 +457,34 @@ class AutoShardedClient(Client):
                 return
 
     async def launch_shards(self) -> None:
+        """Launch every shard, respecting Discord's IDENTIFY concurrency limit.
+
+        Shards are identified in batches of ``max_concurrency``, waiting five
+        seconds between batches. The limit comes from ``/gateway/bot``; when
+        ``shard_count`` is passed to the client that endpoint is not called, so
+        shards are identified one at a time.
+        """
         if self.shard_count is None:
-            self.shard_count, gateway = await self.http.get_bot_gateway()
+            shard_count, gateway, max_concurrency = await self.http.get_bot_gateway()
+            self.shard_count = shard_count
         else:
             gateway = await self.http.get_gateway()
+            # Without the bot gateway call the concurrency Discord allows is
+            # unknown, so identify one shard at a time.
+            max_concurrency = 1
 
         self._connection.shard_count = self.shard_count
 
         shard_ids = self.shard_ids or range(self.shard_count)
         self._connection.shard_ids = shard_ids
 
-        for shard_id in shard_ids:
-            initial = shard_id == shard_ids[0]
+        for index, shard_id in enumerate(shard_ids):
+            initial = index == 0
             await self.launch_shard(gateway, shard_id, initial=initial)
+            # Discord rate limits IDENTIFY to one shard per five seconds per
+            # bucket, and the buckets are shard IDs modulo the concurrency.
+            if (index + 1) % max_concurrency == 0 and index + 1 < len(shard_ids):
+                await asyncio.sleep(5.0)
 
         self._connection.shards_launched.set()
 

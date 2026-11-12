@@ -25,8 +25,9 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import asyncio
+import os
 import random
-from datetime import time, timezone
+from datetime import UTC, time
 
 import rum
 from rum.ext import tasks
@@ -53,7 +54,7 @@ class MyClient(rum.Client):
         await channel.send(str(self.counter))
 
     @tasks.loop(
-        time=time(3, 0, tzinfo=timezone.utc)
+        time=time(3, 0, tzinfo=UTC)
     )  # Task that runs every day at 3 AM UTC
     async def time_task(self):
         channel = self.get_channel(1234567)  # Your Channel ID goes here
@@ -92,4 +93,4 @@ class MyClient(rum.Client):
 
 
 client = MyClient()
-client.run("TOKEN")
+client.run(os.environ.get("BOT_TOKEN", "TOKEN"))

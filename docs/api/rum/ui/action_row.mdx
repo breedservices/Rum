@@ -1,0 +1,217 @@
+# `rum.ui.action_row`
+
+## Classes
+
+### `ActionRow`
+
+```python
+class ActionRow(*items: ViewItem, id: int | None = None)
+```
+
+Represents a UI Action Row used in `discord.ui.DesignerView`.
+
+The items supported are as follows:
+
+- `discord.ui.Select`
+- `discord.ui.Button`
+
+*Added in 2.7.*
+
+#### Parameters
+
+\*items: `ViewItem`  
+The initial items in this action row.
+
+id: `int` | `None`  
+The action's ID.
+
+#### `add_item()`
+
+```python
+add_item(item: ViewItem) -> Self
+```
+
+Adds an item to the action row.
+
+#### Parameters
+
+item: `ViewItem`  
+The item to add to the action row.
+
+#### Raises
+
+TypeError  
+A `ViewItem` was not passed.
+
+#### `remove_item()`
+
+```python
+remove_item(item: ViewItem | str | int) -> Self
+```
+
+Removes an item from the action row. If an int or str is passed, it will remove by Item `id` or `custom_id` respectively.
+
+#### Parameters
+
+item: `ViewItem` | `int` | `str`  
+The item, `id`, or item `custom_id` to remove from the action row.
+
+#### `get_item()`
+
+```python
+get_item(id: str | int) -> ViewItem | None
+```
+
+Get an item from this action row. Roughly equivalent to <span class="title-ref">utils.get(row.children, ...)</span>. If an `int` is provided, the item will be retrieved by `id`, otherwise by `custom_id`.
+
+#### Parameters
+
+id: `str` | `int`  
+The id or custom_id of the item to get.
+
+#### Returns
+
+`ViewItem` | `None`  
+The item with the matching `id` or `custom_id` if it exists.
+
+#### `add_button()`
+
+```python
+add_button(*, style: ButtonStyle = <ButtonStyle.secondary: 2>, label: str | None = None, disabled: bool = False, custom_id: str | None = None, url: str | None = None, emoji: str | GuildEmoji | AppEmoji | PartialEmoji | None = None, sku_id: int | None = None, id: int | None = None) -> Self
+```
+
+Adds a `Button` to the action row.
+
+To append a pre-existing `Button`, use the `add_item` method instead.
+
+#### Parameters
+
+style: `discord.ButtonStyle`  
+The style of the button.
+
+custom_id: `str` | `None`  
+The custom ID of the button that gets received during an interaction. If this button is for a URL, it does not have a custom ID.
+
+url: `str` | `None`  
+The URL this button sends you to.
+
+disabled: `bool`  
+Whether the button is disabled or not.
+
+label: `str` | `None`  
+The label of the button, if any. Maximum of 80 chars.
+
+emoji: `.PartialEmoji` | `GuildEmoji` | `AppEmoji` | `str` | `None`  
+The emoji of the button, if any.
+
+sku_id: `int` | `None`  
+The ID of the SKU this button refers to.
+
+id: `int` | `None`  
+The button's ID.
+
+#### `add_select()`
+
+```python
+add_select(select_type: ComponentType = <ComponentType.string_select: 3>, *, custom_id: str | None = None, placeholder: str | None = None, min_values: int = 1, max_values: int = 1, options: list[SelectOption] | None = None, channel_types: list[ChannelType] | None = None, disabled: bool = False, id: int | None = None, default_values: Sequence[SelectDefaultValue] | None = None) -> Self
+```
+
+Adds a `Select` to the action row.
+
+To append a pre-existing `Select`, use the `add_item` method instead.
+
+#### Parameters
+
+select_type: `discord.ComponentType`  
+The type of select to create. Must be one of `discord.ComponentType.string_select`, `discord.ComponentType.user_select`, `discord.ComponentType.role_select`, `discord.ComponentType.mentionable_select`, or `discord.ComponentType.channel_select`.
+
+custom_id: `str`  
+The custom ID of the select menu that gets received during an interaction. If not given then one is generated for you.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any.
+
+min_values: `int`  
+The minimum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+max_values: `int`  
+The maximum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+options: List\[`discord.SelectOption`\]  
+A list of options that can be selected in this menu. Only valid for selects of type `discord.ComponentType.string_select`.
+
+channel_types: List\[`discord.ChannelType`\]  
+A list of channel types that can be selected in this menu. Only valid for selects of type `discord.ComponentType.channel_select`.
+
+disabled: `bool`  
+Whether the select is disabled or not. Defaults to `False`.
+
+id: `int` | `None`  
+The select menu's ID.
+
+default_values: Sequence\[`discord.SelectDefaultValue` | `discord.abc.Snowflake`\] | `None`  
+The default values of this select. Only applicable if `.select_type` is not `discord.ComponentType.string_select`.
+
+These can be either `discord.SelectDefaultValue` instances or models, which will be converted into `discord.SelectDefaultValue` instances.
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_persistent()`
+
+```python
+is_persistent() -> bool
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: ActionRowComponent) -> None
+```
+
+#### `disable_all_items()`
+
+```python
+disable_all_items(*, exclusions: list[ViewItem] | None = None) -> Self
+```
+
+Disables all items in the row.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.children</span> to not disable.
+
+#### `enable_all_items()`
+
+```python
+enable_all_items(*, exclusions: list[ViewItem] | None = None) -> Self
+```
+
+Enables all items in the row.
+
+#### Parameters
+
+exclusions: List\[`ViewItem`\] | `None`  
+A list of items in <span class="title-ref">self.children</span> to not enable.
+
+#### `walk_items()`
+
+```python
+walk_items() -> Iterator[ViewItem]
+```
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> ActionRowPayload
+```
+
+#### `from_component()`
+
+```python
+from_component(component: ActionRowComponent) -> A
+```

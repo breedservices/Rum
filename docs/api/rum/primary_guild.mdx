@@ -1,0 +1,46 @@
+# `rum.primary_guild`
+
+## Classes
+
+### `PrimaryGuild`
+
+```python
+class PrimaryGuild(data: rum.types.primary_guild.PrimaryGuild, state: ConnectionState) -> None
+```
+
+Represents a Discord Primary Guild.
+
+*Added in 2.7.*
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two Primary Guilds are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two Primary Guilds are not equal.
+
+</div>
+
+</div>
+
+*Changed in 2.7.1 Primary Guilds are now comparable.*
+
+#### Attributes
+
+identity_guild_id: int  
+The ID of the guild.
+
+identity_enabled: `bool`  
+Whether the primary guild is enabled.
+
+tag: str  
+The tag of the primary guild.

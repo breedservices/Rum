@@ -1,0 +1,749 @@
+# `rum.state`
+
+## Classes
+
+### `AutoShardedConnectionState`
+
+```python
+class AutoShardedConnectionState(*args: Any, **kwargs: Any) -> None
+```
+
+#### `chunker()`
+
+```python
+chunker(guild_id: int, query: str = '', limit: int = 0, presences: bool = False, *, shard_id: int | None = None, nonce: str | None = None) -> None
+```
+
+#### `parse_ready()`
+
+```python
+parse_ready(data) -> None
+```
+
+#### `parse_resumed()`
+
+```python
+parse_resumed(data) -> None
+```
+
+### `ChannelInfoRequest`
+
+```python
+class ChannelInfoRequest(guild_id: int, loop: asyncio.AbstractEventLoop, resolver: Callable[[int], Any], *, cache: bool = True) -> None
+```
+
+#### `parse_response()`
+
+```python
+parse_response(channel_info: list[ChannelInfo]) -> None
+```
+
+#### `wait()`
+
+```python
+wait() -> list[ChannelInfo]
+```
+
+#### `get_future()`
+
+```python
+get_future() -> asyncio.Future[list[ChannelInfo]]
+```
+
+### `ChunkRequest`
+
+```python
+class ChunkRequest(guild_id: int, loop: asyncio.AbstractEventLoop, resolver: Callable[[int], Any], *, cache: bool = True) -> None
+```
+
+#### `add_members()`
+
+```python
+add_members(members: list[Member]) -> None
+```
+
+#### `wait()`
+
+```python
+wait() -> list[Member]
+```
+
+#### `get_future()`
+
+```python
+get_future() -> asyncio.Future[list[Member]]
+```
+
+#### `done()`
+
+```python
+done() -> None
+```
+
+### `ConnectionState`
+
+```python
+class ConnectionState(*, dispatch: Callable, handlers: dict[str, Callable], hooks: dict[str, Callable], http: HTTPClient, loop: asyncio.AbstractEventLoop, **options: Any) -> None
+```
+
+#### `clear()`
+
+```python
+clear(*, views: bool = True) -> None
+```
+
+#### `process_chunk_requests()`
+
+```python
+process_chunk_requests(guild_id: int, nonce: str | None, members: list[Member], complete: bool) -> None
+```
+
+#### `process_info_requests()`
+
+```python
+process_info_requests(guild_id: int, channel_info: list[ChannelInfo]) -> None
+```
+
+#### `call_handlers()`
+
+```python
+call_handlers(key: str, *args: Any, **kwargs: Any) -> None
+```
+
+#### `call_hooks()`
+
+```python
+call_hooks(key: str, *args: Any, **kwargs: Any) -> None
+```
+
+#### `store_user()`
+
+```python
+store_user(data: UserPayload) -> User
+```
+
+#### `deref_user()`
+
+```python
+deref_user(user_id: int, user: User | None = None) -> None
+```
+
+#### `create_user()`
+
+```python
+create_user(data: UserPayload) -> User
+```
+
+#### `deref_user_no_intents()`
+
+```python
+deref_user_no_intents(user_id: int, user: User | None = None) -> None
+```
+
+#### `get_user()`
+
+```python
+get_user(id: int | None) -> User | None
+```
+
+#### `store_emoji()`
+
+```python
+store_emoji(guild: Guild, data: EmojiPayload) -> GuildEmoji
+```
+
+#### `maybe_store_app_emoji()`
+
+```python
+maybe_store_app_emoji(application_id: int, data: EmojiPayload) -> AppEmoji
+```
+
+#### `store_sticker()`
+
+```python
+store_sticker(guild: Guild, data: GuildStickerPayload) -> GuildSticker
+```
+
+#### `store_view()`
+
+```python
+store_view(view: BaseView, message_id: int | None = None) -> None
+```
+
+#### `purge_message_view()`
+
+```python
+purge_message_view(message_id: int) -> None
+```
+
+#### `store_modal()`
+
+```python
+store_modal(modal: BaseModal, message_id: int) -> None
+```
+
+#### `prevent_view_updates_for()`
+
+```python
+prevent_view_updates_for(message_id: int) -> BaseView | None
+```
+
+#### `get_emoji()`
+
+```python
+get_emoji(emoji_id: int | None) -> GuildEmoji | AppEmoji | None
+```
+
+#### `get_sticker()`
+
+```python
+get_sticker(sticker_id: int | None) -> GuildSticker | None
+```
+
+#### `store_raw_poll()`
+
+```python
+store_raw_poll(poll: PollPayload, raw)
+```
+
+#### `store_poll()`
+
+```python
+store_poll(poll: Poll, message_id: int)
+```
+
+#### `get_poll()`
+
+```python
+get_poll(message_id)
+```
+
+#### `add_dm_channel()`
+
+```python
+add_dm_channel(data: DMChannelPayload) -> DMChannel
+```
+
+#### `chunker()`
+
+```python
+chunker(guild_id: int, query: str = '', limit: int = 0, presences: bool = False, *, nonce: str | None = None) -> None
+```
+
+#### `query_members()`
+
+```python
+query_members(guild: Guild, query: str | None, limit: int, user_ids: list[int] | None, cache: bool, presences: bool)
+```
+
+#### `parse_ready()`
+
+```python
+parse_ready(data) -> None
+```
+
+#### `parse_resumed()`
+
+```python
+parse_resumed(data) -> None
+```
+
+#### `parse_application_command_permissions_update()`
+
+```python
+parse_application_command_permissions_update(data) -> None
+```
+
+#### `parse_auto_moderation_rule_create()`
+
+```python
+parse_auto_moderation_rule_create(data) -> None
+```
+
+#### `parse_auto_moderation_rule_update()`
+
+```python
+parse_auto_moderation_rule_update(data) -> None
+```
+
+#### `parse_auto_moderation_rule_delete()`
+
+```python
+parse_auto_moderation_rule_delete(data) -> None
+```
+
+#### `parse_auto_moderation_action_execution()`
+
+```python
+parse_auto_moderation_action_execution(data) -> None
+```
+
+#### `parse_entitlement_create()`
+
+```python
+parse_entitlement_create(data) -> None
+```
+
+#### `parse_entitlement_update()`
+
+```python
+parse_entitlement_update(data) -> None
+```
+
+#### `parse_entitlement_delete()`
+
+```python
+parse_entitlement_delete(data) -> None
+```
+
+#### `parse_subscription_create()`
+
+```python
+parse_subscription_create(data) -> None
+```
+
+#### `parse_subscription_update()`
+
+```python
+parse_subscription_update(data) -> None
+```
+
+#### `parse_subscription_delete()`
+
+```python
+parse_subscription_delete(data) -> None
+```
+
+#### `parse_message_create()`
+
+```python
+parse_message_create(data) -> None
+```
+
+#### `parse_message_delete()`
+
+```python
+parse_message_delete(data) -> None
+```
+
+#### `parse_message_delete_bulk()`
+
+```python
+parse_message_delete_bulk(data) -> None
+```
+
+#### `parse_message_update()`
+
+```python
+parse_message_update(data) -> None
+```
+
+#### `parse_message_reaction_add()`
+
+```python
+parse_message_reaction_add(data) -> None
+```
+
+#### `parse_message_reaction_remove_all()`
+
+```python
+parse_message_reaction_remove_all(data) -> None
+```
+
+#### `parse_message_reaction_remove()`
+
+```python
+parse_message_reaction_remove(data) -> None
+```
+
+#### `parse_message_reaction_remove_emoji()`
+
+```python
+parse_message_reaction_remove_emoji(data) -> None
+```
+
+#### `parse_message_poll_vote_add()`
+
+```python
+parse_message_poll_vote_add(data) -> None
+```
+
+#### `parse_message_poll_vote_remove()`
+
+```python
+parse_message_poll_vote_remove(data) -> None
+```
+
+#### `parse_interaction_create()`
+
+```python
+parse_interaction_create(data) -> None
+```
+
+#### `parse_presence_update()`
+
+```python
+parse_presence_update(data) -> None
+```
+
+#### `parse_user_update()`
+
+```python
+parse_user_update(data) -> None
+```
+
+#### `parse_invite_create()`
+
+```python
+parse_invite_create(data) -> None
+```
+
+#### `parse_invite_delete()`
+
+```python
+parse_invite_delete(data) -> None
+```
+
+#### `parse_channel_delete()`
+
+```python
+parse_channel_delete(data) -> None
+```
+
+#### `parse_channel_update()`
+
+```python
+parse_channel_update(data) -> None
+```
+
+#### `parse_channel_create()`
+
+```python
+parse_channel_create(data) -> None
+```
+
+#### `parse_channel_pins_update()`
+
+```python
+parse_channel_pins_update(data) -> None
+```
+
+#### `parse_thread_create()`
+
+```python
+parse_thread_create(data) -> None
+```
+
+#### `parse_thread_update()`
+
+```python
+parse_thread_update(data) -> None
+```
+
+#### `parse_thread_delete()`
+
+```python
+parse_thread_delete(data) -> None
+```
+
+#### `parse_thread_list_sync()`
+
+```python
+parse_thread_list_sync(data) -> None
+```
+
+#### `parse_thread_member_update()`
+
+```python
+parse_thread_member_update(data) -> None
+```
+
+#### `parse_thread_members_update()`
+
+```python
+parse_thread_members_update(data) -> None
+```
+
+#### `parse_guild_member_add()`
+
+```python
+parse_guild_member_add(data) -> None
+```
+
+#### `parse_guild_member_remove()`
+
+```python
+parse_guild_member_remove(data) -> None
+```
+
+#### `parse_guild_member_update()`
+
+```python
+parse_guild_member_update(data: MemberUpdateEvent) -> None
+```
+
+#### `parse_guild_emojis_update()`
+
+```python
+parse_guild_emojis_update(data) -> None
+```
+
+#### `parse_guild_stickers_update()`
+
+```python
+parse_guild_stickers_update(data) -> None
+```
+
+#### `is_guild_evicted()`
+
+```python
+is_guild_evicted(guild) -> bool
+```
+
+#### `chunk_guild()`
+
+```python
+chunk_guild(guild, *, wait=True, cache=None)
+```
+
+#### `request_guild_channel_info()`
+
+```python
+request_guild_channel_info(guild: Guild, *, wait: bool = True, cache: bool | None = None) -> asyncio.Future[list[ChannelInfo]] | list[ChannelInfo]
+```
+
+#### `parse_guild_create()`
+
+```python
+parse_guild_create(data) -> None
+```
+
+#### `parse_guild_update()`
+
+```python
+parse_guild_update(data) -> None
+```
+
+#### `parse_guild_delete()`
+
+```python
+parse_guild_delete(data) -> None
+```
+
+#### `parse_guild_audit_log_entry_create()`
+
+```python
+parse_guild_audit_log_entry_create(data) -> None
+```
+
+#### `parse_guild_ban_add()`
+
+```python
+parse_guild_ban_add(data) -> None
+```
+
+#### `parse_guild_ban_remove()`
+
+```python
+parse_guild_ban_remove(data) -> None
+```
+
+#### `parse_guild_role_create()`
+
+```python
+parse_guild_role_create(data) -> None
+```
+
+#### `parse_guild_role_delete()`
+
+```python
+parse_guild_role_delete(data) -> None
+```
+
+#### `parse_guild_role_update()`
+
+```python
+parse_guild_role_update(data) -> None
+```
+
+#### `parse_guild_members_chunk()`
+
+```python
+parse_guild_members_chunk(data) -> None
+```
+
+#### `parse_channel_info()`
+
+```python
+parse_channel_info(data) -> None
+```
+
+#### `parse_guild_scheduled_event_create()`
+
+```python
+parse_guild_scheduled_event_create(data) -> None
+```
+
+#### `parse_guild_scheduled_event_update()`
+
+```python
+parse_guild_scheduled_event_update(data) -> None
+```
+
+#### `parse_guild_scheduled_event_delete()`
+
+```python
+parse_guild_scheduled_event_delete(data) -> None
+```
+
+#### `parse_guild_scheduled_event_user_add()`
+
+```python
+parse_guild_scheduled_event_user_add(data) -> None
+```
+
+#### `parse_guild_scheduled_event_user_remove()`
+
+```python
+parse_guild_scheduled_event_user_remove(data) -> None
+```
+
+#### `parse_guild_integrations_update()`
+
+```python
+parse_guild_integrations_update(data) -> None
+```
+
+#### `parse_integration_create()`
+
+```python
+parse_integration_create(data) -> None
+```
+
+#### `parse_integration_update()`
+
+```python
+parse_integration_update(data) -> None
+```
+
+#### `parse_integration_delete()`
+
+```python
+parse_integration_delete(data) -> None
+```
+
+#### `parse_webhooks_update()`
+
+```python
+parse_webhooks_update(data) -> None
+```
+
+#### `parse_stage_instance_create()`
+
+```python
+parse_stage_instance_create(data) -> None
+```
+
+#### `parse_stage_instance_update()`
+
+```python
+parse_stage_instance_update(data) -> None
+```
+
+#### `parse_stage_instance_delete()`
+
+```python
+parse_stage_instance_delete(data) -> None
+```
+
+#### `parse_voice_state_update()`
+
+```python
+parse_voice_state_update(data) -> None
+```
+
+#### `parse_voice_server_update()`
+
+```python
+parse_voice_server_update(data) -> None
+```
+
+#### `parse_voice_channel_status_update()`
+
+```python
+parse_voice_channel_status_update(data) -> None
+```
+
+#### `parse_voice_channel_start_time_update()`
+
+```python
+parse_voice_channel_start_time_update(data) -> None
+```
+
+#### `parse_typing_start()`
+
+```python
+parse_typing_start(data) -> None
+```
+
+#### `get_reaction_emoji()`
+
+```python
+get_reaction_emoji(data) -> GuildEmoji | AppEmoji | PartialEmoji
+```
+
+#### `get_channel()`
+
+```python
+get_channel(id: int | None) -> Channel | Thread | None
+```
+
+#### `create_message()`
+
+```python
+create_message(*, channel: MessageableChannel, data: MessagePayload) -> Message
+```
+
+#### `parse_voice_channel_effect_send()`
+
+```python
+parse_voice_channel_effect_send(data) -> None
+```
+
+#### `parse_soundboard_sounds()`
+
+```python
+parse_soundboard_sounds(data) -> None
+```
+
+#### `parse_guild_soundboard_sounds_update()`
+
+```python
+parse_guild_soundboard_sounds_update(data)
+```
+
+#### `parse_guild_soundboard_sound_update()`
+
+```python
+parse_guild_soundboard_sound_update(data)
+```
+
+#### `parse_guild_soundboard_sound_create()`
+
+```python
+parse_guild_soundboard_sound_create(data)
+```
+
+#### `parse_guild_soundboard_sound_delete()`
+
+```python
+parse_guild_soundboard_sound_delete(data)
+```
+
+## Functions
+
+### `logging_coroutine()`
+
+```python
+logging_coroutine(coroutine: Coroutine[Any, Any, T], *, info: str) -> None
+```

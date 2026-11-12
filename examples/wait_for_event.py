@@ -29,9 +29,9 @@ DEALINGS IN THE SOFTWARE.
 # It can also be set in the .env file in the repository root.
 #
 # wait_for_event.py
+import builtins
 import os
 import random
-from asyncio import TimeoutError
 
 import rum
 
@@ -75,7 +75,7 @@ async def guess_number(ctx: rum.ApplicationContext):
         guess: rum.Message = await bot.wait_for(
             "message", check=is_valid_guess, timeout=5.0
         )
-    except TimeoutError:
+    except builtins.TimeoutError:
         return await ctx.send_followup(f"Sorry, you took too long it was {answer}.")
 
     if int(guess.content) == answer:

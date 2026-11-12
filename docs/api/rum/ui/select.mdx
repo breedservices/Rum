@@ -1,0 +1,428 @@
+# `rum.ui.select`
+
+## Classes
+
+### `Select`
+
+```python
+class Select(select_type: ComponentType = <ComponentType.string_select: 3>, *, custom_id: str | None = None, placeholder: str | None = None, min_values: int = 1, max_values: int = 1, options: list[SelectOption] | None = None, channel_types: list[ChannelType] | None = None, disabled: bool = False, row: int | None = None, id: int | None = None, required: bool | None = None, default_values: Sequence[SelectDefaultValue | ST] | None = None) -> None
+```
+
+Represents a UI select menu.
+
+This is usually represented as a drop down menu.
+
+In order to get the selected items that the user has chosen, use `Select.values`.
+
+*Added in 2.0.*
+
+*Changed in 2.3
+
+Added support for `discord.ComponentType.string_select`, `discord.ComponentType.user_select`, `discord.ComponentType.role_select`, `discord.ComponentType.mentionable_select`, and `discord.ComponentType.channel_select`.*
+
+*Changed in 2.7
+
+Can now be sent in `discord.ui.DesignerModal`.*
+
+#### Parameters
+
+select_type: `discord.ComponentType`  
+The type of select to create. Must be one of `discord.ComponentType.string_select`, `discord.ComponentType.user_select`, `discord.ComponentType.role_select`, `discord.ComponentType.mentionable_select`, or `discord.ComponentType.channel_select`.
+
+The default is `discord.ComponentType.string_select`, but if this is created using any of the provided aliases: `StringSelect`, `RoleSelect`, `UserSelect`, `MentionableSelect`, or `ChannelSelect`, the default will be its respective select type.
+
+custom_id: `str`  
+The ID of the select menu that gets received during an interaction. If not given then one is generated for you.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any.
+
+min_values: `int`  
+The minimum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+max_values: `int`  
+The maximum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+options: List\[`discord.SelectOption`\]  
+A list of options that can be selected in this menu. Only valid for selects of type `discord.ComponentType.string_select`.
+
+channel_types: List\[`discord.ChannelType`\]  
+A list of channel types that can be selected in this menu. Only valid for selects of type `discord.ComponentType.channel_select`.
+
+disabled: `bool`  
+Whether the select is disabled or not. Only usable in views. Defaults to `False` in views.
+
+row: `int` | `None`  
+The relative row this select menu belongs to. A Discord component can only have 5 rows. By default, items are arranged automatically into those 5 rows. If you'd like to control the relative positioning of the row then passing an index is advised. For example, row=1 will show up before row=2. Defaults to `None`, which is automatic ordering. The row number must be between 0 and 4 (i.e. zero indexed). Does not work in `ActionRow` or `Label`.
+
+id: `int` | `None`  
+The select menu's ID.
+
+required: `bool` | `None`  
+Whether the select is required or not. Only usable when added to `Label` for modals. Defaults to `True` in modals.
+
+*Added in 2.7.*
+
+default_values: Sequence\[`discord.SelectDefaultValue` | `discord.abc.Snowflake`\] | `None`  
+The default values of this select. Only applicable if `.select_type` is not `discord.ComponentType.string_select`.
+
+These can be either `discord.SelectDefaultValue` instances or models, which will be converted into `discord.SelectDefaultValue` instances.
+
+Below, is a table defining the model instance type and the default value type it will be mapped:
+
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr>
+<td>Model Type</td>
+<td>Default Value Type</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.User</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Member</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Role</code> | <code>discord.SelectDefaultValueType.role</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.abc.GuildChannel</code> | <code>discord.SelectDefaultValueType.channel</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Object</code> | depending on <code>discord.Object.type</code>, it will be mapped to any above |</td>
+</tr>
+</tbody>
+</table>
+
+If you pass a model that is not defined in the table, `TypeError` will be raised.
+
+> [!NOTE]
+> The `discord.abc.GuildChannel` protocol includes `discord.TextChannel`, `discord.VoiceChannel`, `discord.StageChannel`, `discord.ForumChannel`, `discord.Thread`, `discord.MediaChannel`. This list is not exhaustive, and is bound to change based of the new channel types Discord adds.
+
+*Added in 2.7.*
+
+#### `add_default_value()`
+
+```python
+add_default_value(*, id: int, type: SelectDefaultValueType = ...) -> Self
+```
+
+Adds a default value to the select menu.
+
+To append a pre-existing `discord.SelectDefaultValue` use the `append_default_value` method instead.
+
+*Added in 2.7.*
+
+#### Parameters
+
+id: `int`  
+The ID of the entity to add as a default.
+
+type: `discord.SelectDefaultValueType`  
+The default value type of the ID. This is only required if the select `type` is `discord.ComponentType.mentionable_select`.
+
+#### Raises
+
+TypeError  
+The select type is a mentionable_select and type was not provided, or the select type is string_select.
+
+ValueError  
+The number of default select values exceeds 25.
+
+#### `append_default_value()`
+
+```python
+append_default_value(value: SelectDefaultValue | Snowflake, /) -> Self
+```
+
+Appends a default value to this select menu.
+
+*Added in 2.7.*
+
+#### Parameters
+
+value: `discord.SelectDefaultValue` | `discord.abc.Snowflake`  
+The default value to append to this select.
+
+These can be either `discord.SelectDefaultValue` instances or models, which will be converted into `discord.SelectDefaultvalue` instances.
+
+Below, is a table defining the model instance type and the default value type it will be mapped:
+
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr>
+<td>Model Type</td>
+<td>Default Value Type</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.User</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Member</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Role</code> | <code>discord.SelectDefaultValueType.role</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.abc.GuildChannel</code> | <code>discord.SelectDefaultValueType.channel</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Object</code> | depending on <code>discord.Object.type</code>, it will be mapped to any above |</td>
+</tr>
+</tbody>
+</table>
+
+If you pass a model that is not defined in the table, `TypeError` will be raised.
+
+> [!NOTE]
+> The `discord.abc.GuildChannel` protocol includes `discord.TextChannel`, `discord.VoiceChannel`, `discord.StageChannel`, `discord.ForumChannel`, `discord.Thread`, `discord.MediaChannel`. This list is not exhaustive, and is bound to change based of the new channel types Discord adds.
+
+#### Raises
+
+TypeError  
+The select type is string_select, which does not allow for default_values
+
+ValueError  
+The number of default select values exceeds 25.
+
+#### `add_option()`
+
+```python
+add_option(*, label: str, value: str = ..., description: str | None = None, emoji: str | GuildEmoji | AppEmoji | PartialEmoji | None = None, default: bool = False) -> Self
+```
+
+Adds an option to the select menu.
+
+To append a pre-existing `discord.SelectOption` use the `append_option` method instead.
+
+#### Parameters
+
+label: `str`  
+The label of the option. This is displayed to users. Can only be up to 100 characters.
+
+value: `str`  
+The value of the option. This is not displayed to users. If not given, defaults to the label. Can only be up to 100 characters.
+
+description: `str` | `None`  
+An additional description of the option, if any. Can only be up to 100 characters.
+
+emoji: `str` | `GuildEmoji` | `AppEmoji` | `.PartialEmoji` | `None`  
+The emoji of the option, if available. This can either be a string representing the custom or unicode emoji or an instance of `.PartialEmoji`, `GuildEmoji`, or `AppEmoji`.
+
+default: `bool`  
+Whether this option is selected by default.
+
+#### Raises
+
+ValueError  
+The number of options exceeds 25.
+
+#### `append_option()`
+
+```python
+append_option(option: SelectOption) -> Self
+```
+
+Appends an option to the select menu.
+
+#### Parameters
+
+option: `discord.SelectOption`  
+The option to append to the select menu.
+
+#### Raises
+
+ValueError  
+The number of options exceeds 25.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> SelectMenuPayload
+```
+
+#### `refresh_component()`
+
+```python
+refresh_component(component: SelectMenu) -> None
+```
+
+#### `refresh_state()`
+
+```python
+refresh_state(interaction: Interaction | dict) -> None
+```
+
+#### `refresh_from_modal()`
+
+```python
+refresh_from_modal(interaction: Interaction | dict, data: SelectMenuPayload) -> None
+```
+
+#### `from_component()`
+
+```python
+from_component(component: SelectMenu) -> S
+```
+
+#### `is_dispatchable()`
+
+```python
+is_dispatchable() -> bool
+```
+
+#### `is_storable()`
+
+```python
+is_storable() -> bool
+```
+
+## Functions
+
+### `channel_select()`
+
+```python
+channel_select(*, placeholder: str | None = None, custom_id: str | None = None, min_values: int = 1, max_values: int = 1, disabled: bool = False, channel_types: list[ChannelType] = ..., row: int | None = None, id: int | None = None, default_values: Sequence[SelectDefaultValue | Snowflake] | None = None) -> Callable[[ItemCallbackType[ChannelSelect[V]]], ChannelSelect[V]]
+```
+
+A shortcut for `discord.ui.select` with select type `discord.ComponentType.channel_select`.
+
+*Added in 2.3.*
+
+### `mentionable_select()`
+
+```python
+mentionable_select(*, placeholder: str | None = None, custom_id: str | None = None, min_values: int = 1, max_values: int = 1, disabled: bool = False, row: int | None = None, id: int | None = None, default_values: Sequence[SelectDefaultValue | Snowflake] | None = None) -> Callable[[ItemCallbackType[MentionableSelect[V]]], MentionableSelect[V]]
+```
+
+A shortcut for `discord.ui.select` with select type `discord.ComponentType.mentionable_select`.
+
+*Added in 2.3.*
+
+### `role_select()`
+
+```python
+role_select(*, placeholder: str | None = None, custom_id: str | None = None, min_values: int = 1, max_values: int = 1, disabled: bool = False, row: int | None = None, id: int | None = None, default_values: Sequence[SelectDefaultValue | Snowflake] | None = None) -> Callable[[ItemCallbackType[RoleSelect[V]]], RoleSelect[V]]
+```
+
+A shortcut for `discord.ui.select` with select type `discord.ComponentType.role_select`.
+
+*Added in 2.3.*
+
+### `select()`
+
+```python
+select(select_type: ComponentType = <ComponentType.string_select: 3>, *, placeholder: str | None = None, custom_id: str | None = None, min_values: int = 1, max_values: int = 1, options: list[SelectOption] = ..., channel_types: list[ChannelType] = ..., disabled: bool = False, row: int | None = None, id: int | None = None, default_values: Sequence[SelectDefaultValue | Snowflake] | None = None) -> Callable[[ItemCallbackType[Select[V, ST]]], Select[V, ST]]
+```
+
+A decorator that attaches a select menu to a component.
+
+The function being decorated should have three parameters, `self` representing the `discord.ui.View`, `discord.ui.ActionRow` or `discord.ui.Section`, the `discord.ui.Select` being pressed and the `discord.Interaction` you receive.
+
+In order to get the selected items that the user has chosen within the callback use `Select.values`.
+
+*Changed in 2.3
+
+Creating select menus of different types is now supported.*
+
+#### Parameters
+
+select_type: `discord.ComponentType`  
+The type of select to create. Must be one of `discord.ComponentType.string_select`, `discord.ComponentType.user_select`, `discord.ComponentType.role_select`, `discord.ComponentType.mentionable_select`, or `discord.ComponentType.channel_select`.
+
+placeholder: `str` | `None`  
+The placeholder text that is shown if nothing is selected, if any.
+
+custom_id: `str`  
+The ID of the select menu that gets received during an interaction. It is recommended not to set this parameter to prevent conflicts.
+
+row: `int` | `None`  
+The relative row this select menu belongs to. A Discord component can only have 5 rows. By default, items are arranged automatically into those 5 rows. If you'd like to control the relative positioning of the row then passing an index is advised. For example, row=1 will show up before row=2. Defaults to `None`, which is automatic ordering. The row number must be between 0 and 4 (i.e. zero indexed).
+
+min_values: `int`  
+The minimum number of items that must be chosen for this select menu. Defaults to 1 and must be between 0 and 25.
+
+max_values: `int`  
+The maximum number of items that must be chosen for this select menu. Defaults to 1 and must be between 1 and 25.
+
+options: List\[`discord.SelectOption`\]  
+A list of options that can be selected in this menu. Only valid for the `discord.ComponentType.string_select` type.
+
+channel_types: List\[`discord.ChannelType`\]  
+The channel types that should be selectable. Only valid for the `discord.ComponentType.channel_select` type. Defaults to all channel types.
+
+disabled: `bool`  
+Whether the select is disabled or not. Defaults to `False`.
+
+id: `int` | `None`  
+The select menu's ID.
+
+default_values: Sequence\[`discord.SelectDefaultValue` | `discord.abc.Snowflake`\] | `None`  
+The default values of this select. Only applicable if `.select_type` is not `discord.ComponentType.string_select`.
+
+This can be either `discord.SelectDefaultValue` instances or models, which will be converted into `discord.SelectDefaultValue` instances.
+
+Below, is a table defining the model instance type and the default value type it will be mapped:
+
+<table>
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr>
+<td>Model Type</td>
+<td>Default Value Type</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.User</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Member</code> | <code>discord.SelectDefaultValueType.user</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Role</code> | <code>discord.SelectDefaultValueType.role</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.abc.GuildChannel</code> | <code>discord.SelectDefaultValueType.channel</code> |</td>
+</tr>
+<tr>
+<td colspan="2"><code>discord.Object</code> | depending on <code>discord.Object.type</code>, it will be mapped to any above |</td>
+</tr>
+</tbody>
+</table>
+
+If you pass a model that is not defined in the table, `TypeError` will be raised.
+
+> [!NOTE]
+> The `discord.abc.GuildChannel` protocol includes `discord.TextChannel`, `discord.VoiceChannel`, `discord.StageChannel`, `discord.ForumChannel`, `discord.Thread`, `discord.MediaChannel`. This list is not exhaustive, and is bound to change based of the new channel types Discord adds.
+
+*Added in 2.7.*
+
+### `string_select()`
+
+```python
+string_select(*, placeholder: str | None = None, custom_id: str | None = None, min_values: int = 1, max_values: int = 1, options: list[SelectOption] = ..., disabled: bool = False, row: int | None = None, id: int | None = None) -> Callable[[ItemCallbackType[StringSelect[V]]], StringSelect[V]]
+```
+
+A shortcut for `discord.ui.select` with select type `discord.ComponentType.string_select`.
+
+*Added in 2.3.*
+
+### `user_select()`
+
+```python
+user_select(*, placeholder: str | None = None, custom_id: str | None = None, min_values: int = 1, max_values: int = 1, disabled: bool = False, row: int | None = None, id: int | None = None, default_values: Sequence[SelectDefaultValue | Snowflake] | None = None) -> Callable[[ItemCallbackType[UserSelect[V]]], UserSelect[V]]
+```
+
+A shortcut for `discord.ui.select` with select type `discord.ComponentType.user_select`.
+
+*Added in 2.3.*

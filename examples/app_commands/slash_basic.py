@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 # This example requires the 'members' privileged intent to use the Member converter.
 
 import os
+
 import rum
 
 intents = rum.Intents.default()

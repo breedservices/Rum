@@ -25,6 +25,7 @@ DEALINGS IN THE SOFTWARE.
 """
 
 import asyncio
+import os
 
 import rum
 
@@ -51,4 +52,4 @@ class MyClient(rum.Client):
 
 
 client = MyClient()
-client.run("TOKEN")
+client.run(os.environ.get("BOT_TOKEN", "TOKEN"))

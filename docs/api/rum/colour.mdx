@@ -1,0 +1,891 @@
+# `rum.colour`
+
+## Classes
+
+### `Colour`
+
+```python
+class Colour(value: int)
+```
+
+Represents a Colour. This class is similar to a (red, green, blue) `tuple`.
+
+There is an alias for this called Color.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two colours are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two colours are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the colour's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the hex format for the colour.
+
+</div>
+
+<div class="describe">
+
+int(x)
+
+Returns the raw colour value.
+
+</div>
+
+</div>
+
+#### Attributes
+
+value: `int`  
+The raw integer colour value.
+
+#### `to_rgb()`
+
+```python
+to_rgb() -> tuple[int, int, int]
+```
+
+Returns an (r, g, b) tuple representing the colour.
+
+#### `resolve_value()`
+
+```python
+resolve_value(value: int | Colour | None) -> Self
+```
+
+#### `from_rgb()`
+
+```python
+from_rgb(r: int, g: int, b: int) -> Self
+```
+
+Constructs a `Colour` from an RGB tuple.
+
+#### `from_hsv()`
+
+```python
+from_hsv(h: float, s: float, v: float) -> Self
+```
+
+Constructs a `Colour` from an HSV tuple.
+
+#### `default()`
+
+```python
+default() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0`.
+
+#### `random()`
+
+```python
+random(*, seed: int | str | float | bytes | bytearray | None = None) -> Self
+```
+
+A factory method that returns a `Colour` with a random hue.
+
+> [!NOTE]
+> The random algorithm works by choosing a colour with a random hue but with maxed out saturation and value.
+
+*Added in 1.6.*
+
+#### Parameters
+
+seed: `int` | `str` | `float` | `bytes` | `bytearray` | `None`  
+The seed to initialize the RNG with. If `None` is passed the default RNG is used.
+
+*Added in 1.7.*
+
+#### `teal()`
+
+```python
+teal() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x1abc9c`.
+
+#### `dark_teal()`
+
+```python
+dark_teal() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x11806a`.
+
+#### `brand_green()`
+
+```python
+brand_green() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x57F287`.
+
+*Added in 2.0.*
+
+#### `green()`
+
+```python
+green() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x2ecc71`.
+
+#### `dark_green()`
+
+```python
+dark_green() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x1f8b4c`.
+
+#### `blue()`
+
+```python
+blue() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x3498db`.
+
+#### `dark_blue()`
+
+```python
+dark_blue() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x206694`.
+
+#### `purple()`
+
+```python
+purple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x9b59b6`.
+
+#### `dark_purple()`
+
+```python
+dark_purple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x71368a`.
+
+#### `magenta()`
+
+```python
+magenta() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xe91e63`.
+
+#### `dark_magenta()`
+
+```python
+dark_magenta() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xad1457`.
+
+#### `gold()`
+
+```python
+gold() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xf1c40f`.
+
+#### `dark_gold()`
+
+```python
+dark_gold() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xc27c0e`.
+
+#### `orange()`
+
+```python
+orange() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xe67e22`.
+
+#### `dark_orange()`
+
+```python
+dark_orange() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xa84300`.
+
+#### `brand_red()`
+
+```python
+brand_red() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xED4245`.
+
+*Added in 2.0.*
+
+#### `red()`
+
+```python
+red() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xe74c3c`.
+
+#### `dark_red()`
+
+```python
+dark_red() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x992d22`.
+
+#### `lighter_grey()`
+
+```python
+lighter_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x95a5a6`.
+
+#### `lighter_gray()`
+
+```python
+lighter_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x95a5a6`.
+
+#### `dark_grey()`
+
+```python
+dark_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x607d8b`.
+
+#### `dark_gray()`
+
+```python
+dark_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x607d8b`.
+
+#### `light_grey()`
+
+```python
+light_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x979c9f`.
+
+#### `light_gray()`
+
+```python
+light_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x979c9f`.
+
+#### `darker_grey()`
+
+```python
+darker_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x546e7a`.
+
+#### `darker_gray()`
+
+```python
+darker_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x546e7a`.
+
+#### `og_blurple()`
+
+```python
+og_blurple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x7289da`.
+
+#### `blurple()`
+
+```python
+blurple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x5865F2`.
+
+#### `greyple()`
+
+```python
+greyple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x99aab5`.
+
+#### `light_theme()`
+
+```python
+light_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xfbfbfb`. This will appear transparent on Discord's light theme.
+
+*Added in 2.8.*
+
+#### `ash_theme()`
+
+```python
+ash_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x323339`. This will appear transparent on Discord's ash theme.
+
+*Added in 2.8.*
+
+#### `dark_theme()`
+
+```python
+dark_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x1a1a1e`. This will appear transparent on Discord's dark theme.
+
+*Added in 1.5.*
+
+*Changed in 2.8 Updated to match Discord's new theme colour.*
+
+#### `onyx_theme()`
+
+```python
+onyx_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x070709`. This will appear transparent on Discord's onyx theme.
+
+*Added in 2.8.*
+
+#### `fuchsia()`
+
+```python
+fuchsia() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xEB459E`.
+
+*Added in 2.0.*
+
+#### `yellow()`
+
+```python
+yellow() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xFEE75C`.
+
+*Added in 2.0.*
+
+#### `nitro_pink()`
+
+```python
+nitro_pink() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xf47fff`.
+
+*Added in 2.0.*
+
+#### `embed_background()`
+
+```python
+embed_background(theme: str = 'dark') -> Self
+```
+
+A factory method that returns a `Colour` corresponding to the embed colours on discord clients, with a value of:
+
+- `0x2B2D31` (dark)
+- `0xEEEFF1` (light)
+- `0x000000` (amoled).
+
+*Added in 2.0.*
+
+#### Parameters
+
+theme: `str`  
+The theme colour to apply, must be one of "dark", "light", or "amoled".
+
+### `Colour`
+
+```python
+class Colour(value: int)
+```
+
+Represents a Colour. This class is similar to a (red, green, blue) `tuple`.
+
+There is an alias for this called Color.
+
+<div class="container operations">
+
+<div class="describe">
+
+x == y
+
+Checks if two colours are equal.
+
+</div>
+
+<div class="describe">
+
+x != y
+
+Checks if two colours are not equal.
+
+</div>
+
+<div class="describe">
+
+hash(x)
+
+Return the colour's hash.
+
+</div>
+
+<div class="describe">
+
+str(x)
+
+Returns the hex format for the colour.
+
+</div>
+
+<div class="describe">
+
+int(x)
+
+Returns the raw colour value.
+
+</div>
+
+</div>
+
+#### Attributes
+
+value: `int`  
+The raw integer colour value.
+
+#### `to_rgb()`
+
+```python
+to_rgb() -> tuple[int, int, int]
+```
+
+Returns an (r, g, b) tuple representing the colour.
+
+#### `resolve_value()`
+
+```python
+resolve_value(value: int | Colour | None) -> Self
+```
+
+#### `from_rgb()`
+
+```python
+from_rgb(r: int, g: int, b: int) -> Self
+```
+
+Constructs a `Colour` from an RGB tuple.
+
+#### `from_hsv()`
+
+```python
+from_hsv(h: float, s: float, v: float) -> Self
+```
+
+Constructs a `Colour` from an HSV tuple.
+
+#### `default()`
+
+```python
+default() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0`.
+
+#### `random()`
+
+```python
+random(*, seed: int | str | float | bytes | bytearray | None = None) -> Self
+```
+
+A factory method that returns a `Colour` with a random hue.
+
+> [!NOTE]
+> The random algorithm works by choosing a colour with a random hue but with maxed out saturation and value.
+
+*Added in 1.6.*
+
+#### Parameters
+
+seed: `int` | `str` | `float` | `bytes` | `bytearray` | `None`  
+The seed to initialize the RNG with. If `None` is passed the default RNG is used.
+
+*Added in 1.7.*
+
+#### `teal()`
+
+```python
+teal() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x1abc9c`.
+
+#### `dark_teal()`
+
+```python
+dark_teal() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x11806a`.
+
+#### `brand_green()`
+
+```python
+brand_green() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x57F287`.
+
+*Added in 2.0.*
+
+#### `green()`
+
+```python
+green() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x2ecc71`.
+
+#### `dark_green()`
+
+```python
+dark_green() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x1f8b4c`.
+
+#### `blue()`
+
+```python
+blue() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x3498db`.
+
+#### `dark_blue()`
+
+```python
+dark_blue() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x206694`.
+
+#### `purple()`
+
+```python
+purple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x9b59b6`.
+
+#### `dark_purple()`
+
+```python
+dark_purple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x71368a`.
+
+#### `magenta()`
+
+```python
+magenta() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xe91e63`.
+
+#### `dark_magenta()`
+
+```python
+dark_magenta() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xad1457`.
+
+#### `gold()`
+
+```python
+gold() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xf1c40f`.
+
+#### `dark_gold()`
+
+```python
+dark_gold() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xc27c0e`.
+
+#### `orange()`
+
+```python
+orange() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xe67e22`.
+
+#### `dark_orange()`
+
+```python
+dark_orange() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xa84300`.
+
+#### `brand_red()`
+
+```python
+brand_red() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xED4245`.
+
+*Added in 2.0.*
+
+#### `red()`
+
+```python
+red() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xe74c3c`.
+
+#### `dark_red()`
+
+```python
+dark_red() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x992d22`.
+
+#### `lighter_grey()`
+
+```python
+lighter_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x95a5a6`.
+
+#### `lighter_gray()`
+
+```python
+lighter_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x95a5a6`.
+
+#### `dark_grey()`
+
+```python
+dark_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x607d8b`.
+
+#### `dark_gray()`
+
+```python
+dark_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x607d8b`.
+
+#### `light_grey()`
+
+```python
+light_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x979c9f`.
+
+#### `light_gray()`
+
+```python
+light_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x979c9f`.
+
+#### `darker_grey()`
+
+```python
+darker_grey() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x546e7a`.
+
+#### `darker_gray()`
+
+```python
+darker_gray() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x546e7a`.
+
+#### `og_blurple()`
+
+```python
+og_blurple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x7289da`.
+
+#### `blurple()`
+
+```python
+blurple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x5865F2`.
+
+#### `greyple()`
+
+```python
+greyple() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x99aab5`.
+
+#### `light_theme()`
+
+```python
+light_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xfbfbfb`. This will appear transparent on Discord's light theme.
+
+*Added in 2.8.*
+
+#### `ash_theme()`
+
+```python
+ash_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x323339`. This will appear transparent on Discord's ash theme.
+
+*Added in 2.8.*
+
+#### `dark_theme()`
+
+```python
+dark_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x1a1a1e`. This will appear transparent on Discord's dark theme.
+
+*Added in 1.5.*
+
+*Changed in 2.8 Updated to match Discord's new theme colour.*
+
+#### `onyx_theme()`
+
+```python
+onyx_theme() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0x070709`. This will appear transparent on Discord's onyx theme.
+
+*Added in 2.8.*
+
+#### `fuchsia()`
+
+```python
+fuchsia() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xEB459E`.
+
+*Added in 2.0.*
+
+#### `yellow()`
+
+```python
+yellow() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xFEE75C`.
+
+*Added in 2.0.*
+
+#### `nitro_pink()`
+
+```python
+nitro_pink() -> Self
+```
+
+A factory method that returns a `Colour` with a value of `0xf47fff`.
+
+*Added in 2.0.*
+
+#### `embed_background()`
+
+```python
+embed_background(theme: str = 'dark') -> Self
+```
+
+A factory method that returns a `Colour` corresponding to the embed colours on discord clients, with a value of:
+
+- `0x2B2D31` (dark)
+- `0xEEEFF1` (light)
+- `0x000000` (amoled).
+
+*Added in 2.0.*
+
+#### Parameters
+
+theme: `str`  
+The theme colour to apply, must be one of "dark", "light", or "amoled".

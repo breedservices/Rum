@@ -1,0 +1,1197 @@
+# `rum.ext.commands.converter`
+
+## Classes
+
+### `CategoryChannelConverter`
+
+```python
+class CategoryChannelConverter(*args, **kwargs)
+```
+
+Converts to a `discord.CategoryChannel`.
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name
+
+*Changed in 1.5 Raise `.ChannelNotFound` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.CategoryChannel
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `ColourConverter`
+
+```python
+class ColourConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Colour`.
+
+*Changed in 1.5 Add an alias named ColorConverter.*
+
+The following formats are accepted:
+
+- `0x<hex>`
+
+- `#<hex>`
+
+- `0x#<hex>`
+
+- `rgb(<number>, <number>, <number>)`
+
+- Any of the `classmethod` in `discord.Colour`
+
+  > - The `_` in the name can be optionally replaced with spaces.
+
+Like CSS, `<number>` can be either 0-255 or 0-100% and `<hex>` can be either a 6 digit hex number or a 3 digit hex shortcut (e.g. \#fff).
+
+*Changed in 1.5 Raise `.BadColourArgument` instead of generic `.BadArgument`.*
+
+*Changed in 1.7 Added support for `rgb` function and 3-digit hex shortcuts.*
+
+#### `parse_hex_number()`
+
+```python
+parse_hex_number(argument)
+```
+
+#### `parse_rgb_number()`
+
+```python
+parse_rgb_number(argument, number)
+```
+
+#### `parse_rgb()`
+
+```python
+parse_rgb(argument, *, regex=re.compile('rgb\\s*\\((?P<r>[0-9]{1,3}%?)\\s*,\\s*(?P<g>[0-9]{1,3}%?)\\s*,\\s*(?P<b>[0-9]{1,3}%?)\\s*\\)'))
+```
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Colour
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `ColourConverter`
+
+```python
+class ColourConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Colour`.
+
+*Changed in 1.5 Add an alias named ColorConverter.*
+
+The following formats are accepted:
+
+- `0x<hex>`
+
+- `#<hex>`
+
+- `0x#<hex>`
+
+- `rgb(<number>, <number>, <number>)`
+
+- Any of the `classmethod` in `discord.Colour`
+
+  > - The `_` in the name can be optionally replaced with spaces.
+
+Like CSS, `<number>` can be either 0-255 or 0-100% and `<hex>` can be either a 6 digit hex number or a 3 digit hex shortcut (e.g. \#fff).
+
+*Changed in 1.5 Raise `.BadColourArgument` instead of generic `.BadArgument`.*
+
+*Changed in 1.7 Added support for `rgb` function and 3-digit hex shortcuts.*
+
+#### `parse_hex_number()`
+
+```python
+parse_hex_number(argument)
+```
+
+#### `parse_rgb_number()`
+
+```python
+parse_rgb_number(argument, number)
+```
+
+#### `parse_rgb()`
+
+```python
+parse_rgb(argument, *, regex=re.compile('rgb\\s*\\((?P<r>[0-9]{1,3}%?)\\s*,\\s*(?P<g>[0-9]{1,3}%?)\\s*,\\s*(?P<b>[0-9]{1,3}%?)\\s*\\)'))
+```
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Colour
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `Converter`
+
+```python
+class Converter(*args, **kwargs)
+```
+
+The base class of custom converters that require the `.Context` to be passed to be useful.
+
+This allows you to implement converters that function similar to the special cased `discord` classes.
+
+Classes that derive from this should override the `.Converter.convert` method to do its conversion logic. This method must be a `coroutine <coroutine>`.
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> T_co
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `EmojiConverter`
+
+```python
+class EmojiConverter(*args, **kwargs)
+```
+
+Converts to a `discord.GuildEmoji`.
+
+All lookups are done for the local guild first, if available. If that lookup fails, then it checks the client's global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by extracting ID from the emoji.
+3.  Lookup by name
+
+*Changed in 1.5 Raise `.EmojiNotFound` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.GuildEmoji
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `ForumChannelConverter`
+
+```python
+class ForumChannelConverter(*args, **kwargs)
+```
+
+Converts to a `discord.ForumChannel`.
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name
+
+*Added in 2.0.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.ForumChannel
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `GameConverter`
+
+```python
+class GameConverter(*args, **kwargs)
+```
+
+Converts to `discord.Game`.
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Game
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `Greedy`
+
+```python
+class Greedy(*, converter: T)
+```
+
+A special converter that greedily consumes arguments until it can't. As a consequence of this behaviour, most input errors are silently discarded, since it is used as an indicator of when to stop parsing.
+
+When a parser error is met the greedy converter stops converting, undoes the internal string parsing routine, and continues parsing regularly.
+
+For example, in the following code:
+
+``` python3
+@commands.command()
+async def test(ctx, numbers: Greedy[int], reason: str):
+    await ctx.send("numbers: {}, reason: {}".format(numbers, reason))
+```
+
+An invocation of `[p]test 1 2 3 4 5 6 hello` would pass `numbers` with `[1, 2, 3, 4, 5, 6]` and `reason` with `hello`.
+
+For more information, check `ext_commands_special_converters`.
+
+### `GuildChannelConverter`
+
+```python
+class GuildChannelConverter(*args, **kwargs)
+```
+
+Converts to a `discord.abc.GuildChannel`.
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name.
+
+*Added in 2.0.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.abc.GuildChannel
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `GuildConverter`
+
+```python
+class GuildConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Guild`.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by name. (There is no disambiguation for Guilds with multiple matching names).
+
+*Added in 1.7.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Guild
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `GuildStickerConverter`
+
+```python
+class GuildStickerConverter(*args, **kwargs)
+```
+
+Converts to a `discord.GuildSticker`.
+
+All lookups are done for the local guild first, if available. If that lookup fails, then it checks the client's global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by name
+
+*Added in 2.0.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.GuildSticker
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `IDConverter`
+
+```python
+class IDConverter(*args, **kwargs)
+```
+
+The base class of custom converters that require the `.Context` to be passed to be useful.
+
+This allows you to implement converters that function similar to the special cased `discord` classes.
+
+Classes that derive from this should override the `.Converter.convert` method to do its conversion logic. This method must be a `coroutine <coroutine>`.
+
+### `InviteConverter`
+
+```python
+class InviteConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Invite`.
+
+This is done via an HTTP request using `.Bot.fetch_invite`.
+
+*Changed in 1.5 Raise `.BadInviteArgument` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Invite
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `MemberConverter`
+
+```python
+class MemberConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Member`.
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name#discrim
+4.  Lookup by name
+5.  Lookup by nickname
+
+*Changed in 1.5 Raise `.MemberNotFound` instead of generic `.BadArgument`.*
+
+*Changed in 1.5.1 This converter now lazily fetches members from the gateway and HTTP APIs, optionally caching the result if `.MemberCacheFlags.joined` is enabled.*
+
+#### `query_member_named()`
+
+```python
+query_member_named(guild, argument)
+```
+
+#### `query_member_by_id()`
+
+```python
+query_member_by_id(bot, guild, user_id)
+```
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Member
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `MessageConverter`
+
+```python
+class MessageConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Message`.
+
+*Added in 1.1.*
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by "{channel ID}-{message ID}" (retrieved by shift-clicking on "Copy ID")
+2.  Lookup by message ID (the message **must** be in the context channel)
+3.  Lookup by message URL
+
+*Changed in 1.5 Raise `.ChannelNotFound`, `.MessageNotFound` or `.ChannelNotReadable` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Message
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `ObjectConverter`
+
+```python
+class ObjectConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Object`.
+
+The argument must follow the valid ID or mention formats (e.g. <span class="title-ref">\<@80088516616269824\></span>).
+
+*Added in 2.0.*
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by member, role, or channel mention.
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Object
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `PartialEmojiConverter`
+
+```python
+class PartialEmojiConverter(*args, **kwargs)
+```
+
+Converts to a `discord.PartialEmoji`.
+
+This is done by extracting the animated flag, name, and ID for custom emojis, or by using the standard Unicode emojis supported by Discord.
+
+*Changed in 1.5 Raise `.PartialEmojiConversionFailure` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.PartialEmoji
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `PartialMessageConverter`
+
+```python
+class PartialMessageConverter(*args, **kwargs)
+```
+
+Converts to a `discord.PartialMessage`.
+
+*Added in 1.7.*
+
+The creation strategy is as follows (in order):
+
+1.  By "{channel ID}-{message ID}" (retrieved by shift-clicking on "Copy ID")
+2.  By message ID (The message is assumed to be in the context channel.)
+3.  By message URL
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.PartialMessage
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `RoleConverter`
+
+```python
+class RoleConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Role`.
+
+All lookups are via the local guild. If in a DM context, the converter raises `.NoPrivateMessage` exception.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name
+
+*Changed in 1.5 Raise `.RoleNotFound` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Role
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `StageChannelConverter`
+
+```python
+class StageChannelConverter(*args, **kwargs)
+```
+
+Converts to a `discord.StageChannel`.
+
+*Added in 1.7.*
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.StageChannel
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `TextChannelConverter`
+
+```python
+class TextChannelConverter(*args, **kwargs)
+```
+
+Converts to a `discord.TextChannel`.
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name
+
+*Changed in 1.5 Raise `.ChannelNotFound` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.TextChannel
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `ThreadConverter`
+
+```python
+class ThreadConverter(*args, **kwargs)
+```
+
+Converts to a `discord.Thread`.
+
+All lookups are via the local guild.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name.
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.Thread
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `UserConverter`
+
+```python
+class UserConverter(*args, **kwargs)
+```
+
+Converts to a `discord.User`.
+
+All lookups are via the global user cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name#discrim
+4.  Lookup by name
+
+*Changed in 1.5 Raise `.UserNotFound` instead of generic `.BadArgument`.*
+
+*Changed in 1.6 This converter now lazily fetches users from the HTTP APIs if an ID is passed, and it's not available in cache.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.User
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `VoiceChannelConverter`
+
+```python
+class VoiceChannelConverter(*args, **kwargs)
+```
+
+Converts to a `discord.VoiceChannel`.
+
+All lookups are via the local guild. If in a DM context, then the lookup is done by the global cache.
+
+The lookup strategy is as follows (in order):
+
+1.  Lookup by ID.
+2.  Lookup by mention.
+3.  Lookup by name
+
+*Changed in 1.5 Raise `.ChannelNotFound` instead of generic `.BadArgument`.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> rum.VoiceChannel
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+### `clean_content`
+
+```python
+class clean_content(*, fix_channel_mentions: bool = False, use_nicknames: bool = True, escape_markdown: bool = False, remove_markdown: bool = False) -> None
+```
+
+Converts the argument to mention scrubbed version of said content.
+
+This behaves similarly to `discord.Message.clean_content`.
+
+#### Attributes
+
+fix_channel_mentions: `bool`  
+Whether to clean channel mentions.
+
+use_nicknames: `bool`  
+Whether to use nicknames when transforming mentions.
+
+escape_markdown: `bool`  
+Whether to also escape special markdown characters.
+
+remove_markdown: `bool`  
+Whether to also remove special markdown characters. This option is not supported with `escape_markdown`
+
+*Added in 1.7.*
+
+#### `convert()`
+
+```python
+convert(ctx: Context, argument: str) -> str
+```
+
+*(coroutine)*
+
+The method to override to do conversion logic.
+
+If an error is found while converting, it is recommended to raise a `.CommandError` derived exception as it will properly propagate to the error handlers.
+
+#### Parameters
+
+ctx: `.Context`  
+The invocation context that the argument is being used in.
+
+argument: `str`  
+The argument that is being converted.
+
+#### Raises
+
+`.CommandError`  
+A generic exception occurred when converting the argument.
+
+`.BadArgument`  
+The converter failed to convert the argument.
+
+## Functions
+
+### `get_converter()`
+
+```python
+get_converter(param: inspect.Parameter) -> Any
+```
+
+### `is_generic_type()`
+
+```python
+is_generic_type(tp: Any, *, _GenericAlias: type = <class 'types.GenericAlias'>) -> bool
+```
+
+### `run_converters()`
+
+```python
+run_converters(ctx: Context, converter, argument: str | None, param: inspect.Parameter)
+```
+
+*(coroutine)*
+
+Runs converters for a given converter, argument, and parameter.
+
+This function does the same work that the library does under the hood.
+
+*Added in 2.0.*
+
+#### Parameters
+
+ctx: `Context`  
+The invocation context to run the converters under.
+
+converter: Any  
+The converter to run, this corresponds to the annotation in the function.
+
+argument: `str` | `None`  
+The argument to convert to.
+
+param: `inspect.Parameter`  
+The parameter being converted. This is mainly for error reporting.
+
+#### Returns
+
+Any  
+The resulting conversion.
+
+#### Raises
+
+CommandError  
+The converter failed to convert.

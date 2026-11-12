@@ -1,0 +1,165 @@
+# `rum.voice.state`
+
+## Classes
+
+### `SocketEventReader`
+
+```python
+class SocketEventReader(state: VoiceConnectionState, *, start_paused: bool = True) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+### `SocketReader`
+
+```python
+class SocketReader(state: VoiceConnectionState, name: str, buffer_size: int, *, start_paused: bool = True) -> None
+```
+
+A class that represents a thread of control.
+
+This class can be safely subclassed in a limited fashion. There are two ways to specify the activity: by passing a callable object to the constructor, or by overriding the run() method in a subclass.
+
+#### `is_running()`
+
+```python
+is_running() -> bool
+```
+
+#### `register()`
+
+```python
+register(callback: SocketReaderCallback) -> None
+```
+
+#### `unregister()`
+
+```python
+unregister(callback: SocketReaderCallback) -> None
+```
+
+#### `pause()`
+
+```python
+pause() -> None
+```
+
+#### `is_paused()`
+
+```python
+is_paused() -> bool
+```
+
+#### `resume()`
+
+```python
+resume(*, force: bool = False) -> None
+```
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+#### `run()`
+
+```python
+run() -> None
+```
+
+Method representing the thread's activity.
+
+You may override this method in a subclass. The standard run() method invokes the callable object passed to the object's constructor as the target argument, if any, with sequential and keyword arguments taken from the args and kwargs arguments, respectively.
+
+### `VoiceConnectionState`
+
+```python
+class VoiceConnectionState(client: VoiceClient, *, hook: Callable[[VoiceWebSocket, dict[str, Any]], Coroutine[Any, Any, Any]] | None = None) -> None
+```
+
+#### `is_connected()`
+
+```python
+is_connected() -> bool
+```
+
+#### `voice_state_update()`
+
+```python
+voice_state_update(data: RawVoiceStateUpdateEvent) -> None
+```
+
+#### `voice_server_update()`
+
+```python
+voice_server_update(data: RawVoiceServerUpdateEvent) -> None
+```
+
+#### `connect()`
+
+```python
+connect(*, reconnect: bool, timeout: float, self_deaf: bool, self_mute: bool, resume: bool, wait: bool = True) -> None
+```
+
+#### `disconnect()`
+
+```python
+disconnect(*, force: bool = True, cleanup: bool = True, wait: bool = False) -> None
+```
+
+#### `soft_disconnect()`
+
+```python
+soft_disconnect(*, with_state: ConnectionFlowState = <ConnectionFlowState.got_both_voice_updates: 4>) -> None
+```
+
+#### `move_to()`
+
+```python
+move_to(channel: abc.Snowflake | None, timeout: float | None) -> None
+```
+
+#### `wait_for()`
+
+```python
+wait_for(state: ConnectionFlowState = <ConnectionFlowState.connected: 8>, timeout: float | None = None) -> Any
+```
+
+#### `send_packet()`
+
+```python
+send_packet(packet: bytes) -> None
+```
+
+#### `add_socket_listener()`
+
+```python
+add_socket_listener(callback: SocketReaderCallback) -> None
+```
+
+#### `remove_socket_listener()`
+
+```python
+remove_socket_listener(callback: SocketReaderCallback) -> None
+```
+
+#### `reinit_dave_session()`
+
+```python
+reinit_dave_session() -> None
+```
+
+#### `recover_dave_from_invalid_commit()`
+
+```python
+recover_dave_from_invalid_commit(transition: int) -> None
+```
+
+#### `execute_dave_transition()`
+
+```python
+execute_dave_transition(transition: int) -> None
+```

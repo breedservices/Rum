@@ -1,0 +1,36 @@
+# `rum.ui.separator`
+
+## Classes
+
+### `Separator`
+
+```python
+class Separator(*, divider: bool = True, spacing: SeparatorSpacingSize = <SeparatorSpacingSize.small: 1>, id: int | None = None)
+```
+
+Represents a UI Separator.
+
+*Added in 2.7.*
+
+#### Parameters
+
+divider: `bool`  
+Whether the separator is a divider. Defaults to `True`.
+
+spacing: `discord.SeparatorSpacingSize`  
+The spacing size of the separator. Defaults to `discord.SeparatorSpacingSize.small`.
+
+id: `int` | `None`  
+The separator's ID.
+
+#### `to_component_dict()`
+
+```python
+to_component_dict() -> SeparatorComponentPayload
+```
+
+#### `from_component()`
+
+```python
+from_component(component: SeparatorComponent) -> S
+```
