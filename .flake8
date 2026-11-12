@@ -7,3 +7,18 @@ ignore =
 
 max-line-length=120
 max-complexity=39
+
+exclude =
+    .git,
+    __pycache__,
+    .tox,
+    .nox,
+    .eggs,
+    *.egg,
+    .venv,
+    .mypy_cache,
+    .pytest_cache,
+    .ruff_cache,
+    build,
+    dist,
+    docs/_build

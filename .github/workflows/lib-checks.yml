@@ -90,8 +90,8 @@ jobs:
           python-version: "3.14"
       - name: "Run codespell"
         run:
-          codespell --ignore-words-list="groupt,nd,ot,ro,falsy,BU" \
-          --exclude-file=".github/workflows/codespell.yml"
+          codespell --ignore-words-list="groupt,nd,ot,ro,falsy,BU,womens,pre-select,pre-emptively" \
+          --skip="*.po,*.pot,uv.lock,docs/build,.venv,rum-cache"
   bandit:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' && github.event_name != 'schedule' }}
@@ -104,7 +104,7 @@ jobs:
         with:
           python-version: "3.14"
       - name: "Run bandit"
-        run: bandit --recursive  --skip B101,B104,B105,B110,B307,B311,B404,B603,B607 .
+        run: bandit --recursive  --skip B101,B104,B105,B110,B307,B311,B404,B603,B607 --exclude ./.venv,./build,./dist,./docs/_build .
   readme-metadata:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' }}
@@ -218,6 +218,7 @@ jobs:
     if: ${{ needs.changes.outputs.lib == 'true' && github.event_name != 'schedule' && github.event_name != 'workflow_dispatch' }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
         python-version: [ "3.11", "3.14" ]
@@ -229,14 +230,18 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           install-voice: "true"
+          groups: "test"
 
       - name: "Run tests"
-        run: tox
+        run: |
+          uv run --group test --extra voice pytest tests -q
+          uv run --isolated --no-extra voice --group test pytest tests/voice/test_dependency_behavior.py -q
   tests-full:
     needs: [ changes ]
     if: ${{ needs.changes.outputs.lib == 'true' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
         python-version: [ "3.11", "3.12", "3.13", "3.14" ]
@@ -248,9 +253,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           install-voice: "true"
+          groups: "test"
 
       - name: "Run tests"
-        run: tox
+        run: |
+          uv run --group test --extra voice pytest tests -q
+          uv run --isolated --no-extra voice --group test pytest tests/voice/test_dependency_behavior.py -q
   tests-pass: # ref: https://github.com/orgs/community/discussions/4324#discussioncomment-3477871
     runs-on: ubuntu-latest
     needs: [ changes, tests, tests-full ]

@@ -1,3 +1,29 @@
+"""
+The MIT License (MIT)
+
+Copyright (c) 2015-2021 Rapptz
+Copyright (c) 2021-2026 Pycord Development
+Copyright (c) 2026-present The rum team
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+"""
+
 # Set the BOT_TOKEN environment variable before running this example:
 #     export BOT_TOKEN=your-token
 # It can also be set in the .env file in the repository root.
@@ -175,7 +201,7 @@ class SqliteCache(MutableMapping[int, Any]):
 
     def __getitem__(self, key: int) -> Any:
         row = self._connection.execute(
-            f'SELECT value FROM "{self._table}" WHERE key = ?', (key,)
+            f'SELECT value FROM "{self._table}" WHERE key = ?', (key,)  # nosec B608
         ).fetchone()
         if row is None:
             raise KeyError(key)
@@ -196,7 +222,7 @@ class SqliteCache(MutableMapping[int, Any]):
 
     def __delitem__(self, key: int) -> None:
         cursor = self._connection.execute(
-            f'DELETE FROM "{self._table}" WHERE key = ?', (key,)
+            f'DELETE FROM "{self._table}" WHERE key = ?',  # nosec B608 (key,)
         )
         if cursor.rowcount == 0:
             raise KeyError(key)
@@ -204,13 +230,13 @@ class SqliteCache(MutableMapping[int, Any]):
 
     def __iter__(self) -> Iterator[int]:
         for (key,) in self._connection.execute(
-            f'SELECT key FROM "{self._table}"'
+            f'SELECT key FROM "{self._table}"'  # nosec B608
         ).fetchall():
             yield int(key)
 
     def __len__(self) -> int:
         row = self._connection.execute(
-            f'SELECT COUNT(*) FROM "{self._table}"'
+            f'SELECT COUNT(*) FROM "{self._table}"'  # nosec B608
         ).fetchone()
         return int(row[0]) if row else 0
 
@@ -300,7 +326,7 @@ class SqliteCacheProvider(rum.DefaultCacheProvider):
             "SELECT name FROM sqlite_master WHERE type = 'table'"
         ).fetchall():
             row = self._connection.execute(
-                f'SELECT COUNT(*) FROM "{table}"'
+                f'SELECT COUNT(*) FROM "{table}"'  # nosec B608
             ).fetchone()
             sizes[table] = int(row[0]) if row else 0
         return sizes

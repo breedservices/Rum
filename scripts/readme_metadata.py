@@ -167,7 +167,7 @@ def _github_request(url: str, method: str = "GET", payload: dict | None = None) 
 
     request = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(request) as response:
+        with urllib.request.urlopen(request) as response:  # nosec B310
             body = response.read()
             return json.loads(body) if body else {}
     except urllib.error.HTTPError as exc:

@@ -330,7 +330,7 @@ class Button(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Button` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Button` instead.
 
     .. versionadded:: 2.0
 
@@ -412,7 +412,7 @@ class SelectMenu(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Select` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Select` instead.
 
     .. versionadded:: 2.0
 
@@ -450,7 +450,7 @@ class SelectMenu(Component):
     disabled: :class:`bool`
         Whether the select is disabled or not. Not usable in modals. Defaults to ``False``.
     required: :class:`bool` | :obj:`None`
-        Whether the select is required or not. Only useable in modals. Defaults to ``True``.
+        Whether the select is required or not. Only usable in modals. Defaults to ``True``.
     """
 
     __slots__: tuple[str, ...] = (
@@ -814,7 +814,7 @@ class Section(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Section` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Section` instead.
 
     .. versionadded:: 2.7
 
@@ -888,7 +888,7 @@ class TextDisplay(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.TextDisplay` instead.
+        This class is not usable by end-users; see :class:`discord.ui.TextDisplay` instead.
 
     .. versionadded:: 2.7
 
@@ -982,7 +982,7 @@ class Thumbnail(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Thumbnail` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Thumbnail` instead.
 
     .. versionadded:: 2.7
 
@@ -1093,7 +1093,7 @@ class MediaGallery(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.MediaGallery` instead.
+        This class is not usable by end-users; see :class:`discord.ui.MediaGallery` instead.
 
     .. versionadded:: 2.7
 
@@ -1132,7 +1132,7 @@ class FileComponent(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.File` instead.
+        This class is not usable by end-users; see :class:`discord.ui.File` instead.
 
     .. versionadded:: 2.7
 
@@ -1184,7 +1184,7 @@ class Separator(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Separator` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Separator` instead.
 
     .. versionadded:: 2.7
 
@@ -1238,7 +1238,7 @@ class Container(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Container` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Container` instead.
 
     .. versionadded:: 2.7
 
@@ -1374,7 +1374,7 @@ class FileUpload(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.FileUpload` instead.
+        This class is not usable by end-users; see :class:`discord.ui.FileUpload` instead.
 
     .. versionadded:: 2.7
 
@@ -1439,7 +1439,7 @@ class RadioGroup(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.RadioGroup` instead.
+        This class is not usable by end-users; see :class:`discord.ui.RadioGroup` instead.
 
     .. versionadded:: 2.8
 
@@ -1583,7 +1583,7 @@ class CheckboxGroup(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.CheckboxGroup` instead.
+        This class is not usable by end-users; see :class:`discord.ui.CheckboxGroup` instead.
 
     .. versionadded:: 2.8
 
@@ -1743,7 +1743,7 @@ class Checkbox(Component):
 
     .. note::
 
-        This class is not useable by end-users; see :class:`discord.ui.Checkbox` instead.
+        This class is not usable by end-users; see :class:`discord.ui.Checkbox` instead.
 
     .. versionadded:: 2.8
 
