@@ -464,7 +464,7 @@ class Node:
 
     async def _configure_session(self) -> None:
         sid = self._session_id
-        if not sid:
+        if not sid or self.is_nodelink:
             return
         payload = {"resuming": True, "timeout": self.resume_timeout}
         try:
