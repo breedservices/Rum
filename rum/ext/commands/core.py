@@ -56,7 +56,13 @@ from ...enums import ChannelType
 from ...errors import *
 from .cog import Cog
 from .context import Context
-from .converter import Greedy, get_converter, run_converters
+from .converter import (
+    Converter,
+    Greedy,
+    _get_option_converter,
+    get_converter,
+    run_converters,
+)
 from .cooldowns import (
     BucketType,
     Cooldown,
@@ -564,15 +570,40 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
         finally:
             ctx.bot.dispatch("command_error", ctx, error)
 
-    async def transform(self, ctx: Context, param: inspect.Parameter) -> Any:
+    def _resolve_option(self, param: inspect.Parameter) -> Option | None:
+        """Returns the option of the parameter, if there is one."""
         if isinstance(param.annotation, Option):
-            default = param.annotation.default
-            required = param.annotation.required
+            return param.annotation
+        if isinstance(param.default, Option):
+            return param.default
+        return None
+
+    def _resolve_converter(self, param: inspect.Parameter) -> Any:
+        """Returns the converter to use for the parameter."""
+        option = self._resolve_option(param)
+        if option is not None:
+            if isinstance(option, Converter):
+                return option
+            if isinstance(param.annotation, Option) or (
+                isinstance(param.annotation, type)
+                and issubclass(param.annotation, Option)
+            ):
+                return _get_option_converter(option)
+        return get_converter(param)
+
+    async def transform(self, ctx: Context, param: inspect.Parameter) -> Any:
+        option = self._resolve_option(param)
+        if option is not None:
+            default = option.default
+            required = option.required
+            if param.default is not param.empty and option is not param.default:
+                default = param.default
+                required = False
         else:
             default = param.default
             required = default is param.empty
 
-        converter = get_converter(param)
+        converter = self._resolve_converter(param)
         consume_rest_is_special = (
             param.kind == param.KEYWORD_ONLY and not self.rest_is_raw
         )
@@ -785,7 +816,7 @@ class Command(_BaseCommand, Generic[CogT, P, T]):
             elif param.kind == param.KEYWORD_ONLY:
                 # kwarg only param denotes "consume rest" semantics
                 if self.rest_is_raw:
-                    converter = get_converter(param)
+                    converter = self._resolve_converter(param)
                     argument = view.read_rest()
                     kwargs[name] = await run_converters(ctx, converter, argument, param)
                 else:

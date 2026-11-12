@@ -1,3 +1,29 @@
+"""
+The MIT License (MIT)
+
+Copyright (c) 2015-2021 Rapptz
+Copyright (c) 2021-2026 Pycord Development
+Copyright (c) 2026-present The rum team
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+"""
+
 # Set the BOT_TOKEN environment variable before running this example:
 #     export BOT_TOKEN=your-token
 # It can also be set in the .env file in the repository root.
@@ -69,7 +95,12 @@ async def file(ctx: bridge.BridgeContext, attachment: rum.Attachment):
 async def on_command_error(ctx: commands.Context, error: commands.CommandError):
     # This is raised when a choice outside the given choices is selected on a prefixed command.
     if isinstance(error, commands.BadArgument):
-        await ctx.reply("Hey! The valid choices are 1, 2, or 3!")
+        if ctx.command.name == "choose":
+            await ctx.reply("Hey! The valid choices are 1, 2, or 3!")
+        else:
+            await ctx.reply("I couldn't understand that argument.")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.reply(f"You're missing the `{error.param.name}` argument.")
     else:
         raise error  # Raise other errors so they aren't ignored
 

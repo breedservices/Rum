@@ -1100,6 +1100,18 @@ def get_converter(param: inspect.Parameter) -> Any:
     return converter
 
 
+def _get_option_converter(option: Any) -> Any:
+    """Returns the converter to use for an option in a prefixed command."""
+    converter = getattr(option, "converter", None)
+    if converter is not None:
+        return converter
+
+    raw_type = getattr(option, "_raw_type", None) or str
+    if isinstance(raw_type, tuple):
+        raw_type = next((t for t in raw_type if t is not type(None)), str)
+    return raw_type
+
+
 _GenericAlias = type(list[T])
 
 
@@ -1147,7 +1159,8 @@ async def _actual_conversion(
         pass
     else:
         if module is not None and (
-            module.startswith("discord.") and not module.endswith("converter")
+            module.split(".")[0] in ("rum", "discord")
+            and not module.endswith("converter")
         ):
             converter = CONVERTER_MAPPING.get(converter, converter)
 
