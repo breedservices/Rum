@@ -13,8 +13,8 @@ import rum
 from rum.ext import commands
 from rum.ext.music import NodePool, Player, SearchType, ServerType, TrackEndEvent
 
-logging.basicConfig(level=logging.DEBUG)
-rum.utils.setup_logging(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("rum.ext.music").setLevel(logging.DEBUG)
 
 
 def _load_nodelink_config() -> tuple[str, int, str, bool]:
