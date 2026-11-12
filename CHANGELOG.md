@@ -20,11 +20,15 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Fixed
 
-- Fixed webhook sends with Components V2/views (no files) producing an empty request body and Discord 400 `50109 Invalid JSON` by normalizing empty multipart payloads to JSON bodies.
-
 ### Deprecated
 
 ### Removed
+
+## [0.2.1] - 2026-11-12
+
+### Fixed
+
+- Fixed webhook sends with Components V2/views (no files) producing an empty request body and Discord 400 `50109 Invalid JSON` by normalizing empty multipart payloads to JSON bodies.
 
 ## [0.2.0] - 2026-11-12
 
@@ -74,5 +78,6 @@ These changes are available on the `master` branch, but have not yet been releas
   packaging files (`setup.py`, `MANIFEST.in`, `requirements/*.txt`) replaced by the
   Hatchling configuration.
 
-[unreleased]: https://github.com/breedservices/Rum/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/breedservices/Rum/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/breedservices/Rum/releases/tag/v0.2.1
 [0.2.0]: https://github.com/breedservices/Rum/releases/tag/v0.2.0
