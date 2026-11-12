@@ -26,6 +26,7 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
+import sys
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any, TypeVar
 
@@ -322,6 +323,8 @@ class RoleColours:
     HOLOGRAPHIC_SECONDARY = Colour(16759788)
     HOLOGRAPHIC_TERTIARY = Colour(16761760)
 
+    __slots__ = ("_primary", "_secondary", "_tertiary")
+
     def __init__(
         self,
         primary: Colour,
@@ -341,9 +344,24 @@ class RoleColours:
         tertiary: :class:`Colour` | :obj:`None`
             The tertiary colour of the role.
         """
-        self.primary: Colour = primary
-        self.secondary: Colour | None = secondary
-        self.tertiary: Colour | None = tertiary
+        self._primary: int = primary.value
+        self._secondary: int | None = secondary.value if secondary is not None else None
+        self._tertiary: int | None = tertiary.value if tertiary is not None else None
+
+    @property
+    def primary(self) -> Colour:
+        """The primary colour of the role."""
+        return Colour(self._primary)
+
+    @property
+    def secondary(self) -> Colour | None:
+        """The secondary colour of the role."""
+        return Colour(self._secondary) if self._secondary is not None else None
+
+    @property
+    def tertiary(self) -> Colour | None:
+        """The tertiary colour of the role."""
+        return Colour(self._tertiary) if self._tertiary is not None else None
 
     @classmethod
     def _from_payload(cls, data: RoleColoursPayload) -> Self:
@@ -556,7 +574,7 @@ class Role(Hashable):
         return not r
 
     def _update(self, data: RolePayload):
-        self.name: str = data["name"]
+        self.name: str = sys.intern(data["name"])
         self._permissions: int = int(data.get("permissions", 0))
         self.position: int = data.get("position", 0)
         self._colour: int = data.get("color", 0)

@@ -414,3 +414,65 @@ def test_changing_a_status_does_not_change_the_other_members():
     first.status = rum.Status.idle
     assert first.status is rum.Status.idle
     assert second.status is rum.Status.online
+
+
+def test_roles_with_the_same_colours_keep_them_apart():
+    state = _make_state()
+    guild = state._get_create_guild(
+        {
+            "id": "1",
+            "name": "guild",
+            "roles": [
+                {
+                    "id": "10",
+                    "name": "role",
+                    "permissions": "0",
+                    "position": 1,
+                    "color": 0,
+                    "hoist": False,
+                    "managed": False,
+                    "mentionable": False,
+                    "colors": {
+                        "primary_color": 123,
+                        "secondary_color": 0,
+                        "tertiary_color": 0,
+                    },
+                }
+            ],
+        }
+    )
+    role = guild.get_role(10)
+    assert role.colours.primary.value == 123
+    assert role.colours.secondary is None
+    assert role.colours.primary.value == 123
+
+
+def test_the_permission_overwrites_of_a_guild_are_shared():
+    state = _make_state()
+    guild = state._get_create_guild(
+        {
+            "id": "1",
+            "name": "guild",
+            "roles": [],
+            "channels": [
+                {
+                    "id": str(10 + index),
+                    "type": 0,
+                    "name": f"channel{index}",
+                    "position": index,
+                    "parent_id": None,
+                    "nsfw": False,
+                    "topic": None,
+                    "permission_overwrites": [
+                        {"id": "1", "type": 0, "allow": "0", "deny": "0"},
+                    ],
+                }
+                for index in range(3)
+            ],
+            "members": [],
+        }
+    )
+    channels = list(guild._channels.values())
+    assert len(channels) == 3
+    first = channels[0]._overwrites[0]
+    assert all(channel._overwrites[0] is first for channel in channels)

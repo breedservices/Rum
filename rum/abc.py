@@ -555,8 +555,18 @@ class GuildChannel:
         everyone_index = 0
         everyone_id = self.guild.id
 
+        cache = self.guild._overwrite_cache
         for index, overridden in enumerate(data.get("permission_overwrites", [])):
-            overwrite = _Overwrites(overridden)
+            key = (
+                int(overridden["id"]),
+                int(overridden.get("allow", 0)),
+                int(overridden.get("deny", 0)),
+                overridden["type"],
+            )
+            # the same overwrite is in every channel of a guild, so it is shared
+            overwrite = cache.get(key)
+            if overwrite is None:
+                overwrite = cache[key] = _Overwrites(overridden)
             self._overwrites.append(overwrite)
 
             if overwrite.type == _Overwrites.MEMBER:

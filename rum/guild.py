@@ -393,6 +393,7 @@ class Guild(Hashable):
         "_scheduled_events",
         "_members",
         "_role_arrays",
+        "_overwrite_cache",
         "_channels",
         "_icon",
         "_banner",
@@ -626,6 +627,7 @@ class Guild(Hashable):
             self._roles = {}
         state = self._state  # speed up attribute access
         self._role_arrays: dict[tuple[int, ...], utils.SnowflakeList] = {}
+        self._overwrite_cache: dict[tuple[int, int, int, int], Any] = {}
         for r in guild.get("roles", []):
             role = Role(guild=self, data=r, state=state)
             self._roles[role.id] = role
