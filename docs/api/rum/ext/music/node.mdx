@@ -1,0 +1,261 @@
+# `rum.ext.music.node`
+
+## Classes
+
+### `Node`
+
+```python
+class Node(*, pool: NodePool, host: str, port: int, password: str, identifier: str | None = None, secure: bool = False, server_type: ServerType | str = <ServerType.LAVALINK: lavalink>, session: Session | None = None, heartbeat: float = 30.0, resume_timeout: int = 60) -> None
+```
+
+Connection to a Lavalink v4 or NodeLink v3 server.
+
+Handles the WebSocket session, REST requests, and dispatching player/node events through `rum.ext.music.NodePool`. Select protocol behavior with `server_type` (`"lavalink"` or `"nodelink"`).
+
+#### `connect()`
+
+```python
+connect() -> None
+```
+
+Open the WebSocket connection and start listening for events.
+
+#### `disconnect()`
+
+```python
+disconnect() -> None
+```
+
+Close the WebSocket/session and mark the node unavailable.
+
+#### `request()`
+
+```python
+request(method: str, path: str, *, raw: bool = False, **kwargs: Any) -> Any
+```
+
+Perform an authenticated REST request against the node.
+
+Returns decoded JSON by default, `None` for 204, or raw `bytes` when `raw=True`.
+
+#### `get_tracks()`
+
+```python
+get_tracks(identifier: str, *, requester: Any = None) -> LoadResult
+```
+
+Resolve tracks/playlists/search results via `/v4/loadtracks`.
+
+#### `decode_track()`
+
+```python
+decode_track(encoded: str) -> dict[str, Any]
+```
+
+#### `decode_tracks()`
+
+```python
+decode_tracks(encoded: list[str]) -> list[dict[str, Any]]
+```
+
+#### `encode_track()`
+
+```python
+encode_track(track: dict[str, Any]) -> str
+```
+
+#### `encode_tracks()`
+
+```python
+encode_tracks(tracks: list[dict[str, Any]]) -> list[str]
+```
+
+#### `load_lyrics()`
+
+```python
+load_lyrics(encoded: str, *, lang: str | None = None) -> dict[str, Any] | None
+```
+
+#### `load_chapters()`
+
+```python
+load_chapters(encoded: str) -> dict[str, Any] | None
+```
+
+#### `load_meaning()`
+
+```python
+load_meaning(encoded: str, *, lang: str | None = None) -> dict[str, Any] | None
+```
+
+#### `track_stream()`
+
+```python
+track_stream(encoded: str, *, itag: int | None = None) -> bytes
+```
+
+#### `load_stream()`
+
+```python
+load_stream(encoded: str, *, volume: int | None = None, position: int | None = None, filters: dict[str, Any] | None = None) -> bytes
+```
+
+#### `get_session()`
+
+```python
+get_session(session_id: str | None = None) -> Any
+```
+
+#### `update_session()`
+
+```python
+update_session(session_id: str | None = None, **payload: Any) -> dict[str, Any] | None
+```
+
+#### `get_players()`
+
+```python
+get_players(session_id: str | None = None) -> Any
+```
+
+#### `get_player()`
+
+```python
+get_player(guild_id: int, session_id: str | None = None) -> dict[str, Any] | None
+```
+
+#### `update_player()`
+
+```python
+update_player(guild_id: int, payload: dict[str, Any], *, no_replace: bool = False) -> dict[str, Any] | None
+```
+
+Create or update a guild player (`PATCH /v4/sessions/{id}/players/{guild}`).
+
+#### `destroy_player()`
+
+```python
+destroy_player(guild_id: int) -> None
+```
+
+Destroy a guild player on the node (best-effort if unavailable).
+
+#### `subscribe_lyrics()`
+
+```python
+subscribe_lyrics(guild_id: int, *, skip_track_source: bool = False) -> Any
+```
+
+#### `unsubscribe_lyrics()`
+
+```python
+unsubscribe_lyrics(guild_id: int) -> Any
+```
+
+#### `add_mix()`
+
+```python
+add_mix(guild_id: int, payload: dict[str, Any]) -> dict[str, Any] | None
+```
+
+#### `get_mixes()`
+
+```python
+get_mixes(guild_id: int) -> Any
+```
+
+#### `update_mix()`
+
+```python
+update_mix(guild_id: int, mix_id: str, payload: dict[str, Any]) -> Any
+```
+
+#### `remove_mix()`
+
+```python
+remove_mix(guild_id: int, mix_id: str) -> Any
+```
+
+#### `get_sponsorblock()`
+
+```python
+get_sponsorblock(guild_id: int) -> Any
+```
+
+#### `update_sponsorblock()`
+
+```python
+update_sponsorblock(guild_id: int, payload: dict[str, Any]) -> Any
+```
+
+#### `set_sponsorblock_segments()`
+
+```python
+set_sponsorblock_segments(guild_id: int, segments: list[dict[str, Any]]) -> Any
+```
+
+#### `clear_sponsorblock()`
+
+```python
+clear_sponsorblock(guild_id: int) -> Any
+```
+
+#### `get_info()`
+
+```python
+get_info() -> Any
+```
+
+#### `get_stats()`
+
+```python
+get_stats() -> Any
+```
+
+#### `get_version()`
+
+```python
+get_version() -> Any
+```
+
+#### `get_routeplanner_status()`
+
+```python
+get_routeplanner_status() -> Any
+```
+
+#### `routeplanner_free_address()`
+
+```python
+routeplanner_free_address(address: str) -> Any
+```
+
+#### `routeplanner_free_all()`
+
+```python
+routeplanner_free_all() -> Any
+```
+
+#### `get_youtube_config()`
+
+```python
+get_youtube_config(*, validate: bool = False) -> Any
+```
+
+#### `update_youtube_config()`
+
+```python
+update_youtube_config(payload: dict[str, Any]) -> Any
+```
+
+#### `youtube_oauth()`
+
+```python
+youtube_oauth(refresh_token: str) -> Any
+```
+
+#### `get_local_player()`
+
+```python
+get_local_player(guild_id: int) -> Player | None
+```

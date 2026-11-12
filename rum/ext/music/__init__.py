@@ -6,6 +6,9 @@ A Lavalink v4 and NodeLink v3 music client for rum.
 
 Uses rum's transport (no aiohttp, no voice extra). Choose the server protocol at
 init with ``server_type="lavalink"`` or ``server_type="nodelink"``.
+
+Players accept a custom queue provider via ``queue=...`` (default: in-memory
+:class:`~rum.ext.music.Queue`) so queue state can be stored outside RAM.
 """
 
 from .enums import *

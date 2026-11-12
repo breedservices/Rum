@@ -52,7 +52,6 @@ voice = [
     "PyNaCl>=1.6.2,<1.7",
     "davey>=0.1.4,<1",
 ]
-music = []
 
 [project.urls]
 Source = "https://github.com/breedservices/Rum"

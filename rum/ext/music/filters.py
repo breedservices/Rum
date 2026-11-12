@@ -29,9 +29,12 @@ __all__ = (
 
 
 class Filter:
+    """Base filter that serializes to a Lavalink/NodeLink filter payload."""
+
     __slots__ = ()
 
     def to_dict(self) -> dict[str, Any]:
+        """Return the filter's JSON-serializable payload fragment."""
         raise NotImplementedError
 
 
@@ -344,25 +347,32 @@ class AudioFading:
 
 
 class Filters:
+    """Collection of audio filters applied to a player."""
+
     __slots__ = ("_filters",)
 
     def __init__(self) -> None:
+        """Create an empty filter set."""
         self._filters: dict[str, Filter] = {}
 
     def add(self, f: Filter) -> Filters:
+        """Add or replace a filter of the given type."""
         self._filters[type(f).__name__.lower()] = f
         return self
 
     set = add
 
     def remove(self, filter_type: type[Filter]) -> Filters:
+        """Remove a filter type if present."""
         self._filters.pop(filter_type.__name__.lower(), None)
         return self
 
     def clear(self) -> None:
+        """Remove all filters."""
         self._filters.clear()
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize all filters into a single payload dict."""
         payload: dict[str, Any] = {}
         for f in self._filters.values():
             payload.update(f.to_dict())

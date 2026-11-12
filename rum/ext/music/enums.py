@@ -12,6 +12,8 @@ __all__ = (
 
 
 class LoadType(str, Enum):
+    """Load result type returned by ``/v4/loadtracks``."""
+
     TRACK = "track"
     PLAYLIST = "playlist"
     SEARCH = "search"
@@ -20,6 +22,8 @@ class LoadType(str, Enum):
 
 
 class SearchType(str, Enum):
+    """Common search/source prefixes supported by Lavalink/NodeLink backends."""
+
     YOUTUBE = "ytsearch"
     YOUTUBE_MUSIC = "ytmsearch"
     SOUNDCLOUD = "scsearch"
@@ -39,11 +43,15 @@ class SearchType(str, Enum):
 
 
 class ServerType(str, Enum):
+    """Audio server protocol to use for a node (``lavalink`` or ``nodelink``)."""
+
     LAVALINK = "lavalink"
     NODELINK = "nodelink"
 
 
 class TrackEndReason(str, Enum):
+    """Reason a track ended, as reported by the server."""
+
     FINISHED = "finished"
     LOAD_FAILED = "loadFailed"
     STOPPED = "stopped"

@@ -1310,7 +1310,7 @@ requires-dist = [
     { name = "wsproto", specifier = ">=1.2.0,<2" },
     { name = "yarl", specifier = ">=1.6.3,<2.0" },
 ]
-provides-extras = ["voice", "music"]
+provides-extras = ["voice"]
 
 [package.metadata.requires-dev]
 dev = [

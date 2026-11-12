@@ -1,0 +1,63 @@
+# `rum.ext.music.pool`
+
+## Classes
+
+### `NodePool`
+
+```python
+class NodePool(bot: rum.Client) -> None
+```
+
+Manages music nodes for a bot and dispatches music events.
+
+A pool is attached to the bot as `bot.music` (and `bot.lavalink` for compatibility). Events are dispatched as `on_music_*` handlers.
+
+#### `get_pool()`
+
+```python
+get_pool(bot: rum.Client) -> NodePool | None
+```
+
+Return the pool attached to `bot`, if any.
+
+#### `create_node()`
+
+```python
+create_node(*, bot: rum.Client, host: str, port: int, password: str, identifier: str | None = None, secure: bool = False, server_type: ServerType | str = <ServerType.LAVALINK: lavalink>, session: Session | None = None, heartbeat: float = 30.0, resume_timeout: int = 60) -> Node
+```
+
+Create (or reuse) the bot's pool, add a node, and connect it.
+
+Set `server_type` to `"lavalink"` or `"nodelink"` to match the server.
+
+#### `add_node()`
+
+```python
+add_node(*, host: str, port: int, password: str, identifier: str | None = None, secure: bool = False, server_type: ServerType | str = <ServerType.LAVALINK: lavalink>, session: Session | None = None, heartbeat: float = 30.0, resume_timeout: int = 60) -> Node
+```
+
+Add and connect a node to this pool.
+
+#### `get_node()`
+
+```python
+get_node(*, identifier: str | None = None) -> Node
+```
+
+Return a specific node or the best available node by penalty.
+
+#### `fetch_tracks()`
+
+```python
+fetch_tracks(query: str, *, requester: Any = None, node: Node | None = None) -> LoadResult
+```
+
+Load tracks via the given or best available node.
+
+#### `disconnect()`
+
+```python
+disconnect() -> None
+```
+
+Disconnect and remove all nodes from the pool.

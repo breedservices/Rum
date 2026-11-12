@@ -1,0 +1,47 @@
+# `rum.ext.music.objects`
+
+## Classes
+
+### `LoadResult`
+
+```python
+class LoadResult(load_type: LoadType, tracks: list[Track] = <factory>, playlist: Playlist | None = None, error: dict[str, Any] | None = None, raw: dict[str, Any] = <factory>) -> None
+```
+
+Result of a track/playlist/search load request.
+
+#### `from_response()`
+
+```python
+from_response(data: dict[str, Any], *, requester: Any = None) -> LoadResult
+```
+
+### `Playlist`
+
+```python
+class Playlist(name: str, tracks: list[Track], selected_track: int = -1, info: dict[str, Any] = <factory>, requester: Any = None) -> None
+```
+
+A playlist returned by a Lavalink or NodeLink node.
+
+#### `from_data()`
+
+```python
+from_data(data: dict[str, Any], *, requester: Any = None) -> Playlist
+```
+
+### `Track`
+
+```python
+class Track(encoded: str, identifier: str = '', title: str = 'Unknown title', author: str = 'Unknown author', uri: str | None = None, source_name: str | None = None, duration: int = 0, position: int = 0, is_stream: bool = False, is_seekable: bool = True, artwork_url: str | None = None, isrc: str | None = None, requester: Any = None, plugin_info: dict[str, Any] | None = None, user_data: dict[str, Any] | None = None, extras: dict[str, Any] = <factory>) -> None
+```
+
+A playable track returned by a Lavalink or NodeLink node.
+
+Stores the encoded track and commonly used metadata. `plugin_info`, `user_data`, and `extras` preserve additional payload fields when present.
+
+#### `from_data()`
+
+```python
+from_data(data: dict[str, Any], *, requester: Any = None) -> Track
+```

@@ -1,0 +1,343 @@
+# `rum.ext.music.filters`
+
+## Classes
+
+### `AudioFading`
+
+```python
+class AudioFading(enabled: bool | None = None, track_start: dict[str, Any] | None = None, track_end: dict[str, Any] | None = None, track_stop: dict[str, Any] | None = None, seek: dict[str, Any] | None = None, ducking: dict[str, Any] | None = None) -> None
+```
+
+AudioFading(enabled: 'bool | None' = None, track_start: 'dict\[str, Any\] | None' = None, track_end: 'dict\[str, Any\] | None' = None, track_stop: 'dict\[str, Any\] | None' = None, seek: 'dict\[str, Any\] | None' = None, ducking: 'dict\[str, Any\] | None' = None)
+
+#### `step()`
+
+```python
+step(duration: int, curve: FadeCurve | str = <FadeCurve.LINEAR: linear>) -> dict[str, Any]
+```
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+### `ChannelMix`
+
+```python
+class ChannelMix(left_to_left: float | None = None, left_to_right: float | None = None, right_to_left: float | None = None, right_to_right: float | None = None) -> None
+```
+
+ChannelMix(left_to_left: 'float | None' = None, left_to_right: 'float | None' = None, right_to_left: 'float | None' = None, right_to_right: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Chorus`
+
+```python
+class Chorus(rate: float | None = None, depth: float | None = None, delay: float | None = None, mix: float | None = None, feedback: float | None = None) -> None
+```
+
+Chorus(rate: 'float | None' = None, depth: 'float | None' = None, delay: 'float | None' = None, mix: 'float | None' = None, feedback: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Compressor`
+
+```python
+class Compressor(threshold: float | None = None, ratio: float | None = None, attack: float | None = None, release: float | None = None, gain: float | None = None) -> None
+```
+
+Compressor(threshold: 'float | None' = None, ratio: 'float | None' = None, attack: 'float | None' = None, release: 'float | None' = None, gain: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Distortion`
+
+```python
+class Distortion(sin_offset: float | None = None, sin_scale: float | None = None, cos_offset: float | None = None, cos_scale: float | None = None, tan_offset: float | None = None, tan_scale: float | None = None, offset: float | None = None, scale: float | None = None) -> None
+```
+
+Distortion(sin_offset: 'float | None' = None, sin_scale: 'float | None' = None, cos_offset: 'float | None' = None, cos_scale: 'float | None' = None, tan_offset: 'float | None' = None, tan_scale: 'float | None' = None, offset: 'float | None' = None, scale: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Echo`
+
+```python
+class Echo(delay: float | None = None, feedback: float | None = None, mix: float | None = None) -> None
+```
+
+Echo(delay: 'float | None' = None, feedback: 'float | None' = None, mix: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Equalizer`
+
+```python
+class Equalizer(bands: list[tuple[int, float]] = <factory>) -> None
+```
+
+Equalizer(bands: 'list\[tuple\[int, float\]\]' = \<factory\>)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Filter`
+
+```python
+class Filter()
+```
+
+Base filter that serializes to a Lavalink/NodeLink filter payload.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Filters`
+
+```python
+class Filters() -> None
+```
+
+Collection of audio filters applied to a player.
+
+#### `add()`
+
+```python
+add(f: Filter) -> Filters
+```
+
+Add or replace a filter of the given type.
+
+#### `set()`
+
+```python
+set(f: Filter) -> Filters
+```
+
+Add or replace a filter of the given type.
+
+#### `remove()`
+
+```python
+remove(filter_type: type[Filter]) -> Filters
+```
+
+Remove a filter type if present.
+
+#### `clear()`
+
+```python
+clear() -> None
+```
+
+Remove all filters.
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Serialize all filters into a single payload dict.
+
+### `HighPass`
+
+```python
+class HighPass(smoothing: float | None = None) -> None
+```
+
+HighPass(smoothing: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Karaoke`
+
+```python
+class Karaoke(level: float | None = None, mono_level: float | None = None, filter_band: float | None = None, filter_width: float | None = None) -> None
+```
+
+Karaoke(level: 'float | None' = None, mono_level: 'float | None' = None, filter_band: 'float | None' = None, filter_width: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `LowPass`
+
+```python
+class LowPass(smoothing: float | None = None) -> None
+```
+
+LowPass(smoothing: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Phaser`
+
+```python
+class Phaser(stages: int | None = None, rate: float | None = None, depth: float | None = None, feedback: float | None = None, mix: float | None = None, min_frequency: float | None = None, max_frequency: float | None = None) -> None
+```
+
+Phaser(stages: 'int | None' = None, rate: 'float | None' = None, depth: 'float | None' = None, feedback: 'float | None' = None, mix: 'float | None' = None, min_frequency: 'float | None' = None, max_frequency: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Rotation`
+
+```python
+class Rotation(rotation_hz: float | None = None) -> None
+```
+
+Rotation(rotation_hz: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Spatial`
+
+```python
+class Spatial(depth: float | None = None, rate: float | None = None) -> None
+```
+
+Spatial(depth: 'float | None' = None, rate: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Timescale`
+
+```python
+class Timescale(speed: float | None = None, pitch: float | None = None, rate: float | None = None) -> None
+```
+
+Timescale(speed: 'float | None' = None, pitch: 'float | None' = None, rate: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Tremolo`
+
+```python
+class Tremolo(frequency: float | None = None, depth: float | None = None) -> None
+```
+
+Tremolo(frequency: 'float | None' = None, depth: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Vibrato`
+
+```python
+class Vibrato(frequency: float | None = None, depth: float | None = None) -> None
+```
+
+Vibrato(frequency: 'float | None' = None, depth: 'float | None' = None)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.
+
+### `Volume`
+
+```python
+class Volume(volume: float = 1.0) -> None
+```
+
+Volume(volume: 'float' = 1.0)
+
+#### `to_dict()`
+
+```python
+to_dict() -> dict[str, Any]
+```
+
+Return the filter's JSON-serializable payload fragment.

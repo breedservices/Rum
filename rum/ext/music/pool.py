@@ -23,10 +23,17 @@ _CAMEL_RE = re.compile(r"(?<!^)(?=[A-Z])")
 
 
 class NodePool:
+    """Manages music nodes for a bot and dispatches music events.
+
+    A pool is attached to the bot as ``bot.music`` (and ``bot.lavalink`` for
+    compatibility). Events are dispatched as ``on_music_*`` handlers.
+    """
+
     __slots__ = ("_nodes", "bot")
     _pools: ClassVar[dict[int, NodePool]] = {}
 
     def __init__(self, bot: rum.Client) -> None:
+        """Create and attach a node pool to ``bot``."""
         self.bot = bot
         self._nodes: dict[str, Node] = {}
         self._pools[id(bot)] = self
@@ -35,10 +42,12 @@ class NodePool:
 
     @property
     def nodes(self) -> dict[str, Node]:
+        """A snapshot mapping of node identifiers to nodes."""
         return dict(self._nodes)
 
     @classmethod
     def get_pool(cls, bot: rum.Client) -> NodePool | None:
+        """Return the pool attached to ``bot``, if any."""
         pool = cls._pools.get(id(bot))
         if pool is None:
             pool = getattr(bot, "music", None) or getattr(bot, "lavalink", None)
@@ -59,6 +68,10 @@ class NodePool:
         heartbeat: float = 30.0,
         resume_timeout: int = 60,
     ) -> Node:
+        """Create (or reuse) the bot's pool, add a node, and connect it.
+
+        Set ``server_type`` to ``"lavalink"`` or ``"nodelink"`` to match the server.
+        """
         pool = cls.get_pool(bot) or cls(bot)
         return await pool.add_node(
             host=host,
@@ -85,6 +98,7 @@ class NodePool:
         heartbeat: float = 30.0,
         resume_timeout: int = 60,
     ) -> Node:
+        """Add and connect a node to this pool."""
         node = Node(
             pool=self,
             host=host,
@@ -106,6 +120,7 @@ class NodePool:
         return node
 
     def get_node(self, *, identifier: str | None = None) -> Node:
+        """Return a specific node or the best available node by penalty."""
         if identifier:
             node = self._nodes.get(identifier)
             if not node or not node.available:
@@ -127,6 +142,7 @@ class NodePool:
     async def fetch_tracks(
         self, query: str, *, requester: Any = None, node: Node | None = None
     ) -> LoadResult:
+        """Load tracks via the given or best available node."""
         if node is None:
             node = self.get_node()
         return await node.get_tracks(query, requester=requester)
@@ -141,6 +157,7 @@ class NodePool:
             _log.exception("Error dispatching music_%s", snake)
 
     async def disconnect(self) -> None:
+        """Disconnect and remove all nodes from the pool."""
         for node in list(self._nodes.values()):
             try:
                 await node.disconnect()

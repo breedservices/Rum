@@ -48,6 +48,8 @@ __all__ = (
 
 @dataclass(slots=True)
 class NodeEvent:
+    """Base event emitted for node-level activity."""
+
     node: Node
 
 
@@ -64,6 +66,11 @@ class NodeDisconnectedEvent(NodeEvent):
 
 @dataclass(slots=True)
 class MusicEvent:
+    """Base event emitted for player/guild activity.
+
+    ``raw`` contains the original server payload when available.
+    """
+
     player: Player
     node: Node
     raw: dict[str, Any] | None = None

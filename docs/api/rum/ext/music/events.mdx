@@ -1,0 +1,263 @@
+# `rum.ext.music.events`
+
+## Classes
+
+### `ConnectionStatusEvent`
+
+```python
+class ConnectionStatusEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, status: str | None = None, metrics: dict[str, Any] | None = None) -> None
+```
+
+ConnectionStatusEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, status: 'str | None' = None, metrics: 'dict\[str, Any\] | None' = None)
+
+### `EternalBoxInfoEvent`
+
+```python
+class EternalBoxInfoEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, eternalbox: dict[str, Any] | None = None) -> None
+```
+
+EternalBoxInfoEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, eternalbox: 'dict\[str, Any\] | None' = None)
+
+### `EternalBoxJumpEvent`
+
+```python
+class EternalBoxJumpEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, from_beat: int = 0, to_beat: int = 0, jump_type: str | None = None) -> None
+```
+
+EternalBoxJumpEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, from_beat: 'int' = 0, to_beat: 'int' = 0, jump_type: 'str | None' = None)
+
+### `FiltersChangedEvent`
+
+```python
+class FiltersChangedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, filters: dict[str, Any] | None = None) -> None
+```
+
+FiltersChangedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, filters: 'dict\[str, Any\] | None' = None)
+
+### `LyricsFoundEvent`
+
+```python
+class LyricsFoundEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, lyrics: dict[str, Any] | None = None) -> None
+```
+
+LyricsFoundEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, lyrics: 'dict\[str, Any\] | None' = None)
+
+### `LyricsLineEvent`
+
+```python
+class LyricsLineEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, line_index: int = 0, line: dict[str, Any] | None = None) -> None
+```
+
+LyricsLineEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, line_index: 'int' = 0, line: 'dict\[str, Any\] | None' = None)
+
+### `LyricsNotFoundEvent`
+
+```python
+class LyricsNotFoundEvent(player: Player, node: Node, raw: dict[str, Any] | None = None) -> None
+```
+
+LyricsNotFoundEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None)
+
+### `MixEndedEvent`
+
+```python
+class MixEndedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, mix_id: str | None = None, reason: str | None = None) -> None
+```
+
+MixEndedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, mix_id: 'str | None' = None, reason: 'str | None' = None)
+
+### `MixStartedEvent`
+
+```python
+class MixStartedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, mix_id: str | None = None, track: Track | None = None, volume: float | None = None) -> None
+```
+
+MixStartedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, mix_id: 'str | None' = None, track: 'Track | None' = None, volume: 'float | None' = None)
+
+### `MusicEvent`
+
+```python
+class MusicEvent(player: Player, node: Node, raw: dict[str, Any] | None = None) -> None
+```
+
+Base event emitted for player/guild activity.
+
+`raw` contains the original server payload when available.
+
+### `MusicEvent`
+
+```python
+class MusicEvent(player: Player, node: Node, raw: dict[str, Any] | None = None) -> None
+```
+
+Base event emitted for player/guild activity.
+
+`raw` contains the original server payload when available.
+
+### `NodeConnectedEvent`
+
+```python
+class NodeConnectedEvent(node: Node) -> None
+```
+
+NodeConnectedEvent(node: 'Node')
+
+### `NodeDisconnectedEvent`
+
+```python
+class NodeDisconnectedEvent(node: Node, code: int | None = None, reason: str | None = None) -> None
+```
+
+NodeDisconnectedEvent(node: 'Node', code: 'int | None' = None, reason: 'str | None' = None)
+
+### `NodeEvent`
+
+```python
+class NodeEvent(node: Node) -> None
+```
+
+Base event emitted for node-level activity.
+
+### `PauseEvent`
+
+```python
+class PauseEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, paused: bool = False) -> None
+```
+
+PauseEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, paused: 'bool' = False)
+
+### `PlayerConnectedEvent`
+
+```python
+class PlayerConnectedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, voice: dict[str, Any] | None = None) -> None
+```
+
+PlayerConnectedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, voice: 'dict\[str, Any\] | None' = None)
+
+### `PlayerCreatedEvent`
+
+```python
+class PlayerCreatedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, player_state: dict[str, Any] | None = None) -> None
+```
+
+PlayerCreatedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, player_state: 'dict\[str, Any\] | None' = None)
+
+### `PlayerDestroyedEvent`
+
+```python
+class PlayerDestroyedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None) -> None
+```
+
+PlayerDestroyedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None)
+
+### `PlayerReconnectingEvent`
+
+```python
+class PlayerReconnectingEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, voice: dict[str, Any] | None = None) -> None
+```
+
+PlayerReconnectingEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, voice: 'dict\[str, Any\] | None' = None)
+
+### `PlayerUpdateEvent`
+
+```python
+class PlayerUpdateEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, state: dict[str, Any] | None = None) -> None
+```
+
+PlayerUpdateEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, state: 'dict\[str, Any\] | None' = None)
+
+### `RawEvent`
+
+```python
+class RawEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, type: str = '') -> None
+```
+
+RawEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, type: 'str' = '')
+
+### `SeekEvent`
+
+```python
+class SeekEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, position: int = 0) -> None
+```
+
+SeekEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, position: 'int' = 0)
+
+### `SponsorBlockSegmentSkippedEvent`
+
+```python
+class SponsorBlockSegmentSkippedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, segment: dict[str, Any] | None = None) -> None
+```
+
+SponsorBlockSegmentSkippedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, segment: 'dict\[str, Any\] | None' = None)
+
+### `SponsorBlockSegmentsLoadedEvent`
+
+```python
+class SponsorBlockSegmentsLoadedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, segments: list[dict[str, Any]] | None = None) -> None
+```
+
+SponsorBlockSegmentsLoadedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, segments: 'list\[dict\[str, Any\]\] | None' = None)
+
+### `StreamMetadataEvent`
+
+```python
+class StreamMetadataEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, stream: dict[str, Any] | None = None) -> None
+```
+
+StreamMetadataEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, stream: 'dict\[str, Any\] | None' = None)
+
+### `TrackEndEvent`
+
+```python
+class TrackEndEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, track: Track | None = None, reason: TrackEndReason | str = 'finished') -> None
+```
+
+TrackEndEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, track: 'Track | None' = None, reason: 'TrackEndReason | str' = 'finished')
+
+### `TrackExceptionEvent`
+
+```python
+class TrackExceptionEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, track: Track | None = None, exception: dict[str, Any] | None = None) -> None
+```
+
+TrackExceptionEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, track: 'Track | None' = None, exception: 'dict\[str, Any\] | None' = None)
+
+### `TrackStartEvent`
+
+```python
+class TrackStartEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, track: Track | None = None, playing_quality: Any = None) -> None
+```
+
+TrackStartEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, track: 'Track | None' = None, playing_quality: 'Any' = None)
+
+### `TrackStuckEvent`
+
+```python
+class TrackStuckEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, track: Track | None = None, threshold_ms: int = 0, reason: str | None = None) -> None
+```
+
+TrackStuckEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, track: 'Track | None' = None, threshold_ms: 'int' = 0, reason: 'str | None' = None)
+
+### `VolumeChangedEvent`
+
+```python
+class VolumeChangedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, volume: int = 100) -> None
+```
+
+VolumeChangedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, volume: 'int' = 100)
+
+### `WebSocketClosedEvent`
+
+```python
+class WebSocketClosedEvent(player: Player, node: Node, raw: dict[str, Any] | None = None, code: int = 0, reason: str = '', by_remote: bool = False) -> None
+```
+
+WebSocketClosedEvent(player: 'Player', node: 'Node', raw: 'dict\[str, Any\] | None' = None, code: 'int' = 0, reason: 'str' = '', by_remote: 'bool' = False)
+
+### `WorkerFailedEvent`
+
+```python
+class WorkerFailedEvent(node: Node, affected_guilds: list[str] | None = None, message: str | None = None, raw: dict[str, Any] | None = None) -> None
+```
+
+WorkerFailedEvent(node: 'Node', affected_guilds: 'list\[str\] | None' = None, message: 'str | None' = None, raw: 'dict\[str, Any\] | None' = None)

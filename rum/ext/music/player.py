@@ -22,7 +22,16 @@ __all__ = ("Player",)
 
 
 class Player(VoiceProtocol):
-    """A Lavalink/Nodelink-backed voice protocol for rum."""
+    """Voice protocol that plays audio through a Lavalink v4 or NodeLink v3 node.
+
+    Use with ``channel.connect(cls=Player)`` (or a factory returning a configured
+    player). The player attaches to ``client.music`` / ``client.lavalink``
+    (:class:`~rum.ext.music.NodePool`) on connect.
+
+    A custom queue provider can be supplied via ``queue=...`` to keep queue state
+    outside RAM (e.g. disk/database-backed). The provider must implement at least
+    ``loop_mode`` and ``get()`` raising :class:`~rum.ext.music.QueueEmpty`.
+    """
 
     __slots__ = (
         "_connected",
@@ -44,7 +53,24 @@ class Player(VoiceProtocol):
         "queue",
     )
 
-    def __init__(self, client: rum.Client, channel: rum.abc.Connectable):
+    def __init__(
+        self,
+        client: rum.Client,
+        channel: rum.abc.Connectable,
+        *,
+        queue: Any | None = None,
+    ):
+        """Create a player for a voice channel.
+
+        Parameters
+        ----------
+        client:
+            The rum client/bot instance.
+        channel:
+            The voice/stage channel to connect to.
+        queue:
+            Optional custom queue provider. Defaults to :class:`~rum.ext.music.Queue`.
+        """
         super().__init__(client, channel)
         self.client: rum.Client = client
         self.channel = channel
@@ -55,7 +81,7 @@ class Player(VoiceProtocol):
         self.pool: NodePool | None = pool
         self.node: Node | None = None
 
-        self.queue = Queue()
+        self.queue = queue if queue is not None else Queue()
         self.filters = Filters()
         self.fading: AudioFading | None = None
 
@@ -70,6 +96,7 @@ class Player(VoiceProtocol):
         self._voice_server: dict[str, Any] = {}
 
     async def on_voice_state_update(self, data) -> None:
+        """Handle a Discord voice state update and forward session info to the node."""
         session_id = getattr(data, "session_id", None)
         channel_id = getattr(data, "channel_id", None)
         if hasattr(data, "get"):
@@ -95,6 +122,7 @@ class Player(VoiceProtocol):
             node._players.pop(guild_id, None)
 
     async def on_voice_server_update(self, data) -> None:
+        """Handle a Discord voice server update and forward voice credentials."""
         token = getattr(data, "token", None)
         endpoint = getattr(data, "endpoint", None)
         guild_id = getattr(data, "guild_id", None)
@@ -115,6 +143,7 @@ class Player(VoiceProtocol):
         self_deaf: bool = False,
         self_mute: bool = False,
     ) -> None:
+        """Select a node, register this player, and join the voice channel."""
         if self.pool is None:
             self.pool = getattr(self.client, "music", None) or getattr(
                 self.client, "lavalink", None
@@ -132,6 +161,7 @@ class Player(VoiceProtocol):
         self._connected = True
 
     async def disconnect(self, *, force: bool = False) -> None:
+        """Destroy the remote player and leave the voice channel."""
         self._connected = False
         guild_id = self.guild_id
         node = self.node
@@ -152,6 +182,7 @@ class Player(VoiceProtocol):
             self.cleanup()
 
     async def move_to(self, channel: rum.abc.Connectable) -> None:
+        """Move the player to another voice channel."""
         self.channel = channel
         await self.guild.change_voice_state(channel=channel)
 
@@ -172,22 +203,27 @@ class Player(VoiceProtocol):
 
     @property
     def current(self) -> Track | None:
+        """The currently playing or last-started track, if any."""
         return self._current
 
     @property
     def position(self) -> int:
+        """Last known playback position in milliseconds."""
         return self._position
 
     @property
     def paused(self) -> bool:
+        """Whether playback is paused."""
         return self._paused
 
     @property
     def volume(self) -> int:
+        """Current player volume (server-side scale, typically 0-1000)."""
         return self._volume
 
     @property
     def is_playing(self) -> bool:
+        """Whether a track is active and not paused."""
         return self._connected and self._current is not None and not self._paused
 
     def _update_state(self, state: dict[str, Any]) -> None:
@@ -208,6 +244,11 @@ class Player(VoiceProtocol):
         next_track: Track | None = None,
         fading: AudioFading | dict[str, Any] | None = None,
     ) -> Track:
+        """Play or replace a track.
+
+        Supports NodeLink/Lavalink options such as ``endTime`` (``end``),
+        ``userData``, ``audioTrackId``, ``nextTrack`` preloading, and ``fading``.
+        """
         node = self.node
         guild_id = self.guild_id
         if not node or not guild_id:
@@ -241,6 +282,7 @@ class Player(VoiceProtocol):
         return track
 
     async def stop(self) -> None:
+        """Stop playback (sends a null track)."""
         node = self.node
         guild_id = self.guild_id
         if not node or not guild_id:
@@ -249,6 +291,7 @@ class Player(VoiceProtocol):
         self._current = None
 
     async def pause(self, paused: bool = True) -> None:
+        """Pause or resume playback."""
         node = self.node
         guild_id = self.guild_id
         if not node or not guild_id:
@@ -257,9 +300,11 @@ class Player(VoiceProtocol):
         self._paused = paused
 
     async def resume(self) -> None:
+        """Resume playback."""
         await self.pause(False)
 
     async def seek(self, position: int) -> None:
+        """Seek to ``position`` in milliseconds."""
         node = self.node
         guild_id = self.guild_id
         if not node or not guild_id:
@@ -269,6 +314,7 @@ class Player(VoiceProtocol):
         self._position = pos
 
     async def set_volume(self, volume: int) -> None:
+        """Set the player volume (server-side scale, typically 0-1000)."""
         node = self.node
         guild_id = self.guild_id
         if not node or not guild_id:
@@ -278,6 +324,7 @@ class Player(VoiceProtocol):
         self._volume = vol
 
     async def set_filters(self, filters: Filters | None = None) -> None:
+        """Apply current or provided filters to the player."""
         if filters is not None:
             self.filters = filters
         node = self.node
@@ -287,6 +334,7 @@ class Player(VoiceProtocol):
         await node.update_player(guild_id, {"filters": self.filters.to_dict()})
 
     async def destroy(self) -> None:
+        """Alias for a forced disconnect/destroy."""
         await self.disconnect(force=True)
 
     async def fetch_tracks(
@@ -296,6 +344,11 @@ class Player(VoiceProtocol):
         search_type: SearchType | str | None = None,
         requester: Any = None,
     ) -> LoadResult:
+        """Load tracks/playlist/search results via the node.
+
+        If ``search_type`` is provided and ``query`` is not a URL, the appropriate
+        search prefix is prepended (supports Lavalink/NodeLink prefixes).
+        """
         pool = self.pool
         if pool is None:
             raise PlayerException("No music NodePool attached")
@@ -310,6 +363,11 @@ class Player(VoiceProtocol):
         return await pool.fetch_tracks(identifier, requester=requester, node=self.node)
 
     async def play_next(self) -> Track | None:
+        """Advance the queue and play the next track.
+
+        Respects ``queue.loop_mode == "track"`` by replaying the current track.
+        Returns ``None`` when the queue is empty.
+        """
         try:
             if self.queue.loop_mode == "track" and self._current:
                 return await self.play(self._current)

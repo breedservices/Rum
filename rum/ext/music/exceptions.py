@@ -14,7 +14,7 @@ __all__ = (
 
 
 class MusicException(Exception):
-    """Base exception for rum.ext.music."""
+    """Base exception for ``rum.ext.music``."""
 
 
 # Backwards-compatible alias.

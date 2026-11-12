@@ -1,0 +1,141 @@
+# `rum.ext.music.player`
+
+## Classes
+
+### `Player`
+
+```python
+class Player(client: rum.Client, channel: rum.abc.Connectable, *, queue: Any | None = None)
+```
+
+Voice protocol that plays audio through a Lavalink v4 or NodeLink v3 node.
+
+Use with `channel.connect(cls=Player)` (or a factory returning a configured player). The player attaches to `client.music` / `client.lavalink` (`rum.ext.music.NodePool`) on connect.
+
+A custom queue provider can be supplied via `queue=...` to keep queue state outside RAM (e.g. disk/database-backed). The provider must implement at least `loop_mode` and `get()` raising `rum.ext.music.QueueEmpty`.
+
+#### `on_voice_state_update()`
+
+```python
+on_voice_state_update(data) -> None
+```
+
+Handle a Discord voice state update and forward session info to the node.
+
+#### `on_voice_server_update()`
+
+```python
+on_voice_server_update(data) -> None
+```
+
+Handle a Discord voice server update and forward voice credentials.
+
+#### `connect()`
+
+```python
+connect(*, timeout: float = 30.0, reconnect: bool = False, self_deaf: bool = False, self_mute: bool = False) -> None
+```
+
+Select a node, register this player, and join the voice channel.
+
+#### `disconnect()`
+
+```python
+disconnect(*, force: bool = False) -> None
+```
+
+Destroy the remote player and leave the voice channel.
+
+#### `move_to()`
+
+```python
+move_to(channel: rum.abc.Connectable) -> None
+```
+
+Move the player to another voice channel.
+
+#### `play()`
+
+```python
+play(track: Track, *, start: int = 0, end: int | None = None, no_replace: bool = False, volume: int | None = None, pause: bool = False, user_data: dict[str, Any] | None = None, audio_track_id: str | None = None, next_track: Track | None = None, fading: AudioFading | dict[str, Any] | None = None) -> Track
+```
+
+Play or replace a track.
+
+Supports NodeLink/Lavalink options such as `endTime` (`end`), `userData`, `audioTrackId`, `nextTrack` preloading, and `fading`.
+
+#### `stop()`
+
+```python
+stop() -> None
+```
+
+Stop playback (sends a null track).
+
+#### `pause()`
+
+```python
+pause(paused: bool = True) -> None
+```
+
+Pause or resume playback.
+
+#### `resume()`
+
+```python
+resume() -> None
+```
+
+Resume playback.
+
+#### `seek()`
+
+```python
+seek(position: int) -> None
+```
+
+Seek to `position` in milliseconds.
+
+#### `set_volume()`
+
+```python
+set_volume(volume: int) -> None
+```
+
+Set the player volume (server-side scale, typically 0-1000).
+
+#### `set_filters()`
+
+```python
+set_filters(filters: Filters | None = None) -> None
+```
+
+Apply current or provided filters to the player.
+
+#### `destroy()`
+
+```python
+destroy() -> None
+```
+
+Alias for a forced disconnect/destroy.
+
+#### `fetch_tracks()`
+
+```python
+fetch_tracks(query: str, *, search_type: SearchType | str | None = None, requester: Any = None) -> LoadResult
+```
+
+Load tracks/playlist/search results via the node.
+
+If `search_type` is provided and `query` is not a URL, the appropriate search prefix is prepended (supports Lavalink/NodeLink prefixes).
+
+#### `play_next()`
+
+```python
+play_next() -> Track | None
+```
+
+Advance the queue and play the next track.
+
+Respects `queue.loop_mode == "track"` by replaying the current track. Returns `None` when the queue is empty.

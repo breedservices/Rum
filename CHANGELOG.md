@@ -26,7 +26,8 @@ These changes are available on the `master` branch, but have not yet been releas
   `VoiceProtocol` player, track loading, queue, filters, events, and REST helpers).
   Select the server with `server_type="lavalink"` or `server_type="nodelink"` when
   creating a node. It uses rum's built-in HTTP/WebSocket transport (no `aiohttp`
-  dependency) and does not depend on the `voice` extra.
+  dependency), does not depend on the `voice` extra, and supports custom queue
+  providers (e.g. disk/database-backed) instead of the default in-memory queue.
 
 ### Changed
 

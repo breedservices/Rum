@@ -10,7 +10,11 @@ __all__ = ("LoadResult", "Playlist", "Track")
 
 @dataclass(slots=True)
 class Track:
-    """A playable track returned by a Lavalink/Nodelink node."""
+    """A playable track returned by a Lavalink or NodeLink node.
+
+    Stores the encoded track and commonly used metadata. ``plugin_info``,
+    ``user_data``, and ``extras`` preserve additional payload fields when present.
+    """
 
     encoded: str
     identifier: str = ""
@@ -65,7 +69,7 @@ class Track:
 
 @dataclass(slots=True)
 class Playlist:
-    """A playlist returned by a Lavalink/Nodelink node."""
+    """A playlist returned by a Lavalink or NodeLink node."""
 
     name: str
     tracks: list[Track]
@@ -90,6 +94,8 @@ class Playlist:
 
 @dataclass(slots=True)
 class LoadResult:
+    """Result of a track/playlist/search load request."""
+
     load_type: LoadType
     tracks: list[Track] = field(default_factory=list)
     playlist: Playlist | None = None

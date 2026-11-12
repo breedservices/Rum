@@ -1,0 +1,103 @@
+# `rum.ext.music.queue`
+
+## Classes
+
+### `Queue`
+
+```python
+class Queue(*, max_size: int | None = None) -> None
+```
+
+Default in-memory track queue for `rum.ext.music.Player`.
+
+A custom queue provider can be used instead by passing a compatible object to `Player(..., queue=...)`. At minimum, a player expects `loop_mode` (`None`, `"track"`, or `"queue"`) and `get() -> Track` that raises `rum.ext.music.QueueEmpty` when no track is available.
+
+#### `clear()`
+
+```python
+clear() -> None
+```
+
+Remove all upcoming tracks.
+
+#### `clear_history()`
+
+```python
+clear_history() -> None
+```
+
+Remove all recorded history entries.
+
+#### `add()`
+
+```python
+add(track: Track) -> None
+```
+
+Append a track to the queue.
+
+#### `put()`
+
+```python
+put(track: Track) -> None
+```
+
+Append a track to the queue.
+
+#### `extend()`
+
+```python
+extend(tracks: Iterable[Track]) -> None
+```
+
+Append multiple tracks in order.
+
+#### `get()`
+
+```python
+get() -> Track
+```
+
+Pop and return the next track.
+
+Records the track in history and, if `loop_mode` is `"queue"`, appends it back to the end.
+
+#### `pop()`
+
+```python
+pop(index: int = 0) -> Track
+```
+
+Remove and return a track by index (default: first).
+
+#### `remove()`
+
+```python
+remove(track: Track) -> None
+```
+
+Remove the first occurrence of a track.
+
+#### `peek()`
+
+```python
+peek(index: int = 0) -> Track
+```
+
+Return a track by index without removing it.
+
+#### `shuffle()`
+
+```python
+shuffle() -> None
+```
+
+Shuffle upcoming tracks in place.
+
+#### `set_loop()`
+
+```python
+set_loop(mode: str | None) -> None
+```
+
+Set loop mode to `None`, `"track"`, or `"queue"`.
