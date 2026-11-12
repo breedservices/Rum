@@ -34,6 +34,7 @@ class Player(VoiceProtocol):
     """
 
     __slots__ = (
+        "_channel_id",
         "_connected",
         "_current",
         "_paused",
@@ -91,6 +92,7 @@ class Player(VoiceProtocol):
         self._position = 0
         self._connected = False
 
+        self._channel_id: int | str | None = getattr(channel, "id", None)
         self._session_id: str | None = None
         self._voice_state: dict[str, Any] = {}
         self._voice_server: dict[str, Any] = {}
@@ -107,8 +109,10 @@ class Player(VoiceProtocol):
         self._voice_state = {"sessionId": session_id}
         if channel_id is None:
             self._connected = False
+            self._channel_id = None
             await self._destroy_player()
             return
+        self._channel_id = channel_id
         await self._maybe_send_voice()
 
     async def _destroy_player(self) -> None:
@@ -196,10 +200,14 @@ class Player(VoiceProtocol):
         guild_id = self.guild_id
         if not node or not guild_id:
             return
+        channel_id = self._channel_id or getattr(self.channel, "id", None)
+        if channel_id is None:
+            return
         voice = {
             "token": token,
             "endpoint": endpoint,
             "sessionId": session_id,
+            "channelId": str(channel_id),
         }
         try:
             await node.update_player(guild_id, {"voice": voice})
