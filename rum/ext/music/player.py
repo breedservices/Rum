@@ -196,10 +196,16 @@ class Player(VoiceProtocol):
         guild_id = self.guild_id
         if not node or not guild_id:
             return
-        await node.update_player(
-            guild_id,
-            {"voice": {"token": token, "endpoint": endpoint, "sessionId": session_id}},
-        )
+        voice: dict[str, Any] = {
+            "token": token,
+            "endpoint": endpoint,
+            "sessionId": session_id,
+        }
+        channel = self.channel
+        channel_id = getattr(channel, "id", None)
+        if channel_id is not None:
+            voice["channelId"] = str(channel_id)
+        await node.update_player(guild_id, {"voice": voice})
 
     @property
     def current(self) -> Track | None:

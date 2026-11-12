@@ -497,15 +497,27 @@ class Node:
             if path.startswith(("http://", "https://"))
             else self._base_url() + path
         )
+        _log.debug("Music node request: %s %s", method, url)
         async with session.request(method, url, headers=headers, **kwargs) as resp:
             if resp.status == 204:
+                _log.debug("Music node response: %s %s -> 204", method, url)
                 return None
             body = await resp.bytes()
             if raw:
                 if resp.status >= 400:
                     raise NodeNotAvailable(f"Node request failed ({resp.status})")
+                _log.debug(
+                    "Music node response: %s %s -> %s (%d bytes)",
+                    method,
+                    url,
+                    resp.status,
+                    len(body),
+                )
                 return body
             data = _from_json(body) if body else None
+            _log.debug(
+                "Music node response: %s %s -> %s %r", method, url, resp.status, data
+            )
             if resp.status >= 400:
                 raise NodeNotAvailable(f"Node request failed ({resp.status}): {data}")
             return data
