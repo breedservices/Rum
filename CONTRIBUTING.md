@@ -1,68 +1,30 @@
-## Contributing to rum
+# Contributing to rum
 
-First off, thanks for taking the time to contribute. It makes the library substantially
-better. :+1:
+Thanks for taking the time to contribute.
 
-The following is a set of guidelines for contributing to the repository. These are
-guidelines, not hard rules.
+rum is a fork of [Pycord](https://github.com/Pycord-Development/pycord), maintained by The rum
+team. Report issues against this repository, not upstream, unless the bug is inherited from
+Pycord.
 
-rum is a fork of [Pycord](https://github.com/Pycord-Development/pycord) and is
-maintained by The rum team. Please report issues against this repository, not
-upstream, unless the bug is inherited from Pycord.
+These guidelines describe how the project is developed. Where a rule is enforced (by the test
+suite, CI, or the configured linters/formatters), keep changes consistent with it. If a rule is
+not enforced yet, enforcing it is a welcome contribution.
 
-## This is too much to read! I want to ask a question!
+## Questions and bug reports
 
-Generally speaking questions are better suited in our resources below.
+- Use [discussions](https://github.com/breedservices/Rum/discussions) for questions when possible.
+- Search existing issues before opening a new one.
+- Bug reports need enough information to be actionable: a short summary, steps to reproduce (a
+  small code sample is best — never include a token), what you expected, what actually happened
+  (full traceback if there is one), and your environment (rum version, Python version, OS, how it
+  was installed).
 
-- [This repository's discussions](https://github.com/breedservices/Rum/discussions)
-- The Pycord support server (upstream): https://pycord.dev/discord
-- [The FAQ in the Pycord documentation](https://docs.pycord.dev/en/master/faq.html)
+## Setup
 
-Please try your best not to ask questions in our issue tracker. Most of them don't
-belong there unless they provide value to a larger audience.
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management and builds. Python
+3.11+ is required.
 
-## Good Bug Reports
-
-Please be aware of the following things when filing bug reports.
-
-1. Don't open duplicate issues. Please search your issue to see if it has been asked
-   already. Duplicate issues will be closed.
-2. When filing a bug about exceptions or tracebacks, please include the _complete_
-   traceback. Without the complete traceback the issue might be **unsolvable** and you
-   will be asked to provide more information.
-3. Make sure to provide enough information to make the issue workable. The issue
-   template will generally walk you through the process but they are enumerated here as
-   well:
-   - A **summary** of your bug report. This is generally a quick sentence or two to
-     describe the issue in human terms.
-   - Guidance on **how to reproduce the issue**. Ideally, this should have a small code
-     sample that allows us to run and see the issue for ourselves to debug. **Please
-     make sure that the token is not displayed**. If you cannot provide a code snippet,
-     then let us know what the steps were, how often it happens, etc.
-   - Tell us **what you expected to happen**. That way we can meet that expectation.
-   - Tell us **what actually happens**. What ends up happening in reality? It's not
-     helpful to say "it fails" or "it doesn't work". Say _how_ it failed, do you get an
-     exception? Does it hang? How are the expectations different from reality?
-   - Tell us **information about your environment**. What version of rum are you
-     using? How was it installed? What operating system are you running on? These are
-     valuable questions and information that we use.
-
-If the bug report is missing this information then it'll take us longer to fix the
-issue. We will probably ask for clarification, and barring that if no response was given
-then the issue will be closed.
-
-## Submitting a Pull Request
-
-Submitting a pull request is fairly simple, just make sure it focuses on a single aspect
-and doesn't manage to have scope creep and it's probably good to go. It would be
-incredibly lovely if the style is consistent to that found in the project. This project
-follows PEP-8 guidelines (mostly) with a column limit of 120.
-
-## Development Setup
-
-This project uses [uv](https://docs.astral.sh/uv/) for dependency management and builds.
-
-```sh
+```bash
 # Create the environment and install the dev/test dependencies
 uv sync --group dev --group test --extra voice
 
@@ -73,84 +35,94 @@ uv run pytest
 uv build
 ```
 
-Extras are selected with `--extra`, e.g. `uv sync --extra speed --extra voice`.
-
-If you prefer pip, the extras must be quoted — otherwise the shell expands
-`[speed]` as a glob pattern and fails with `zsh: no matches found: [speed]`:
+Extras are selected with `--extra`, e.g. `uv sync --extra speed --extra voice`. With pip, quote
+extras so the shell does not expand them as globs:
 
 ```sh
 uv pip install -e ".[speed]"
 uv pip install -e ".[voice]"
 ```
 
-The project summary and keywords are derived from `README.md` by
-`scripts/readme_metadata.py`, so please update the `readme-metadata` block at the top
-of the README rather than `pyproject.toml` when changing them.
+`pre-commit` hooks are configured in `.pre-commit-config.yaml` (formatting, import sorting,
+pyupgrade, etc.). Install them with `uv run pre-commit install` if you want them to run on commit.
 
-## Use of "type: ignore" comments
+## Layout
 
-In some cases, it might be necessary to ignore type checker warnings for one reason or
-another. If that is the case, it is **required** that a comment is left explaining why
-you are deciding to ignore type checking warnings.
+```
+rum/                 the library: client, gateway, HTTP, cache, models, state, voice, UI, ...
+  commands/          application command helpers
+  ext/               extensions
+    commands/        prefixed command framework
+    tasks/           background task helpers
+    pages/           pagination
+    bridge/          bridge between slash and prefixed commands
+  sinks/             audio sinks
+  types/             typed payload definitions
+  ui/                components, views, modals
+  voice/             voice connections and receive
+  webhook/           webhook clients
+  bin/               bundled native binaries (e.g. libopus)
+discord/             compatibility package that resolves to the same modules as `rum`
+docs/                guides and extension docs as MDX (rendered on GitHub), plus `docs/api/`
+examples/            runnable example bots
+scripts/             maintenance and release scripts
+tests/               pytest suite (including `tests/voice/`)
+```
+
+`import rum` is the canonical import. `import discord` is a compatibility shim that resolves to the
+same modules.
+
+rum is its own library. Third-party addons (music/Lavalink clients, helpers, etc.) may not know
+about rum yet; when integrating or writing one, prefer the public `rum` API and avoid relying on
+private internals. Compatibility-oriented changes that make the API easier for existing
+discord.py/Pycord ecosystem tooling to adopt are welcome, but keep behaviour correct for rum.
+
+## Documentation
+
+- Guides live in `docs/` as MDX and render directly on GitHub (no site build). Start at
+  [`docs/index.mdx`](docs/index.mdx).
+- The API reference under `docs/api/` is generated from docstrings. After changing a docstring,
+  regenerate it:
+
+  ```bash
+  uv run --with pypandoc-binary python docs/generate_reference.py
+  ```
+
+  (Without pandoc the generator falls back to emitting the docstrings with Sphinx roles stripped.)
+
+## Code and tests
+
+- Read a few nearby files first and match their naming, imports, structure, and error handling.
+- Keep diffs focused on the task. Do not rename, reformat, or tidy unrelated code.
+- Prefer the plain solution; reuse existing helpers before adding new ones. Avoid speculative
+  abstractions.
+- Follow the existing cog/command/event layout when adding features.
+- Add or update tests when behaviour changes. Tests live under `tests/` and run with `pytest`.
+  The full suite is `uv run pytest` (`78 passed, 2 skipped` at the time of writing).
+- When a type checker warning must be suppressed, leave a short comment explaining why (and include
+  the error code for `type: ignore`).
+
+Project metadata (`description`, `keywords`) is derived from the `readme-metadata` block at the top
+of `README.md` by `scripts/readme_metadata.py`; update that block rather than duplicating the
+values elsewhere.
+
+## Changelog, commits, and pull requests
+
+- Update `CHANGELOG.md` under `[Unreleased]` for user-facing or notable changes, following
+  [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+- Prefer [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) style subjects
+  (e.g. `fix(cache): evict expired entries`, `docs: update quickstart`). Keep commits focused on a
+  single logical change.
+- Open pull requests against `master`. Describe the problem and the fix, link any relevant issue,
+  and note anything you did not verify. CI must pass on the latest commit.
 
 ## Licensing
 
-By submitting a pull request, you agree to and accept the following:
+By submitting a pull request, you assert that you have the right to contribute the code and you
+license your contribution under the project's [MIT License](LICENSE), the same terms as the rest of
+the repository. If you include code from another project, keep its copyright and license notice in
+the files you add it to.
 
-1. You hold the copyright on all submitted code inside said pull request.
-2. You transfer all rights to the owner of this repository (The rum team).
-3. If you are found to be in fault with any of the above, we shall not be held
-   responsible in any way after the pull request has been merged.
-
-Your contribution is published under the MIT License, the same terms as the rest
-of the project. If you copy code from another project, keep its copyright
-notice in the file you add it to.
-
-## Git Commit Styling
-
-Not following this guideline could lead to your pull being squashed for a cleaner commit
-history
-
-Some style guides we would recommend using in your pulls:
-
-The [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) style is a
-very widely used style and a good style to start with.
-
-The [gitmoji](https://gitmoji.dev) style guide would make your pull look more lively and
-different to others.
-
-We don't limit nor deny your pulls when you're using another style although, please make
-sure it is appropriate and makes sense in this library.
-
-## AI Usage Policy
-
-The use of LLMs or other AI tools must be disclosed at all times. Disclosure is required
-for any interaction or contribution including, but not limited to, the following:
-
-- Modifying code
-- Modifying documentation
-- Discussion with maintainers
-- Issue bodies and comments
-- Pull request bodies and comments
-
-The disclosure must specify the tools used and the scope of their application. The
-primary location of disclosure should be in the body of issues and pull requests.
-
-If you are not a native English speaker, using LLMs or other AI tools for translation is
-discouraged. It can distort your intended meaning and make a human-written contribution
-look AI-generated. Please use a non-LLM-based translation tool such as
-[DeepL](https://deepl.com) instead.
-
-The use of fully autonomous LLMs or other AI tools to open issues or pull requests is
-strictly forbidden.
-
-Failure to follow this policy may result in a temporary or permanent ban from our
-organization.
-
-The use of LLMs or AI tools by new contributors is highly discouraged, and will likely
-result in the direct closure of your issue or pull request.
-
-Furthermore, as outlined earlier in §"Licensing," by submitting a pull request, you
-agree that you hold the copyright on your contribution, and that you understand how your
-submitted code works and are able to explain its purpose, behavior, and impact when
-requested.
+rum inherits code from [Pycord](https://github.com/Pycord-Development/pycord) and
+[discord.py](https://github.com/Rapptz/discord.py); source files carry the notices of the authors
+they are derived from.
