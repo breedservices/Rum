@@ -20,6 +20,8 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Fixed
 
+- Fixed `rum.ext.music` track/search loading by passing identifiers as request params (previously over-encoded prefixes/URLs could cause searches and links to return empty).
+
 ### Deprecated
 
 ### Removed

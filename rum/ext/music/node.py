@@ -529,7 +529,7 @@ class Node:
     async def get_tracks(self, identifier: str, *, requester: Any = None) -> LoadResult:
         """Resolve tracks/playlists/search results via ``/v4/loadtracks``."""
         data = await self.request(
-            "GET", f"/v4/loadtracks?identifier={quote(identifier, safe='')}"
+            "GET", "/v4/loadtracks", params={"identifier": identifier}
         )
         result = LoadResult.from_response(data or {}, requester=requester)
         if result.load_type == LoadType.ERROR and result.error:
@@ -541,7 +541,7 @@ class Node:
 
     async def decode_track(self, encoded: str) -> dict[str, Any]:
         return await self.request(
-            "GET", f"/v4/decodetrack?encodedTrack={quote(encoded, safe='')}"
+            "GET", "/v4/decodetrack", params={"encodedTrack": encoded}
         )
 
     async def decode_tracks(self, encoded: list[str]) -> list[dict[str, Any]]:
