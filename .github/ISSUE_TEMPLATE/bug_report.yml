@@ -7,9 +7,11 @@ body:
     attributes:
       value: >
         Thanks for taking the time to fill out a bug. If you want real-time support,
-        consider joining our Discord at https://pycord.dev/discord instead.
+        consider asking in the discussions of this repository or on the upstream
+        Pycord server at https://pycord.dev/discord instead.
 
-        Please make sure that you tested either the latest (pre-)release [currently https://pypi.org/project/py-cord/2.8.0rc1/] or master, before submitting a bug report.
+        Please make sure that you tested the latest revision of master before
+        submitting a bug report.
 
         Please note that this form is for bugs only!
   - type: input

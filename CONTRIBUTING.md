@@ -14,9 +14,9 @@ upstream, unless the bug is inherited from Pycord.
 
 Generally speaking questions are better suited in our resources below.
 
+- [This repository's discussions](https://github.com/breedservices/Rum/discussions)
 - The Pycord support server (upstream): https://pycord.dev/discord
 - [The FAQ in the Pycord documentation](https://docs.pycord.dev/en/master/faq.html)
-- [This repository's discussions](https://github.com/breedservices/Rum/discussions)
 
 Please try your best not to ask questions in our issue tracker. Most of them don't
 belong there unless they provide value to a larger audience.
@@ -43,7 +43,7 @@ Please be aware of the following things when filing bug reports.
    - Tell us **what actually happens**. What ends up happening in reality? It's not
      helpful to say "it fails" or "it doesn't work". Say _how_ it failed, do you get an
      exception? Does it hang? How are the expectations different from reality?
-   - Tell us **information about your environment**. What version of Pycord are you
+   - Tell us **information about your environment**. What version of rum are you
      using? How was it installed? What operating system are you running on? These are
      valuable questions and information that we use.
 
@@ -101,6 +101,10 @@ By submitting a pull request, you agree to and accept the following:
 2. You transfer all rights to the owner of this repository (The rum team).
 3. If you are found to be in fault with any of the above, we shall not be held
    responsible in any way after the pull request has been merged.
+
+Your contribution is published under the MIT License, the same terms as the rest
+of the project. If you copy code from another project, keep its copyright
+notice in the file you add it to.
 
 ## Git Commit Styling
 

@@ -140,4 +140,14 @@ single source of truth. A CI job verifies the built package matches it.
 
 ## License
 
-rum is based on Pycord and retains the upstream MIT license notices for Pycord-derived code. See [`LICENSE`](./LICENSE) for details.
+rum is licensed under the MIT License. See [`LICENSE`](./LICENSE) for the full text.
+
+rum is a fork of [Pycord](https://github.com/Pycord-Development/pycord), which is
+in turn a fork of [discord.py](https://github.com/Rapptz/discord.py). Code
+inherited from those projects keeps its original copyright notice, and every
+source file in this repository carries the notices of the authors it is derived
+from.
+
+Contributions are accepted under the same terms, see
+[`CONTRIBUTING.md`](./CONTRIBUTING.md).
+

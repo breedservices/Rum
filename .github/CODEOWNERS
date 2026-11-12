@@ -1,15 +1,19 @@
-* @Pycord-Development/library-maintainers @Pycord-Development/library-contributors
+# The teams below still point at the upstream Pycord organisation. Replace them
+# with the rum team's handles, or delete the lines, once the teams exist in the
+# breedservices organisation.
 
-/rum/ @Pycord-Development/maintain-discord-api
+# * @breedservices/library-maintainers @breedservices/library-contributors
 
-/tests/ @Pycord-Development/maintain-tests
-/rum/ext/testing/ @Pycord-Development/maintain-tests
-/rum/ext/bridge/ @Pycord-Development/maintain-ext-bridge
-/.github/ @Lulalaby
-/docs/locales/ @Pycord-Development/maintain-translations
-/docs/build/locales/ @Pycord-Development/maintain-translations
-/.github/workflows/docs-localization-download.yml @Pycord-Development/maintain-translations
-/.github/workflows/docs-localization-upload.yml @Pycord-Development/maintain-translations
-/crowdin.yml @Pycord-Development/maintain-translations
-/requirements/_locale.txt @Pycord-Development/maintain-translations
-/CHANGELOG.md @Pycord-Development/squiddo-typo-check
+# /rum/ @breedservices/maintain-discord-api
+
+# /tests/ @breedservices/maintain-tests
+# /rum/ext/testing/ @breedservices/maintain-tests
+# /rum/ext/bridge/ @breedservices/maintain-ext-bridge
+# /.github/ @breedservices/maintainers
+# /docs/locales/ @breedservices/maintain-translations
+# /docs/build/locales/ @breedservices/maintain-translations
+# /.github/workflows/docs-localization-download.yml @breedservices/maintain-translations
+# /.github/workflows/docs-localization-upload.yml @breedservices/maintain-translations
+# /crowdin.yml @breedservices/maintain-translations
+# /requirements/_locale.txt @breedservices/maintain-translations
+# /CHANGELOG.md @breedservices/maintain-changelog
