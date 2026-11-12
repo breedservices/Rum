@@ -86,6 +86,29 @@ See the examples for working implementations:
 - [`examples/cache_rules.py`](./examples/cache_rules.py) — per-kind cache rules, so
   one guild's members can be cached while presences are not, with TTLs and size caps
 
+## Music (Lavalink / NodeLink)
+
+`rum.ext.music` provides a low-RAM client for **Lavalink v4** and **NodeLink v3**
+over rum's transport (no `aiohttp`). Choose the server protocol at node creation
+with `server_type="lavalink"` or `server_type="nodelink"`.
+
+```py
+from rum.ext.music import NodePool, ServerType
+
+await NodePool.create_node(
+    bot=bot,
+    host="localhost",
+    port=2333,
+    password="youshallnotpass",
+    server_type=ServerType.LAVALINK,  # or ServerType.NODELINK
+)
+```
+
+Examples:
+
+- [`examples/music_lavalink.py`](./examples/music_lavalink.py) — Lavalink v4
+- [`examples/music_nodelink.py`](./examples/music_nodelink.py) — NodeLink v3
+
 All examples read the bot token from the `BOT_TOKEN` environment variable, or
 from the `.env` file in the repository root:
 

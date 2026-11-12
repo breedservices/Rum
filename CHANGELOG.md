@@ -12,6 +12,9 @@ These changes are available on the `master` branch, but have not yet been releas
 
 ### Added
 
+- Added separate music examples for Lavalink v4 and NodeLink v3
+  (`examples/music_lavalink.py`, `examples/music_nodelink.py`).
+
 ### Changed
 
 ### Fixed
