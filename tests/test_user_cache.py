@@ -416,7 +416,7 @@ def test_changing_a_status_does_not_change_the_other_members():
     assert second.status is rum.Status.online
 
 
-def test_roles_with_the_same_colours_keep_them_apart():
+def test_role_colours_keep_both_colours():
     state = _make_state()
     guild = state._get_create_guild(
         {
@@ -425,26 +425,45 @@ def test_roles_with_the_same_colours_keep_them_apart():
             "roles": [
                 {
                     "id": "10",
-                    "name": "role",
+                    "name": "gradient",
                     "permissions": "0",
                     "position": 1,
+                    "color": 0x3498DB,
+                    "hoist": False,
+                    "managed": False,
+                    "mentionable": False,
+                    "colors": {
+                        "primary_color": 0x3498DB,
+                        "secondary_color": 0x2B6CB0,
+                        "tertiary_color": None,
+                    },
+                },
+                {
+                    "id": "11",
+                    "name": "plain",
+                    "permissions": "0",
+                    "position": 2,
                     "color": 0,
                     "hoist": False,
                     "managed": False,
                     "mentionable": False,
                     "colors": {
-                        "primary_color": 123,
-                        "secondary_color": 0,
-                        "tertiary_color": 0,
+                        "primary_color": 0,
+                        "secondary_color": None,
+                        "tertiary_color": None,
                     },
-                }
+                },
             ],
         }
     )
-    role = guild.get_role(10)
-    assert role.colours.primary.value == 123
-    assert role.colours.secondary is None
-    assert role.colours.primary.value == 123
+    gradient = guild.get_role(10)
+    assert gradient.colours.primary.value == 0x3498DB
+    assert gradient.colours.secondary.value == 0x2B6CB0
+    assert gradient.colours.tertiary is None
+
+    plain = guild.get_role(11)
+    assert plain.colours.primary.value == 0
+    assert plain.colours.secondary is None
 
 
 def test_the_permission_overwrites_of_a_guild_are_shared():
