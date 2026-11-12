@@ -75,6 +75,10 @@ if TYPE_CHECKING:
     from .types.voice import VoiceState as VoiceStatePayload
 
 
+#: The status a member has before Discord says otherwise.
+_OFFLINE_STATUS: dict[str | None, str] = {None: "offline"}
+
+
 class VoiceState:
     """Represents a Discord user's voice state.
 
@@ -304,7 +308,7 @@ class Member(rum.abc.Messageable, _UserTag):
         "guild",
         "pending",
         "nick",
-        "_client_status",
+        "_statuses",
         "_user",
         "_state",
         "_avatar",
@@ -347,8 +351,8 @@ class Member(rum.abc.Messageable, _UserTag):
         self.premium_since: datetime.datetime | None = utils.parse_time(
             data.get("premium_since")
         )
-        self._roles: utils.SnowflakeList = utils.SnowflakeList(map(int, data["roles"]))
-        self._client_status: dict[str | None, str] = {None: "offline"}
+        self._roles: utils.SnowflakeList = guild._shared_role_ids(data["roles"])
+        self._statuses: dict[str | None, str] | None = None
         self.activities: tuple[ActivityTypes, ...] = ()
         self.nick: str | None = data.get("nick", None)
         self.pending: bool = data.get("pending", False)
@@ -400,7 +404,7 @@ class Member(rum.abc.Messageable, _UserTag):
     def _update_from_message(self, data: MemberPayload) -> None:
         self.joined_at = utils.parse_time(data.get("joined_at"))
         self.premium_since = utils.parse_time(data.get("premium_since"))
-        self._roles = utils.SnowflakeList(map(int, data["roles"]))
+        self._roles = self.guild._shared_role_ids(data["roles"])
         self.nick = data.get("nick", None)
         self.pending = data.get("pending", False)
 
@@ -428,7 +432,9 @@ class Member(rum.abc.Messageable, _UserTag):
         self._roles = utils.SnowflakeList(member._roles, is_sorted=True)  # type: ignore # the API is the same
         self.joined_at = member.joined_at
         self.premium_since = member.premium_since
-        self._client_status = member._client_status.copy()
+        self._statuses = (
+            member._statuses.copy() if member._statuses is not None else None
+        )
         self.guild = member.guild
         self.nick = member.nick
         self.pending = member.pending
@@ -463,7 +469,7 @@ class Member(rum.abc.Messageable, _UserTag):
             pass
 
         self.premium_since = utils.parse_time(data.get("premium_since"))
-        self._roles = utils.SnowflakeList(map(int, data.get("roles", [])))  # type: ignore # the API is the same
+        self._roles = self.guild._shared_role_ids(data.get("roles", []))  # type: ignore # the API is the same
         self._avatar = data.get("avatar")
         self._banner = data.get("banner")
         self.communication_disabled_until = utils.parse_time(
@@ -533,11 +539,20 @@ class Member(rum.abc.Messageable, _UserTag):
             return to_return, u
 
     @property
+    def _client_status(self) -> dict[str | None, str]:
+        """The statuses of the member, per client."""
+        return self._statuses if self._statuses is not None else _OFFLINE_STATUS
+
+    @_client_status.setter
+    def _client_status(self, value: dict[str | None, str]) -> None:
+        self._statuses = value
+
+    @property
     def status(self) -> Status:
         """The member's overall status.
         If the value is unknown, then it will be a :class:`str` instead.
         """
-        return try_enum(Status, self._client_status[None])
+        return try_enum(Status, self.raw_status)
 
     @property
     def raw_status(self) -> str:
@@ -545,22 +560,30 @@ class Member(rum.abc.Messageable, _UserTag):
 
         .. versionadded:: 1.5
         """
+        if self._client_status is None:
+            return "offline"
         return self._client_status[None]
 
     @status.setter
     def status(self, value: Status) -> None:
         # internal use only
-        self._client_status[None] = str(value)
+        if self._statuses is None:
+            self._statuses = {}
+        self._statuses[None] = str(value)
+
+    def _device_status(self, device: str) -> Status:
+        """Returns the status of the member on one device."""
+        return try_enum(Status, self._client_status.get(device, "offline"))
 
     @property
     def mobile_status(self) -> Status:
         """The member's status on a mobile device, if applicable."""
-        return try_enum(Status, self._client_status.get("mobile", "offline"))
+        return self._device_status("mobile")
 
     @property
     def desktop_status(self) -> Status:
         """The member's status on the desktop client, if applicable."""
-        return try_enum(Status, self._client_status.get("desktop", "offline"))
+        return self._device_status("desktop")
 
     @property
     def vr_status(self) -> Status:
@@ -568,12 +591,12 @@ class Member(rum.abc.Messageable, _UserTag):
 
         .. versionadded:: 2.9
         """
-        return try_enum(Status, self._client_status.get("vr", "offline"))
+        return self._device_status("vr")
 
     @property
     def web_status(self) -> Status:
         """The member's status on the web client, if applicable."""
-        return try_enum(Status, self._client_status.get("web", "offline"))
+        return self._device_status("web")
 
     @property
     def global_name(self) -> str | None:

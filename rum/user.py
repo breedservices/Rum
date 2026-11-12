@@ -162,6 +162,29 @@ class BaseUser(_UserTag):
         self.bot = data.get("bot", False)
         self.system = data.get("system", False)
 
+    def _matches(self, data: UserPayload) -> bool:
+        """Whether the user already holds the data of the payload.
+
+        The state hands out a copy of a cached user when it gets newer data,
+        so that the cached user is never made older. When the data is the
+        same, the cached user is handed out as it is.
+        """
+        if data.get("primary_guild"):
+            return False
+        return (
+            self.name == data["username"]
+            and self.discriminator == data["discriminator"]
+            and self.global_name == (data.get("global_name") or None)
+            and self._avatar == data["avatar"]
+            and self._banner == data.get("banner")
+            and self._accent_colour == data.get("accent_color")
+            and self._avatar_decoration == data.get("avatar_decoration_data")
+            and self._collectibles == data.get("collectibles")
+            and self._public_flags == data.get("public_flags", 0)
+            and self.bot == data.get("bot", False)
+            and self.system == data.get("system", False)
+        )
+
     @classmethod
     def _copy(cls: type[BU], user: BU) -> BU:
         self = cls.__new__(cls)  # bypass __init__
@@ -603,7 +626,7 @@ class User(BaseUser, rum.abc.Messageable):
     def __del__(self) -> None:
         try:
             if self._stored:
-                self._state.deref_user(self.id)
+                self._state.deref_user(self.id, self)
         except Exception:
             pass
 

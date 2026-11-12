@@ -476,6 +476,10 @@ class ConnectionState:
                 user._stored = True
             return user
         else:
+            if user._matches(data):
+                # The cached user already holds this data, so there is no need
+                # for a copy of it.
+                return user
             # Making sure we don't mutate the cached user
             # because we cannot make sure it's up to date.
             # but still return the updated version of the user.
@@ -484,7 +488,7 @@ class ConnectionState:
             copied_user._update(data)
             return copied_user
 
-    def deref_user(self, user_id: int) -> None:
+    def deref_user(self, user_id: int, user: User | None = None) -> None:
         # rum evicts a user from the cache when the User object is garbage
         # collected. Caches that do not keep a reference to the objects they
         # hold (an external store for example) would lose their entries
@@ -494,12 +498,17 @@ class ConnectionState:
             provider, "keeps_object_references", True
         ):
             return
+        cached = self._users.get(user_id)
+        if user is not None and cached is not user:
+            # another user was cached under this id in the meantime, so this
+            # one is not the one to evict.
+            return
         self._users.pop(user_id, None)
 
     def create_user(self, data: UserPayload) -> User:
         return User(state=self, data=data)
 
-    def deref_user_no_intents(self, user_id: int) -> None:
+    def deref_user_no_intents(self, user_id: int, user: User | None = None) -> None:
         return
 
     def get_user(self, id: int | None) -> User | None:

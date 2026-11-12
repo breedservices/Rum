@@ -29,7 +29,7 @@ from __future__ import annotations
 import copy
 import datetime
 import unicodedata
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
@@ -392,6 +392,7 @@ class Guild(Hashable):
         "nsfw_level",
         "_scheduled_events",
         "_members",
+        "_role_arrays",
         "_channels",
         "_icon",
         "_banner",
@@ -624,6 +625,7 @@ class Guild(Hashable):
         else:
             self._roles = {}
         state = self._state  # speed up attribute access
+        self._role_arrays: dict[tuple[int, ...], utils.SnowflakeList] = {}
         for r in guild.get("roles", []):
             role = Role(guild=self, data=r, state=state)
             self._roles[role.id] = role
@@ -1232,6 +1234,21 @@ class Guild(Hashable):
         hierarchy.
         """
         return sorted(self._roles.values())
+
+    def _shared_role_ids(self, role_ids: Iterable[Any]) -> utils.SnowflakeList:
+        """Returns the role ids of a member, shared with the members that have
+        the same roles.
+
+        The members of a guild often have the same roles, and an array of role
+        ids is 160 bytes, so the array is shared instead of made again for
+        every member.
+        """
+        key = tuple(map(int, role_ids))
+        shared = self._role_arrays.get(key)
+        if shared is None:
+            shared = utils.SnowflakeList(key, is_sorted=True)
+            self._role_arrays[key] = shared
+        return shared
 
     def get_role(self, role_id: int, /) -> Role | None:
         """Returns a role with the given ID.

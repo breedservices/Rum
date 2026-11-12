@@ -26,8 +26,8 @@ DEALINGS IN THE SOFTWARE.
 
 from __future__ import annotations
 
-from collections import deque
-from collections.abc import MutableMapping
+from collections import OrderedDict, deque
+from collections.abc import Iterator, MutableMapping
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
@@ -40,7 +40,50 @@ __all__ = (
     "MessageCache",
     "CacheProvider",
     "DefaultCacheProvider",
+    "LRUCache",
 )
+
+
+class LRUCache(MutableMapping):
+    """A mapping that drops the least recently used entries beyond a limit.
+
+    The library uses it for the caches that would otherwise grow for as long
+    as the bot runs, like the user cache of a bot in many guilds.
+
+    Parameters
+    ----------
+    max_entries: :class:`int`
+        How many entries to keep.
+    """
+
+    __slots__ = ("_data", "max_entries")
+
+    def __init__(self, max_entries: int) -> None:
+        self.max_entries = max_entries
+        self._data: OrderedDict[Any, Any] = OrderedDict()
+
+    def __getitem__(self, key: Any) -> Any:
+        value = self._data[key]
+        self._data.move_to_end(key)
+        return value
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        self._data[key] = value
+        self._data.move_to_end(key)
+        while len(self._data) > self.max_entries:
+            self._data.popitem(last=False)
+
+    def __delitem__(self, key: Any) -> None:
+        del self._data[key]
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter(self._data)
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def __repr__(self) -> str:
+        return f"<LRUCache max_entries={self.max_entries} entries={len(self)}>"
 
 
 @runtime_checkable
@@ -77,6 +120,13 @@ class DefaultCacheProvider:
         Maximum number of messages to keep in the default message cache. ``None``
         disables the message cache. Defaults to ``1000`` to match library
         behavior when not specified by the client.
+    max_users: Optional[:class:`int`]
+        Maximum number of users to keep. The least recently used users are
+        dropped beyond that. ``None`` keeps every user, which is the default.
+    max_members: Optional[:class:`int`]
+        Maximum number of members to keep per guild. The least recently used
+        members are dropped beyond that. ``None`` keeps every member, which is
+        the default.
 
     Attributes
     ----------
@@ -93,15 +143,25 @@ class DefaultCacheProvider:
         to ``True``.
     """
 
-    def __init__(self, *, max_messages: int | None = 1000) -> None:
+    def __init__(
+        self,
+        *,
+        max_messages: int | None = 1000,
+        max_users: int | None = None,
+        max_members: int | None = None,
+    ) -> None:
         self.max_messages = max_messages
+        self.max_users = max_users
+        self.max_members = max_members
         self.state: ConnectionState | None = None
         self.keeps_object_references: bool = True
 
     # Global/state caches
 
     def create_user_cache(self) -> MutableMapping[int, Any]:
-        return {}
+        if self.max_users is None:
+            return {}
+        return LRUCache(self.max_users)
 
     def create_guild_cache(self) -> MutableMapping[int, Any]:
         return {}
@@ -133,7 +193,9 @@ class DefaultCacheProvider:
         return {}
 
     def create_guild_member_cache(self, guild: Any) -> MutableMapping[int, Any]:
-        return {}
+        if self.max_members is None:
+            return {}
+        return LRUCache(self.max_members)
 
     def create_guild_thread_cache(self, guild: Any) -> MutableMapping[int, Any]:
         return {}
