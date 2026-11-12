@@ -240,6 +240,7 @@ class Node:
                     data = _from_json(msg)
                 except Exception:  # noqa: BLE001, S112
                     continue
+                _log.debug("Music node ws recv: %r", data)
                 await self._handle_message(data)
         except asyncio.CancelledError:
             return

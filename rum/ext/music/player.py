@@ -205,9 +205,7 @@ class Player(VoiceProtocol):
             return
         voice = {
             "token": token,
-            "endpoint": endpoint.split(":", 1)[0]
-            if isinstance(endpoint, str)
-            else endpoint,
+            "endpoint": endpoint,
             "sessionId": session_id,
             "channelId": str(channel_id),
         }
