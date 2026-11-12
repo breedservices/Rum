@@ -235,7 +235,9 @@ class Route:
 
 
 class MaybeUnlock:
-    def __init__(self, lock: asyncio.Lock, loop: asyncio.AbstractEventLoop | None = None) -> None:
+    def __init__(
+        self, lock: asyncio.Lock, loop: asyncio.AbstractEventLoop | None = None
+    ) -> None:
         self.lock: asyncio.Lock = lock
         self.loop: asyncio.AbstractEventLoop | None = loop
         self._unlock: bool = True
@@ -541,7 +543,9 @@ class HTTPClient:
                             "%s %s with %s has returned %s",
                             method,
                             url,
-                            req_kwargs.get("data") or req_kwargs.get("json") or req_kwargs.get("multipart"),
+                            req_kwargs.get("data")
+                            or req_kwargs.get("json")
+                            or req_kwargs.get("multipart"),
                             status,
                         )
 
@@ -550,7 +554,9 @@ class HTTPClient:
                         proxy_resp = _ResponseProxy(response)
 
                         # check if we have rate limit header information
-                        remaining = _headers_get(response.headers, "X-Ratelimit-Remaining")
+                        remaining = _headers_get(
+                            response.headers, "X-Ratelimit-Remaining"
+                        )
                         bucket_exhausted = False
                         bucket_delay = 0.0
                         if remaining == "0" and status != 429:
