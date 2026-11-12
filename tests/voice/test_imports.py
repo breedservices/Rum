@@ -1,7 +1,9 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2021-present Pycord Development
+Copyright (c) 2015-2021 Rapptz
+Copyright (c) 2021-2026 Pycord Development
+Copyright (c) 2026-present The rum team
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -35,13 +37,13 @@ def test_client_does_not_warn_when_voice_dependencies_are_available(caplog):
 
     discord.utils.voice_dependency_warning_emitted = False
 
-    with caplog.at_level(logging.WARNING, logger="discord.client"):
+    with caplog.at_level(logging.WARNING, logger=discord.client.__name__):
         discord.Client()
 
     warnings = [
         record.getMessage()
         for record in caplog.records
-        if record.name == "discord.client"
+        if record.name == discord.client.__name__
     ]
     assert warnings == []
 

@@ -5,6 +5,10 @@ Compatibility package for :mod:`rum`.
 rum is the actual library; this package simply re-exports it and makes the
 ``discord.*`` submodule tree resolve to the very same module objects, so
 ``isinstance`` checks and class identities stay consistent across both names.
+
+:copyright: (c) 2015-2021 Rapptz & (c) 2021-present Pycord Development
+:copyright: (c) 2026-present The rum team
+:license: MIT, see LICENSE for more details.
 """
 
 from __future__ import annotations

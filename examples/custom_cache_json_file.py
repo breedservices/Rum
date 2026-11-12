@@ -32,6 +32,10 @@ The guild member cache is stored on disk, one file per member::
 Set the ``BOT_TOKEN`` environment variable to run the example::
 
     BOT_TOKEN=your-token uv run examples/custom_cache_json_file.py
+
+:copyright: (c) 2015-2021 Rapptz & (c) 2021-present Pycord Development
+:copyright: (c) 2026-present The rum team
+:license: MIT, see LICENSE for more details.
 """
 
 import logging
