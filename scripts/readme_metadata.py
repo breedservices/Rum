@@ -39,8 +39,8 @@ from pathlib import Path
 #
 # README.md is the single source of truth for the project's summary and
 # keywords. This script parses it and can either print the derived values
-# (used by ``setup.py``) or push them to the GitHub repository so the
-# "About" section and topics stay in sync with the README.
+# or push them to the GitHub repository so the "About" section and topics
+# stay in sync with the README.
 #
 # Usage:
 #     python scripts/readme_metadata.py            # print JSON to stdout

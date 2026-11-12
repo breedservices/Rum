@@ -10,7 +10,6 @@ on:
       - ".github/actions/**"
       - ".github/workflows/lib-checks.yml"
       - "LICENSE"
-      - "MANIFEST.in"
       - "README.md"
       - "*.toml"
       - "*.py"
@@ -59,7 +58,6 @@ jobs:
               file.startsWith('.github/actions/') ||
               file === '.github/workflows/lib-checks.yml' ||
               file === 'LICENSE' ||
-              file === 'MANIFEST.in' ||
               file === 'README.md' ||
               (!file.includes('/') && file.endsWith('.toml')) ||
               (!file.includes('/') && file.endsWith('.py')) ||

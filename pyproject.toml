@@ -1,19 +1,28 @@
 [build-system]
-requires = [
-    "setuptools>=77.0.3,<=80.9.0",
-]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "rum"
 version = "0.1.0"
+description = "rum - a Discord API wrapper for Python, forked from Pycord"
 authors = [
     { name = "The rum team" }
 ]
-readme = { content-type = "text/markdown", file = "README.md" }
+readme = "README.md"
 requires-python = ">=3.11, <3.15"
 license = "MIT"
 license-files = ["LICENSE"]
+keywords = [
+    "discord",
+    "discord-bot",
+    "python",
+    "async",
+    "pycord",
+    "rum",
+    "bot",
+    "api-wrapper",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -29,13 +38,19 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
-# `description` and `keywords` are derived from README.md by setup.py so the
-# README stays the single source of truth for the project metadata.
-dynamic = [
-    "description",
-    "keywords",
-    "dependencies",
-    "optional-dependencies",
+dependencies = [
+    "h11>=0.16.0,<1",
+    "wsproto>=1.2.0,<2",
+    "zstandard>=0.23,<1; python_version < \"3.14\"",
+    "typing_extensions>=4.14.0,<5",
+    "yarl>=1.6.3,<2.0",
+]
+
+[project.optional-dependencies]
+speed = ["msgspec~=0.22.0"]
+voice = [
+    "PyNaCl>=1.6.2,<1.7",
+    "davey>=0.1.4,<1",
 ]
 
 [project.urls]
@@ -43,30 +58,30 @@ Source = "https://github.com/breedservices/Rum"
 Issues = "https://github.com/breedservices/Rum/issues"
 Upstream = "https://github.com/Pycord-Development/pycord"
 
-[tool.setuptools]
-packages = [
-    "rum",
-    "rum.types",
-    "rum.sinks",
-    "rum.ui",
-    "rum.webhook",
-    "rum.commands",
-    "rum.ext.commands",
-    "rum.ext.tasks",
-    "rum.ext.pages",
-    "rum.ext.bridge",
-    "rum.bin",
-    "rum.voice",
-    "discord",
+[tool.hatch.build.targets.wheel]
+packages = ["rum", "discord"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/rum",
+    "/discord",
+    "/scripts",
+    "/examples",
+    "/tests",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/CONTRIBUTING.md",
+    "/pyproject.toml",
+    "/.gitignore",
+    "/.pre-commit-config.yaml",
 ]
-
-[tool.setuptools.dynamic]
-dependencies = { file = "requirements/_.txt" }
-readme = { content-type = "text/markdown", file = "README.md" }
-
-[tool.setuptools.dynamic.optional-dependencies]
-speed = { file = "requirements/speed.txt" }
-voice = { file = "requirements/voice.txt" }
+exclude = [
+    "/docs/api",
+    "/**/__pycache__",
+    "/**/*.pyc",
+]
 
 [dependency-groups]
 dev = [
