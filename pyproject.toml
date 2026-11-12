@@ -41,7 +41,7 @@ classifiers = [
 dependencies = [
     "h11>=0.16.0,<1",
     "wsproto>=1.2.0,<2",
-    "zstandard>=0.23,<1; python_version < \"3.14\"",
+    "backports.zstd; python_version < \"3.14\"",
     "typing_extensions>=4.14.0,<5",
     "yarl>=1.6.3,<2.0",
 ]
@@ -52,6 +52,7 @@ voice = [
     "PyNaCl>=1.6.2,<1.7",
     "davey>=0.1.4,<1",
 ]
+lavalink = []
 
 [project.urls]
 Source = "https://github.com/breedservices/Rum"

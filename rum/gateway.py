@@ -70,14 +70,11 @@ class _ZstdStream:
 
     @staticmethod
     def _new() -> Any:
-        try:  # Python 3.14 and later
+        try:
             from compression import zstd
-
-            return zstd.ZstdDecompressor()
         except ImportError:  # pragma: no cover
-            import zstandard
-
-            return zstandard.ZstdDecompressor().decompressobj()
+            from backports import zstd
+        return zstd.ZstdDecompressor()
 
     def decompress(self, data: bytes) -> bytes:
         """Decompresses a part of the stream."""
